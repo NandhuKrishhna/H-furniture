@@ -1,0 +1,151 @@
+<div class="container">
+  <div class="row align-items-center min-vh-100">
+    <div class="col-md-6 d-none d-md-block">
+      <img src="/images/blocks-P5mBXg1sFDA-unsplash.jpg" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-md-6">
+      <div class="login-form p-4">
+        <h3 class="mb-4 text-center">Enter OTP</h3>
+        {{#if errors}}
+        <div class="alert alert-danger">
+          <ul>
+            {{#each errors}}
+            <li>{{msg}}</li>
+            {{/each}}
+          </ul>
+        </div>
+        {{/if}}
+        {{#if otpResent}}
+        <div class="alert alert-success">
+          OTP has been resent.
+        </div>
+        {{/if}}
+
+        {{#if otpResentFailed}}
+        <div class="alert alert-danger">
+          Failed to resend OTP. Please try again.
+        </div>
+        {{/if}}
+        <form action="/user/submit_otp" method="post">
+          <div class="form-group">
+            <input type="" class="form-control" id="otp-login" name="otp" placeholder=" ">
+            <label for="otp-login">Enter OTP</label>
+          </div>
+
+
+
+          <div class="mt-3">
+            <button type="submit" class="btn btn-dark btn-block">Submit</button>
+          </div>
+
+          <div class="mt-3">
+            <button id="signup-resend-otp" type="submit" class="btn btn-dark btn-block">Resend</button>
+          </div>
+          <div class="col-lg-12 d-flex justify-content-center mt-2">
+            <span id="timer" class="fs-5 text-danger"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
+
+  .login-form {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-form h3 {
+    font-weight: bold;
+  }
+
+  .form-control {
+    border-radius: 5px;
+  }
+
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .alert-danger {
+    background: none;
+    border: none;
+    color: red;
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 29px;
+    /* Adjust margin-bottom */
+    margin-top: -5px;
+    /* Adjust margin-top to move the error message up */
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+    top: -2rem;
+  }
+</style>
+
+<script>
+function resendOtp() {
+    fetch('/user/resend_otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.otpResent) {
+            alert('OTP has been resent.');
+        } else {
+            alert('Failed to resend OTP.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while resending the OTP.');
+    });
+}
+</script>

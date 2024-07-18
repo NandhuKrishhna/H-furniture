@@ -1,141 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Account</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-    .split-screen {
-      display: flex;
-    }
-
-    .left {
-      flex: 1;
-      background: url('path/to/your/image.jpg') no-repeat center center;
-      background-size: cover;
-      font-family: 'Roboto', sans-serif;
-    }
-
-    .right {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .form-container {
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="split-screen">
-    <div class="left">
-      <!-- Image or other content -->
+<div class="container">
+  <div class="row align-items-center min-vh-100">
+    <div class="col-md-6 d-none d-md-block">
+      <img src="/images/blocks-P5mBXg1sFDA-unsplash.jpg" class="img-fluid" alt="Responsive image">
     </div>
-    <div class="right">
-      <div class="form-container text-center">
-        <h2 style="font-size: 20px;">Create Account</h2>
-        <form id="signupForm" action="/users/signup" method="post">
-          <div class="form-group mt-3">
-            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name">
-            <div class="firstName-error"></div>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name">
-            <div class="lastName-error"></div>
-          </div>
+    <div class="col-md-6">
+      <div class="login-form p-4">
+        <h3 class="mb-4 text-center">User Login</h3>
 
+        <form action="/user/signup" method="post">
           <div class="form-group">
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
-            <div class="email-error"></div>
+            <input type="text" class="form-control" id="fname" name="fname" placeholder=" ">
+            <label for="fname"> First Name</label>
+            {{#if errors.fname}}
+            <div class="text-danger">{{errors.fname.msg}}</div>
+            {{/if}}
           </div>
           <div class="form-group">
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-            <div class="password-error"></div>
+            <input type="text" class="form-control" id="lname" name="lname" placeholder=" ">
+            <label for="lname"> Last Name</label>
+            {{#if errors.lname}}
+            <div class="text-danger">{{errors.lname.msg}}</div>
+            {{/if}}
           </div>
-
           <div class="form-group">
-            <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone No">
-            <div class="phone-error"></div>
+            <input type="email" class="form-control" id="email" name="email" placeholder=" ">
+            <label for="email"> Email</label>
+            {{#if errors.email}}
+            <div class="text-danger">{{errors.email.msg}}</div>
+            {{/if}}
           </div>
-          <button type="submit" class="btn btn-dark btn-block">Create Account</button>
+          <div class="form-group">
+            <input type="password" class="form-control" id="password" name="password" placeholder=" ">
+            <label for="password"> Password</label>
+            {{#if errors.password}}
+            <div class="text-danger">{{errors.password.msg}}</div>
+            {{/if}}
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="phone" name="phone" placeholder=" ">
+            <label for="phone"> Phone No</label>
+            {{#if errors.phone}}
+            <div class="text-danger">{{errors.phone.msg}}</div>
+            {{/if}}
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-dark btn-block">Sign Up</button>
+          </div>
         </form>
-        <p class="mt-3">Already have an account? <a href="/users/login">Login</a></p>
+
+        <div class="col-lg-12 d-flex justify-content-center my-3" style="color: gray;">
+          <span class="text-center">Already Have an Account? <a style="color: #aaa;" href="/user/login">Login</a></span>
+        </div>
+        <a href="/auth/google" class="btn btn-outline-secondary my-3" style="width: 100%">
+          <i class="fa-brands fa-google"></i> <span>Login with Google</span>
+        </a>
       </div>
     </div>
   </div>
-  <script>
+</div>
 
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
 
-    const form = document.getElementById('signupForm');
-    const firstNameErr = document.querySelector('.firstName-error');
-    const lastNameErr = document.querySelector('.lastName-error');
-    const emailErr = document.querySelector('.email-error');
-    const passwordErr = document.querySelector('.password-error');
-    const phoneErr = document.querySelector('.phone-error');
+  .login-form {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      firstNameErr.textContent = '';
-      lastNameErr.textContent = '';
-      emailErr.textContent = '';
-      passwordErr.textContent = '';
-      phoneErr.textContent = '';
+  .login-form h3 {
+    font-weight: bold;
+  }
 
-      const firstName = form.firstName.value
-      const lastName = form.lastName.value
-      const email = form.email.value
-      const password = form.password.value
-      const phone = form.phone.value
+  .form-control {
+    border-radius: 5px;
+  }
 
-      try {
+  .btn-block {
+    border-radius: 5px;
+  }
 
-        const res = await fetch('/users/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            firstName,
-            lastName,
-            email,
-            password,
-            phone
-          })
-        })
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
 
-        const data = await res.json()
-        console.log(data)
-        if(data.errors){
-          firstNameErr.textContent = data.errors.firstName
-          lastNameErr.textContent = data.errors.lastName
-          emailErr.textContent = data.errors.email
-          passwordErr.textContent = data.errors.password
-          phoneErr.textContent = data.errors.phone
-        }
-        if(data.user){
-          location.assign('/users/home')
-        }
-      }
-      catch (err) {
-        console.log(err)
-      
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+    min-height: 50px; /* Adjust this height to fit your design */
+  }
 
-    }
-    })
-  </script>
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+    top: -1.5rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
 
-</html>
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+    top: -2rem;
+  }
+
+  .text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+</style>
