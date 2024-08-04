@@ -1,0 +1,177 @@
+
+    <style>
+        .address-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .cart-summary {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 46px;
+        }
+        .cart-summary h5 {
+            margin-bottom: 15px;
+        }
+        .cart-summary .summary-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .cart-summary .summary-item span {
+            margin-bottom: 10px;
+        }
+        .custom-control-label::before {
+            top: 0.25rem;
+        }
+        .container{
+          padding-top: 50px;
+          padding-bottom: 50px;
+        }
+  
+    </style>
+   
+   <div class="container">
+  <div class="row mt-4">
+    <!-- Main Content Column -->
+    <div class="col-lg-8">
+      <!-- Address and Shipping Methods Section -->
+      <h2>Select Delivery Address</h2>
+      <form id="addressForm" action="/user/checkout_address_details/<%= id %> "method="POST">
+        <% if (address && address.length > 0) { %>
+          <% address.forEach(function(addr) { %>
+            <div class="address-card">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= addr._id %>" value="<%= addr._id %>" <%= addr.isPrimary ? 'checked' : '' %>>
+                <label class="form-check-label" for="address<%= addr._id %>">
+                  <strong><%= addr.firstName %> <%= addr.lastName %></strong><br>
+                  <%= addr.homeAddress %>, <%= addr.street %>, <%= addr.city %>, <%= addr.state %>, <%= addr.country %>, <%= addr.pincode %><br>
+                  Mob: <%= Array.isArray(addr.phone) ? addr.phone.join(", ") : addr.phone %>
+                </label>
+              </div>
+              <div class="mt-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm delete-address" data-address-id="<%= addr._id %>">Remove</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm edit-address" data-address-id="<%= addr._id %>">Edit</button>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+        <button type="submit" class="btn btn-dark mt-3">Confirm Address</button>
+      </form>
+      <a href="/user/add_address" class="btn btn-dark mt-3"> Add New Address</a><br><br>
+      <h3>Shipping Methods</h3>
+      <div class="address-card">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="shippingMethod" id="homeDelivery" checked>
+          <label class="form-check-label" for="homeDelivery">
+            Home Delivery
+          </label>
+        </div>
+      </div>
+      <h3>Billing Information</h3>
+      <div class="address-card">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="billingAddress" id="sameAddress" checked>
+          <label class="form-check-label" for="sameAddress">
+            Use same address for delivery and billing
+          </label>
+        </div>
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="radio" name="billingAddress" id="differentAddress">
+          <label class="form-check-label" for="differentAddress">
+            Use different billing address
+          </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Summary Column -->
+        <div class="col-lg-4">
+            <div class="cart-summary">
+                <h5>Apply Coupon Code</h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Enter Coupon Code">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Apply</button>
+                    </div>
+                </div>
+                <h5>Cart Summary</h5>
+                <div class="summary-item">
+                    <span>SubTotal</span>
+                    <span><%= total.toFixed(2) %></span>
+                </div>
+                <div class="summary-item">
+                    <span>Packing Charges</span>
+                    <span>₹<%=packingCharges.toFixed(2) %></span>
+                </div>
+                <div class="summary-item">
+                    <span>Shipping & Handling</span>
+                    <span>₹<%=shippingHandling.toFixed(2) %></span>
+                </div>
+                <div class="summary-item">
+                    <span>Negotiated Discount</span>
+                    <span>₹0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax</span>
+                    <span>₹<%= tax.toFixed(2) %></span>
+                </div>
+                <div class="summary-item">
+                    <strong>Total Amount</strong>
+                    <strong>₹<%= total.toFixed(2) %></strong>
+                </div>
+                <div class="summary-item">
+                    <span>Total savings</span>
+                    <span><%= savings.toFixed(2) %></span>
+                </div>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="termsCheckbox">
+                    <label class="form-check-label" for="termsCheckbox">
+                        I read the home delivery terms and conditions. <a href="#">Know more</a>
+                    </label>
+                </div>
+                <button class="continue-btn btn btn-dark btn-block mt-3" data-user-id="<%= userInfo._id %>">Continue</button>
+                <p class="text-muted mt-2">By continuing to Checkout, you agree to DTALE Terms of use and Privacy Policy</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $(".delete-address").click(function(){
+            const addressId = $(this).data("address-id");
+            $.ajax({
+                url: `/user/delete_address/${addressId}`,
+                method: "DELETE",
+                success: function(response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert("Error occurred while deleting the address");
+                }
+            });
+        });
+    });
+
+// redirecting to edit address
+$(document).ready(function () {
+    $(".edit-address").click(function() {
+        const addressId = $(this).data("address-id");
+        // Redirect to the edit address page
+        window.location.href = `/user/edit_address/${addressId}`;
+    });
+});
+
+$(document).ready(function () {
+    $(".continue-btn").click(function() {
+        const userId = $(this).data("user-id");
+        // Redirect to the edit address page
+        window.location.href = `/user/payment_method/${userId}`;
+    });
+});
+  </script>

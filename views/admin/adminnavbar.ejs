@@ -1,0 +1,92 @@
+<aside id="sidebar">
+    <div class="d-flex">
+      <button class="toggle-btn" type="button">
+        <i class="lni lni-grid-alt"></i>
+      </button>
+      <div class="sidebar-logo">
+        <a href="#">DASHBOARD</a>
+      </div>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="sidebar-item">
+        <a href="/admin/user_panel" class="sidebar-link">
+          <i class="lni lni-user"></i>
+          <span>User-List</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+          aria-expanded="false" aria-controls="auth">
+          <i class="lni lni-protection"></i>
+          <span>INVENTORY</span>
+        </a>
+        <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+          <li class="sidebar-item">
+            <a href="/admin/products" class="sidebar-link">Products</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="/admin/category" class="sidebar-link">Category</a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+          aria-expanded="false" aria-controls="auth">
+          <i class="lni lni-protection"></i>
+          <span>OFFERS&VOUCHERS</span>
+        </a>
+        <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+          <li class="sidebar-item">
+            <a href="/admin/offers" class="sidebar-link">Offers</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="/admin/coupons" class="sidebar-link">Coupons</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="/admin/vouchers" class="sidebar-link">Vouchers</a>
+          </li>
+        </ul>
+      </li>
+      <li class="sidebar-item">
+        <a href="/admin/stock" class="sidebar-link">
+          <i class="lni lni-user"></i>
+          <span>STOCK</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+          aria-expanded="false" aria-controls="auth">
+          <i class="lni lni-protection"></i>
+          <span>SALES</span>
+        </a>
+        <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+          <li class="sidebar-item">
+            <a href="/admin/sales-report" class="sidebar-link">Sales-Report</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="/admin/inventory-report" class="sidebar-link">Inventory-Report</a>
+          </li>
+          <li class="sidebar-item">
+            <a href="/admin/purchase-report" class="sidebar-link">Purchase-Report</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <button class="logout-btn" id="logout-btn">
+        <i class="lni lni-exit"></i>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamBurger = document.querySelector(".toggle-btn");
+      hamBurger.addEventListener("click", function () {
+        document.querySelector("#sidebar").classList.toggle("expand");
+      });
+  
+  
+    });
+  
+  </script>

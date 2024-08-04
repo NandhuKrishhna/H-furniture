@@ -1,0 +1,114 @@
+<style>
+  .cart-summary {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  .cart-summary h5, .cart-summary p {
+    margin: 0;
+    padding: 0;
+  }
+  .address-card, .payment-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .address-card .card-header, .payment-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border-bottom: none;
+  }
+  .address-card .card-header .badge {
+    background-color: #000;
+    color: #fff;
+  }
+  .payment-card img {
+    width: 50px;
+  }
+  .payment-card {
+    height: 60px;
+  }
+  .row {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  .cart-summary-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+  }
+  .col-md-8, .col-md-4 {
+    flex: 1;
+    margin-right: 15px;
+  }
+  .col-md-4 {
+    max-width: 400px;
+  }
+  .col-md-8 {
+    max-width: 700px;
+  }
+  .form-check-label {
+    font-size: 12px;
+  }
+  order-body {
+    padding-top: 100px;
+  
+  }
+</style>
+
+<body>
+  <div class="orders-body container mt-5">
+    <div class="row">
+      <div class="col-md-8">
+        <h5>Choose Payment Mode</h5>
+        <form id="paymentForm" method="POST" action="/user/payment_method/<%= userId %>">
+          <div class="payment-card">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod1" value="creditCard">
+              <label class="form-check-label" for="paymentMethod1">
+                <i class="fa-regular fa-credit-card"></i> Credit Card/Debit Card/UPI/Net Banking/Wallets
+              </label>
+            </div>
+          </div>
+          <div class="payment-card">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodCOD" value="COD">
+              <label class="form-check-label d-flex align-items-center" for="paymentMethodCOD">
+                <img style="width: 35px; margin-right: 10px;" src="/images/money_14341827.png" alt=""> Cash On Delivery
+              </label>
+            </div>
+          </div>
+          <div id="paymentError" class="text-danger mt-2" style="display: none;">
+            Please select a payment method.
+          </div>
+          <button type="submit" style="width: 40%;" class="btn btn-dark btn-block mt-3">Place Order</button>
+        </form>
+      </div>
+  
+      <div class="col-md-4">
+        <div class="cart-summary">
+          <h5>Cart Summary</h5>
+          <ul class="list-unstyled">
+            <li class="d-flex justify-content-between">
+              <span>SubTotal</span>
+              <span>₹<%= total.toFixed(2) %></span>
+            </li>
+          </ul>
+          <p>Packing Charges: <span class="float-right">₹<%= packingCharges.toFixed(2) %></span></p>
+          <p>Shipping & Handling: <span class="float-right"><del>₹4,000</del> FREE</span></p>
+          <p>Negotiated Discount: <span class="float-right">₹0</span></p>
+          <p>Tax: <span class="float-right">₹<%= tax.toFixed(2) %></span></p>
+          <h5>Total Amount: <span class="float-right">₹<%= total.toFixed(2) %></span></h5>
+          <h6 style="color: green">Total Savings: <span class="float-right" style="color: green">₹<%= savings.toFixed(2) %></span></h6>
+          <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="terms">
+            <label class="form-check-label" for="terms">I read the home delivery terms and conditions. <a href="#">Know more</a></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

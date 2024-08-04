@@ -1,0 +1,91 @@
+<style>
+       .side-menu {
+  background-color: #ffffff;
+  height: 100%;
+  border: 0.5px solid #ced4da; /* Thinner border */
+  
+}
+main-content{
+    position: absolute;
+    left: 300px;
+}
+</style>
+<div class="container-fluid mt-4 main-content">
+    <div class="row">
+      <!-- Side Menu -->
+      <div class="col-md-3 side-menu">
+  
+        <ul class="list-group list-group-flush" style="color: rgb(90, 90, 90); text-decoration: none;">
+          <li class="list-group-item"><a href="/user/orders/<%= userInfo ? userInfo._id : '' %>" style="color: rgb(90, 90, 90); text-decoration: none;">Your
+              Orders</a></li>
+          <li class="list-group-item"><a href="/user/products" style="color: rgb(90, 90, 90); text-decoration: none;">Buy
+              Again</a></li>
+          <li class="list-group-item"><a href="/user/my-account"
+              style="color: rgb(90, 90, 90); text-decoration: none;">Your Account</a></li>
+          <li class="list-group-item"><a href="/user/my-address"
+              style="color: rgb(90, 90, 90); text-decoration: none;">Your Address</a></li>
+          <li class="list-group-item"><a href="/user/cart/<%= userInfo ? userInfo._id : '' %>" style="color: rgb(90, 90, 90); text-decoration: none;">Your
+              Cart</a></li>
+          <li class="list-group-item"><a href="/user/wishlist" style="color: rgb(90, 90, 90); text-decoration: none;">Your
+              Wishlist</a></li>
+          <li class="list-group-item"><a href="/user/set_new_password"
+              style="color: rgb(90, 90, 90); text-decoration: none;">Change Password</a></li>
+          <li class="list-group-item"><a href="/user/coupons-vouchers"
+              style="color: rgb(90, 90, 90); text-decoration: none;">Coupons and Vouchers</a></li>
+        </ul>
+        <button id="logout" class="btn btn-dark logout-btn" style="border-radius: 0;">LOGOUT</button>
+      </div>
+  
+      <script>
+        
+        $(document).ready(function() {
+    $('#logout').on('click', function() {
+      Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out of your account!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'black', // Apply black color directly to the 'Yes' button
+            cancelButtonColor: 'grey', // Apply grey color directly to the 'Cancel' button
+            confirmButtonText: 'Yes, logout!',
+            cancelButtonText: 'No, cancel',
+            customClass: {
+                confirmButton: 'swal2-confirm-black',
+                cancelButton: 'swal2-cancel-grey'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/user/logout',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Logged out!',
+                                'You have been logged out successfully.',
+                                'success',
+                                
+                            ).then(() => {
+                                window.location.href = '/user/login'; 
+                            });
+                        } else {
+                            Swal.fire(
+                                'Oops!',
+                                'Something went wrong. Please try again later.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire(
+                            'Oops!',
+                            'Something went wrong. Please try again later.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+});
+      </script>

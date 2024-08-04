@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const isotpAuth = (req, res, next) => {
+exports.isotpAuth = (req, res, next) => {
     if (req.session.email) {
       console.log("hiiii", req.session.email);
       next();
@@ -10,7 +10,7 @@ const isotpAuth = (req, res, next) => {
   }
 
 
-  const signupAuth = (req, res, next) => {
+exports.signupAuth = (req, res, next) => {
     if (req.session.userdata) {
       next();
     } else {
@@ -18,7 +18,7 @@ const isotpAuth = (req, res, next) => {
     }
   };
 
-  const isuserAuthenticated = (req, res, next) => {
+exports.isuserAuthenticated = (req, res, next) => {
     try {
       if (req.cookies.token) {
         const token = req.cookies.token;
@@ -32,12 +32,12 @@ const isotpAuth = (req, res, next) => {
     }
   };
 
-
-
-  module.exports = {
-    isotpAuth,
-    signupAuth,
-    isuserAuthenticated,
-
+exports.noToken = (req,res,next)=>{
   
+  if(!req.session.token){
+    next();
+  }else{
+    res.redirect("/")
   }
+
+}

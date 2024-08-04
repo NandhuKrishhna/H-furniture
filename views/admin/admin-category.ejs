@@ -1,0 +1,116 @@
+<%- include('../partials/adminSideNav.ejs') %>
+    <div class="main">
+        <div style="margin-top: 50px; margin-right: 50px;">
+            <h1 style="position: relative; left: 80px;" class="text-start">CATEGORY</h1>
+        </div>
+        <div class="container">
+            <div style="margin-bottom: 50px;">
+                <!-- Your main content goes here -->
+                <div class="d-flex justify-content-start mb-3" style="position: relative; left: 2px;">
+
+                    <div class="d-flex align-items-center ms-3">
+                        <a href="/admin/category/add-category" class="btn btn-danger">ADD</a>
+                    </div>
+                </div>
+                <table id="example" class="table table-striped nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>CATEGORY</th>
+                            <th>CREATED AT</th>
+                            <th>UPDATED AT</th>
+                            <th style="width: 100px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% category.forEach(function(cat) { %>
+                            <tr>
+                                <td><%= cat.categoryName %></td>
+                                <td><%= cat.createdAt %></td>
+                                <td><%= cat.updatedAt %></td>
+                                <td>
+                                    <button class="btn">
+                                        <i id="edit-category-button" class="fa-solid fa-pen-to-square" data-category-id="<%= cat._id %>"></i>
+                                    </button>
+                                    <button class="btn">
+                                        <i id="category-delete-icon" class="text-danger fa-solid fa-trash" data-category-id="<%= cat._id %>"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+  <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div style="height:fit-content; width:100%;">
+          <div class="row p-2">
+            <span class="d-flex justify-content-center font-weight-bold text-white fs-6 p-2 modal-body-alert">
+  
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel_crop_button" class="btn btn-light" style="width:fit-content;"
+            data-bs-dismiss="modal">Cancel</button>
+          <button style="width: 110px;" id="confirmAction" type="button" class="btn btn-danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="alert-button" class="btn" hidden data-bs-toggle="modal" data-bs-target="#imageCropModal"></button>
+  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div style="height:fit-content; width:100%;">
+          <div class="row p-2">
+  
+            <div class="d-flex justify-content-center align-items-center">
+              <div>
+                <span class="font-weight-bold text-white fs-6 px-3 me-2 modal-body-msg">
+  
+                </span>
+              </div>
+              <div class="loader">
+  
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel_button" class="btn btn-danger text-white" style="width:fit-content;"
+            data-bs-dismiss="modal">Cancel</button>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="msg-button" hidden class="btn" data-bs-toggle="modal" data-bs-target="#alertModal"></button>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamBurger = document.querySelector(".toggle-btn");
+      hamBurger.addEventListener("click", function () {
+        document.querySelector("#sidebar").classList.toggle("expand");
+      });
+  
+  
+    });
+  
+  </script>

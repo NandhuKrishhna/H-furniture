@@ -1,0 +1,519 @@
+<div class="wrapper">
+    <aside id="sidebar">
+      <div class="d-flex">
+        <button class="toggle-btn" type="button">
+          <i class="lni lni-grid-alt"></i>
+        </button>
+        <div class="sidebar-logo">
+          <a href="#">DASHBOARD</a>
+        </div>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-item">
+          <a href="/admin/user_panel" class="sidebar-link">
+            <i class="lni lni-user"></i>
+            <span>User-List</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>INVENTORY</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/products" class="sidebar-link">Products</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/category" class="sidebar-link">Category</a>
+            </li>
+          </ul>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>OFFERS&VOUCHERS</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/offers" class="sidebar-link">Offers</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/coupons" class="sidebar-link">Coupons</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/vouchers" class="sidebar-link">Vouchers</a>
+            </li>
+          </ul>
+        </li>
+        <li class="sidebar-item">
+          <a href="/admin/stock" class="sidebar-link">
+            <i class="lni lni-user"></i>
+            <span>STOCK</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>SALES</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/sales-report" class="sidebar-link">Sales-Report</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/inventory-report" class="sidebar-link">Inventory-Report</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/purchase-report" class="sidebar-link">Purchase-Report</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logout-btn">
+          <i class="lni lni-exit"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </aside>
+  
+  
+  
+    <div class="container" id="addproduct-container">
+        <div class="row px-5 pt-2">
+          <% product.forEach((item) => { %>
+            <form
+              action="/admin/products/edit-product/<%= item._id %>?_method=PUT"
+              method="POST"
+              class="row g-3"
+              enctype="multipart/form-data"
+            >
+             
+            <label class="fs-4 mb-3 h2">Product Details</label>
+      
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="productname"
+                placeholder="PRODUCT NAME"
+                class="form-control product-name"
+                value="<%= item.productName %>"
+              />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="number"
+                name="originalprice"
+                placeholder="ORIGINAL PRICE"
+                class="form-control price"
+                value="<%= item.originalprice %>"
+              />
+            </div>
+            <div class="col-md-6">
+              <input
+                type="number"
+                name="discount"
+                placeholder="Discount (%)"
+                class="form-control price"
+                value="<%= item.discount %>"
+              />
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">Category</label>
+                  <select class="form-select" name="category" id="inputGroupSelect01">
+                    <% categoryData.forEach(item => { %>
+                      <option selected value="<%= item.categoryName %>"><%= item.categoryName %></option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <input
+                type="number"
+                name="quantity"
+                placeholder="QTY"
+                class="form-control quantity"
+                value="<%= item.quantity %>"
+              />
+            </div>
+            <label class="fs-4 mb-3 mt-5 h2">Product Features</label>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="primarymaterial"
+                placeholder="PRIMARY MATERIAL"
+                class="form-control"
+                list="primary-material"
+                value="<%= item.primarymaterial %>"
+              />
+            </div>
+            <datalist id="primary-material">
+              <option value="European Ash Wood (kiln dried)"></option>
+              <option value="Oak Wood (kiln dried)"></option>
+              <option value="Teak Wood"></option>
+              <option value="Walnut Wood"></option>
+              <option value="Mahogany"></option>
+              <option value="Maple Wood"></option>
+              <option value="Birch Wood"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="floorstanding"
+                placeholder="Floor Standing"
+                class="form-control"
+                list="floor-standing"
+                value="<%= item.floorstanding %>"
+              />
+            </div>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="polishmaterial"
+                placeholder="Polish Material"
+                class="form-control"
+                list="polish-materials"
+                value="<%= item.polishmaterial %>"
+              />
+            </div>
+            <datalist id="polish-materials">
+              <option value="Sayerlack (Italy)"></option>
+              <option value="Dulux (UK)"></option>
+              <option value="Sadolin (Denmark)"></option>
+              <option value="Bondex (Denmark)"></option>
+              <option value="Caparol (Germany)"></option>
+              <option value="Jotun (Norway)"></option>
+              <option value="Benjamin Moore (USA)"></option>
+              <option value="Sherwin-Williams (USA)"></option>
+              <option value="Valspar (USA)"></option>
+              <option value="AkzoNobel (Netherlands)"></option>
+              <option value="Boero (Italy)"></option>
+              <option value="Farrow & Ball (UK)"></option>
+              <option value="Teknos (Finland)"></option>
+              <option value="Tikkurila (Finland)"></option>
+              <option value="Zinsser (USA)"></option>
+            </datalist>
+            <datalist id="floor-standing">
+              <option value="Yes"></option>
+              <option value="No"></option>
+            </datalist>
+            <label class="fs-5">Select colors</label>
+            <div class="col-md-3">
+              <input
+                type="text"
+                name="color"
+                placeholder="COLOR 1"
+                class="form-control"
+                list="color-options"
+                value="<%= item.color %>"
+              />
+            </div>
+            <div class="col-md-3">
+              <input
+                type="text"
+                name="color"
+                placeholder="COLOR 2"
+                class="form-control"
+                list="color-options"
+                value="<%= item.color %>"
+              />
+            </div>
+            <div class="col-md-3">
+              <input
+                type="text"
+                name="color"
+                placeholder="COLOR 3"
+                class="form-control"
+                list="color-options"
+                value="<%= item.color %>"
+              />
+            </div>
+            <datalist id="color-options">
+              <option value="Red"></option>
+              <option value="Blue"></option>
+              <option value="Green"></option>
+              <option value="Yellow"></option>
+              <option value="Black"></option>
+              <option value="White"></option>
+              <option value="Gray"></option>
+              <option value="Brown"></option>
+              <option value="Pink"></option>
+              <option value="Purple"></option>
+              <option value="Orange"></option>
+              <option value="Beige"></option>
+            </datalist>
+            <label class="fs-4 mb-3 mt-5 h2">Specifications</label>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="material"
+                placeholder="MATERIAL"
+                class="form-control material"
+                value="<%= item.material %>"
+              />
+            </div>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="warranty"
+                placeholder="WARRANTY"
+                class="form-control warranty"
+                list="warranty-options"
+                value="<%= item.warranty %>"
+              />
+            </div>
+            <datalist id="warranty-options">
+              <option value="Yes"></option>
+              <option value="No"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input
+                type="text"
+                placeholder="Country of Origin"
+                class="form-control CountryofOrigin"
+                name="countryofOrigin"
+                list="country-options"
+                value="<%= item.countryofOrigin %>"
+              />
+            </div>
+            <datalist id="country-options">
+              <option value="United States"></option>
+              <option value="Canada"></option>
+              <option value="United Kingdom"></option>
+              <option value="Australia"></option>
+              <option value="Germany"></option>
+              <option value="France"></option>
+              <option value="India"></option>
+              <option value="China"></option>
+              <option value="Japan"></option>
+              <option value="South Korea"></option>
+              <option value="Brazil"></option>
+              <option value="Mexico"></option>
+              <option value="Italy"></option>
+              <option value="Spain"></option>
+              <option value="Russia"></option>
+              <option value="South Africa"></option>
+              <option value="Saudi Arabia"></option>
+              <option value="Argentina"></option>
+              <option value="Indonesia"></option>
+              <option value="Turkey"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input
+                type="number"
+                name="weight"
+                placeholder="WEIGHT"
+                class="form-control weight"
+                value="<%= item.weight %>"
+              />
+            </div>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="fabric_options"
+                placeholder="FABRIC OPTIONS"
+                class="form-control fabric_options"
+                list="fabric-options"
+                value="<%= item.fabric_options %>"
+              />
+            </div>
+            <datalist id="fabric-options">
+              <option value="Cotton"></option>
+              <option value="Linen"></option>
+              <option value="Wool"></option>
+              <option value="Silk"></option>
+              <option value="Velvet"></option>
+              <option value="Polyester"></option>
+              <option value="Acrylic"></option>
+              <option value="Nylon"></option>
+              <option value="Chenille"></option>
+              <option value="Leather"></option>
+              <option value="Microfiber"></option>
+              <option value="Suede"></option>
+              <option value="Viscose"></option>
+              <option value="Rayon"></option>
+              <option value="Bamboo"></option>
+              <option value="Jute"></option>
+              <option value="Hemp"></option>
+              <option value="Acetate"></option>
+              <option value="Modal"></option>
+              <option value="Spandex"></option>
+              <option value="Cashmere"></option>
+              <option value="Faux Fur"></option>
+              <option value="Faux Leather"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input
+                type="text"
+                name="brand"
+                placeholder="BRAND"
+                class="form-control brand"
+                list="brand-options"
+                value="<%= item.brand %>"
+              />
+            </div>
+            <datalist id="brand-options">
+              <option value="Herman Miller (USA)"></option>
+              <option value="Knoll (USA)"></option>
+              <option value="Vitra (Switzerland)"></option>
+              <option value="Minotti (Italy)"></option>
+              <option value="B&B Italia (Italy)"></option>
+              <option value="Fritz Hansen (Denmark)"></option>
+              <option value="Poltrona Frau (Italy)"></option>
+              <option value="Cassina (Italy)"></option>
+              <option value="Roche Bobois (France)"></option>
+              <option value="Muuto (Denmark)"></option>
+              <option value="Hay (Denmark)"></option>
+              <option value="Gubi (Denmark)"></option>
+              <option value="Molteni & C (Italy)"></option>
+              <option value="Boffi (Italy)"></option>
+              <option value="Arper (Italy)"></option>
+              <option value="Magis (Italy)"></option>
+              <option value="Kartell (Italy)"></option>
+              <option value="Alessi (Italy)"></option>
+              <option value="Pedrali (Italy)"></option>
+              <option value="Flexform (Italy)"></option>
+              <option value="Ligne Roset (France)"></option>
+              <option value="Porro (Italy)"></option>
+              <option value="Cappellini (Italy)"></option>
+              <option value="Driade (Italy)"></option>
+              <option value="Zanotta (Italy)"></option>
+              <option value="Gloster (UK)"></option>
+              <option value="Dedon (Germany)"></option>
+              <option value="Emeco (USA)"></option>
+              <option value="HAY (Denmark)"></option>
+              <option value="Ferm Living (Denmark)"></option>
+              <option value="Normann Copenhagen (Denmark)"></option>
+              <option value="Gandia Blasco (Spain)"></option>
+              <option value="Saba Italia (Italy)"></option>
+              <option value="Desalto (Italy)"></option>
+              <option value="Moroso (Italy)"></option>
+              <option value="Cattelan Italia (Italy)"></option>
+              <option value="Tonon (Italy)"></option>
+              <option value="Baxter (Italy)"></option>
+              <option value="Bonaldo (Italy)"></option>
+              <option value="Ceccotti Collezioni (Italy)"></option>
+              <option value="Glas Italia (Italy)"></option>
+              <option value="Kettal (Spain)"></option>
+              <option value="Foscarini (Italy)"></option>
+              <option value="Louis Poulsen (Denmark)"></option>
+              <option value="Tom Dixon (UK)"></option>
+              <option value="Anglepoise (UK)"></option>
+              <option value="DCW Éditions (France)"></option>
+              <option value="Santa & Cole (Spain)"></option>
+              <option value="Artemide (Italy)"></option>
+              <option value="Flos (Italy)"></option>
+              <option value="Ingo Maurer (Germany)"></option>
+              <option value="Nemo Lighting (Italy)"></option>
+              <option value="Vibia (Spain)"></option>
+            </datalist>
+            <div class="col-md-6">
+              <input
+                type="text"
+                name="dimensions"
+                placeholder="Dimensions"
+                class="form-control other_dimensions"
+                list="dimensions-options"
+                value="<%= item.dimension %>"
+              />
+            </div>
+            <datalist id="dimension-options">
+                <option value="134L x 75W x 77H"></option>
+                <option value="120L x 60W x 80H"></option>
+                <option value="150L x 90W x 75H"></option>
+                <option value="180L x 90W x 75H"></option>
+                <option value="200L x 100W x 76H"></option>
+                <option value="210L x 100W x 80H"></option>
+                <option value="220L x 110W x 75H"></option>
+                <option value="240L x 120W x 78H"></option>
+                <option value="250L x 120W x 80H"></option>
+                <option value="260L x 130W x 82H"></option>
+                <option value="280L x 140W x 85H"></option>
+                <option value="300L x 150W x 90H"></option>
+                <option value="320L x 160W x 95H"></option>
+                <option value="340L x 170W x 100H"></option>
+              </datalist>
+            
+              <label class="fs-4 mb-3 mt-5 h2">Product Description</label>
+
+              <div class="form-floating">
+                <textarea
+                  class="form-control"
+                  placeholder="Description"
+                  id="floatingTextarea1"
+                  style="height: 100px"
+                  name="description[0]"
+                ><%= item.description[0] %></textarea>
+                <label for="floatingTextarea1">Description 1</label>
+              </div>
+              
+              <div class="form-floating mt-3">
+                <textarea
+                  class="form-control"
+                  placeholder="Description"
+                  id="floatingTextarea2"
+                  style="height: 100px"
+                  name="description[1]"
+                ><%= item.description[1] %></textarea>
+                <label for="floatingTextarea2">Description 2</label>
+              </div>
+              
+              <div class="form-floating mt-3">
+                <textarea
+                  class="form-control"
+                  placeholder="Description"
+                  id="floatingTextarea3"
+                  style="height: 100px"
+                  name="description[2]"
+                ><%= item.description[2] %></textarea>
+                <label for="floatingTextarea3">Description 3</label>
+              </div>
+              
+           
+            <label class="fs-4 mb-3 mt-5 h2">Product Images</label>
+            <div class="col-md-6">
+              <input type="file" name="files" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <input type="file" name="files" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <input type="file" name="files" class="form-control" />
+            </div>
+            <div class="col-md-6">
+              <input type="file" name="files" class="form-control" />
+            </div>
+            <div class="col-md-4 mt-5">
+                <input
+                  type="submit"
+                  value="Submit"
+                  class="btn btn-primary form-control"
+                />
+              </div>
+          </form>
+          <% }); %>
+        </div>
+      </div>
+      
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamBurger = document.querySelector(".toggle-btn");
+        hamBurger.addEventListener("click", function () {
+          document.querySelector("#sidebar").classList.toggle("expand");
+        });
+  
+  
+      });
+  
+    </script>

@@ -1,0 +1,387 @@
+<style>
+  /* General Styles for Sidebar */
+  #sidebar {
+    background-color: #f8f9fa;
+    /* Light background for sidebar */
+    padding: 15px;
+    /* Padding around the content */
+    border-radius: 5px;
+    /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* Soft shadow */
+  }
+
+  #sidebar h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+    /* Space below heading */
+  }
+
+  #sidebar .list-group-item {
+    border: none;
+    /* Remove border from list items */
+    padding: 10px;
+    /* Add padding inside list items */
+  }
+
+  #sidebar .list-group-item:hover {
+    background-color: #e9ecef;
+    /* Background color on hover */
+  }
+
+  #sidebar .badge {
+    background-color: #007bff;
+    /* Blue background for badges */
+  }
+
+  /* Styles for Brand Checkboxes */
+  #sidebar .brand .form-inline {
+    margin-bottom: 10px;
+    /* Space between each checkbox item */
+  }
+
+  #sidebar .tick {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  #sidebar .tick input[type="checkbox"] {
+    margin-right: 10px;
+    /* Space between checkbox and label text */
+  }
+
+  #sidebar .tick .check {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #007bff;
+    /* Blue background for checked boxes */
+    border-radius: 3px;
+  }
+
+  /* Styles for Rating Checkboxes */
+  #sidebar .rating .form-inline {
+    margin-bottom: 10px;
+    /* Space between each rating item */
+  }
+
+  #sidebar .rating .tick {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  #sidebar .rating .tick .fa-star {
+    color: #ffc107;
+    /* Gold color for stars */
+    margin-right: 2px;
+    /* Space between stars */
+  }
+
+  #sidebar .rating .tick input[type="checkbox"] {
+    margin-left: 10px;
+    /* Space between star rating and checkbox */
+  }
+
+  #sidebar .rating .tick .check {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #007bff;
+    /* Blue background for checked boxes */
+    border-radius: 3px;
+  }
+
+  #sidebar .rating .tick .far.fa-star {
+    color: #dee2e6;
+    /* Light color for unfilled stars */
+  }
+
+  .card {
+    margin-bottom: 20px;
+    width: 300px;
+    gap: 10px;
+    height: 433px;
+    border-radius: 0;
+  }
+
+  .card img {
+    width: 299px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 0;
+  }
+
+  .product-card .card-body {
+    padding: 15px;
+  }
+
+  .wishlist-heart {
+    cursor: pointer;
+    color: #ffffff;
+    /* Default color */
+  }
+
+  .wishlist-heart.clicked {
+    color: rgb(0, 0, 0);
+    /* Color when clicked */
+  }
+
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .wishlist-heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    z-index: 10;
+  }
+
+  .main-body {
+ 
+    padding-top: 50px;
+  }
+
+  .dropdown {
+    margin-right: 60px;
+
+  }
+
+  .dropdown-toggle {
+    border-radius: 0;
+    border: none;
+    border-color: #ffffff;
+  }
+
+  .dropdown-toggle:focus {
+    box-shadow: none;
+  }
+
+
+  /* .sidebar {
+    padding-left: 110px;
+  } */
+
+  /* .container .row {
+  padding-left: 50px; 
+  padding-right: 50px; 
+} */
+
+
+</style>
+
+
+
+<div class="container-fluid main-body">
+  <div class="row mt-4">
+    <!-- Updated Sidebar -->
+    <div class="col-md-3 sidebar">
+      <h5>Browse by</h5>
+      
+      <!-- Categories Filter -->
+      <div class="py-3">
+        <!-- <h5 class="font-weight-bold">Categories</h5>
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center category"> vegetables <span class="badge badge-primary badge-pill">328</span> </li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center category"> Fruits <span class="badge badge-primary badge-pill">112</span> </li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center category"> Kitchen Accessories <span class="badge badge-primary badge-pill">32</span> </li>
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center category"> Chefs Tips <span class="badge badge-primary badge-pill">48</span> </li>
+        </ul> -->
+      </div>
+
+      <!-- Brands Filter -->
+      <div class="py-3">
+        <!-- <h5 class="font-weight-bold">Brands</h5>
+        <form class="brand">
+            <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Royal Fields <input type="checkbox"> <span class="check"></span> </label> </div>
+            <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Crasmas Fields <input type="checkbox" checked> <span class="check"></span> </label> </div>
+            <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Vegetarisma Farm <input type="checkbox" checked> <span class="check"></span> </label> </div>
+            <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Farmar Field Eve <input type="checkbox"> <span class="check"></span> </label> </div>
+            <div class="form-inline d-flex align-items-center py-1"> <label class="tick">True Farmar Steve <input type="checkbox"> <span class="check"></span> </label> </div>
+        </form> -->
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="py-3">
+        <!-- <h5 class="font-weight-bold">Rating</h5>
+        <form class="brand">
+          <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Royal Fields <input type="checkbox"> <span class="check"></span> </label> </div>
+          <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Crasmas Fields <input type="checkbox" checked> <span class="check"></span> </label> </div>
+          <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Vegetarisma Farm <input type="checkbox" checked> <span class="check"></span> </label> </div>
+          <div class="form-inline d-flex align-items-center py-1"> <label class="tick">Farmar Field Eve <input type="checkbox"> <span class="check"></span> </label> </div>
+          <div class="form-inline d-flex align-items-center py-1"> <label class="tick">True Farmar Steve <input type="checkbox"> <span class="check"></span> </label> </div> -->
+      </form>
+      </div>
+
+      <!-- Additional Filters -->
+      <!-- <div class="mb-3">
+        <h6>Product Type</h6>
+        <!-- Add your filter options here -->
+      <!-- </div> -->
+      <!-- <div class="mb-3"> -->
+        <!-- <h6>Price</h6> -->
+        <!-- Price filter -->
+        <!-- <input type="range" class="form-control-range"> -->
+        <!-- <div class="d-flex justify-content-between"> -->
+          <!-- <input type="number" class="form-control" placeholder="Min"> -->
+          <!-- <input type="number" class="form-control" placeholder="Max"> -->
+        <!-- </div> -->
+      <!-- </div> -->
+      <!-- <div class="mb-3"> -->
+        <!-- <h6>Size</h6> -->
+        <!-- Add your filter options here -->
+      <!-- </div> --> 
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 style="font-size: 15px; font-weight: bold; padding-left: 10px;"><%= products.length %> Results</h5>
+        <div class="dropdown">
+          <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Sort: Featured 
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a class="dropdown-item" href="?sort=price_asc">Price: Low to High</a></li>
+            <li><a class="dropdown-item" href="?sort=price_desc">Price: High to Low</a></li>
+            <li><a class="dropdown-item" href="?sort=name_asc">Name: A to Z</a></li>
+            <li><a class="dropdown-item" href="?sort=name_desc">Name: Z to A</a></li>
+            <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
+          </ul>
+        </div>
+        
+        
+      </div>
+
+      <div class="container">
+        <div id="product-list" class="row">
+          <% products.forEach(function(product) { %>
+            <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+              <div class="card">
+                <!-- Clickable image -->
+                <div style="position: relative;">
+                  <a href="/user/product/<%= product._id %>" class="product-link" data-id="<%= product._id %>">
+                    <img src="/<%= product.images[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                  </a>
+                </div>
+                <div class="card-body">
+                  <span class="badge badge-dark" style="position: absolute; top: 10px; left: 10px; font-weight: 700; border-radius: 0;">
+                    Ready to Ship
+                  </span>
+                  <h6 class="card-title"><%= product.productName %></h6>
+                  <% if (product.discount) { %>
+                    <p class="card-text text-muted">
+                      <span style="text-decoration: line-through; font-size: small;">₹<%= product.originalprice %></span>
+                      <span style="font-weight: 800;">₹<%= calculateDiscountedPrice(product.originalprice, product.discount) %></span>
+                      <span style="color: coral; font-weight: 700; position: absolute; right: 10px;"><%= product.discount %>% off</span>
+                    </p>
+                  <% } else { %>
+                    <p class="card-text text-muted" style="font-weight: 700;">₹<%= product.originalprice %></p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <nav aria-label="Page navigation">
+          <ul id="pagination" class="pagination justify-content-center mt-4">
+            <% if (totalProducts > 0) { %>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <% if (i === page) { %>
+                  <li class="page-item active m-0">
+                    <a href="#" class="page-link" data-page="<%= i %>"><%= i %></a>
+                  </li>
+                <% } else { %>
+                  <li class="page-item">
+                    <a href="#" class="page-link" data-page="<%= i %>"><%= i %></a>
+                  </li>
+                <% } %>
+              <% } %>
+            <% } %>
+          </ul>
+        </nav>
+      </div>
+
+    </div>
+      <script>
+        $(document).ready(function() {
+  $('#pagination').on('click', '.page-link', function(event) {
+    event.preventDefault();
+    const page = $(this).data('page');
+    const search = '<%= search %>';
+    const sort = '<%= sort %>';
+
+    // Make AJAX request to get products for the selected page
+    $.ajax({
+      url: '/user/products',
+      type: 'GET',
+      data: {
+        page: page,
+        search: search,
+        sort: sort
+      },
+      success: function(response) {
+        // Update the product list
+        $('#product-list').html('');
+        response.products.forEach(function(product) {
+          let productHtml = `
+            <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+              <div class="card">
+                <div style="position: relative;">
+                  <a href="/user/product/${product._id}" class="product-link" data-id="${product._id}">
+                    <img src="/${product.images[0]}" class="card-img-top" alt="${product.productName}">
+                  </a>
+                </div>
+                <div class="card-body">
+                  <span class="badge badge-dark" style="position: absolute; top: 10px; left: 10px; font-weight: 700; border-radius: 0;">Ready to Ship</span>
+                  <h6 class="card-title">${product.productName}</h6>
+                  ${product.discount ? `
+                    <p class="card-text text-muted">
+                      <span style="text-decoration: line-through; font-size: small;">₹${product.originalprice}</span>
+                      <span style="font-weight: 800;">₹${calculateDiscountedPrice(product.originalprice, product.discount)}</span>
+                      <span style="color: coral; font-weight: 700; position: absolute; right: 10px;">${product.discount}% off</span>
+                    </p>
+                  ` : `
+                    <p class="card-text text-muted" style="font-weight: 700;">₹${product.originalprice}</p>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+          $('#product-list').append(productHtml);
+        });
+
+        // Update the pagination links
+        $('#pagination').html('');
+        for (let i = 1; i <= response.totalPages; i++) {
+          let pageLink = `
+            <li class="page-item ${i === response.page ? 'active' : ''} m-0">
+              <a href="#" class="page-link" data-page="${i}">${i}</a>
+            </li>
+          `;
+          $('#pagination').append(pageLink);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error("Error fetching products:", error);
+      }
+    });
+  });
+
+  function calculateDiscountedPrice(originalPrice, discount) {
+    // Assuming discount is a percentage
+    return (originalPrice - (originalPrice * (discount / 100))).toFixed(2);
+  }
+});
+
+      </script>

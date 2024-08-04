@@ -1,0 +1,131 @@
+
+  <style>
+    .cart-summary {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .cart-summary h5, .cart-summary p {
+      margin: 0;
+      padding: 0;
+    }
+    .row{
+  padding-top: 50px;
+  padding-bottom: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- <h2 class="mt-5">Checkout</h2>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Cart</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Shipping</li>
+        <li class="breadcrumb-item"><a href="#">Payment Method</a></li>
+      </ol>
+    </nav> -->
+    <div class="row">
+      <div class="col-md-8">
+        <form>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="firstName">First Name*</label>
+              <input type="text" class="form-control" id="firstName" placeholder="First Name">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="lastName">Last Name*</label>
+              <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="mobileNo">Mobile No*</label>
+              <input type="text" class="form-control" id="mobileNo" placeholder="Mobile No">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="pincode">Pincode/Zipcode*</label>
+              <input type="text" class="form-control" id="pincode" placeholder="Pincode/Zipcode">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="address">Address*</label>
+            <input type="text" class="form-control" id="address" placeholder="Address">
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="city">City*</label>
+              <input type="text" class="form-control" id="city" placeholder="City">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="country">Country*</label>
+              <select id="country" class="form-control">
+                <option selected>Select Country</option>
+                <option>India</option>
+                <option>USA</option>
+                <option>UK</option>
+                <!-- Add more countries as needed -->
+              </select>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="state">State*</label>
+              <input type="text" class="form-control" id="state" placeholder="State">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="streetLocality">Street / Locality*</label>
+            <input type="text" class="form-control" id="streetLocality" placeholder="Street / Locality">
+          </div>
+          <div class="form-group">
+            <label for="landmark">Landmark (Optional)</label>
+            <input type="text" class="form-control" id="landmark" placeholder="Landmark">
+          </div>
+          <div class="form-group">
+            <label>Save Address As</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="addressType" id="home" value="home" checked>
+              <label class="form-check-label" for="home">Home</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="addressType" id="work" value="work">
+              <label class="form-check-label" for="work">Work</label>
+            </div>
+          </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="defaultShipping">
+            <label class="form-check-label" for="defaultShipping">Set as default shipping address</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Continue</button>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <div class="cart-summary">
+          <form>
+            <div class="form-group">
+              <h3 style="padding-left: 5px;">Apply Coupon Code</h3>
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Enter Coupon Code">
+                <div class="input-group-append">
+                  <button class="btn btn-dark">Apply</button>
+                </div>
+              </div>
+          </form>
+          <h5>Cart Summary</h5>
+          <p>SubTotal: <span class="float-right">₹80,000</span></p>
+          <p>Packing: <span class="float-right">₹0</span></p>
+          <p>Charges: <span class="float-right">₹4,000 FREE</span></p>
+          <p>Shipping & Handling: <span class="float-right">₹0 FREE</span></p>
+          <p>Negotiated Discount: <span class="float-right">₹0</span></p>
+          <p>Tax: <span class="float-right">₹14,400</span></p>
+          <h5>Total Amount: <span class="float-right">₹94,400</span></h5>
+          <h6>Total Savings: <span class="float-right">₹12,000</span></h6>
+          
+          <div class="form-check mt-3">
+            <button class="btn btn-dark btn-block mt-3 px-5" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            <small class="text-muted d-block mt-2">By continuing to Checkout, you agree to Habus's Terms of Use and Privacy Policy.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+

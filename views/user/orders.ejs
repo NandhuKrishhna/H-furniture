@@ -1,0 +1,193 @@
+<style>
+.side-menu {
+  background-color: #f8f9fa;
+  padding: 20px;
+  height: 100%;
+}
+
+.logout-btn {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.order-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  width: 60%;
+}
+
+.order-card h5, .order-card p {
+  margin: 0;
+  padding: 0;
+}
+
+.order-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border-bottom: none;
+}
+
+.order-card .card-header .badge {
+  background-color: #000;
+  color: #fff;
+}
+
+.side-menu {
+  padding-top: 20px;
+}
+
+.alert-danger {
+  background: none;
+  border: none;
+  color: red;
+  font-weight: 600;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.product-image {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 15px;
+  border-radius: 5px;
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-price {
+  text-align: right;
+  margin-left: 15px;
+}
+
+.discount-price {
+  color: red;
+}
+
+.order-total {
+  margin-top: 20px;
+  font-weight: bold;
+}
+.cancel-order-btn{
+
+    right: 45%;
+    top: 28%;
+}
+
+</style>
+
+<%- include("../partials/userSidenav.ejs") %>
+<div class="col-md-9">
+  <h3>Your Orders</h3>
+  <% orders.forEach(order => { %>
+    <div class="order-card">
+      <div class="card-header">
+        <h6>Order No: <%= order.transactionId %></h6>
+        <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
+  
+      </div>
+      <ul class="order-items-list">
+        <% if (order.items && Array.isArray(order.items) && order.items.length > 0) { %>
+          <% order.items.forEach(item => { %>
+            <li class="order-item">
+              <% if (item.image && item.image.length > 0) { %>
+                <img src="/<%= item.image[0] %>" alt="<%= item.name %>" class="product-image">
+              <% } else { %>
+                <img src="/path/to/default-image.jpg" alt="No Image Available" class="product-image">
+              <% } %>
+              <div class="product-details">
+                <div><strong><%= item.name || 'Unknown Product' %></strong></div>
+                <div>Qty: <%= item.quantity || 0 %></div>
+                <div>Price: ₹<%= item.price.toFixed(2) %></div>
+              </div>
+            </li>
+          <% }) %>
+        <% } else { %>
+          <li>No items found for this order.</li>
+        <% } %>
+      </ul>
+      <div class="order-total">
+        <div>Status: <%= order.orderStatus %></div>
+        <div>Order Total: ₹<%= order.totalPrice.toFixed(2) %></div>
+        <% if (order.orderStatus !== 'Cancelled') { %>
+          <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>">Cancel</button>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+
+<script>
+$(document).ready(function() {
+  $('.cancel-order-btn').click(function() {
+    const orderId = $(this).data('order-id');
+    console.log('Order ID:', orderId); // Log orderId to verify it's correct
+    if (!orderId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid order ID',
+        text: 'The order ID is invalid. Please try again.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to cancel this order?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/user/cancel-order',
+          type: 'POST',
+          data: JSON.stringify({ orderId: orderId.toString() }), // Convert to string
+          contentType: 'application/json',
+          success: function(response) {
+            if (response.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Cancelled',
+                text: response.message,
+              }).then(() => {
+                location.reload(); // Reload the page to reflect changes
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message,
+              });
+            }
+          },
+          error: function(error) {
+            console.error(error);
+            Swal.fire({
+              icon: 'error',
+              title: 'An error occurred',
+              text: 'An error occurred while cancelling the order. Please try again.',
+            });
+          }
+        });
+      }
+    });
+  });
+});
+</script>
+
+

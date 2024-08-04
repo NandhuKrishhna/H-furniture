@@ -1,6 +1,11 @@
 const nodemailer = require("nodemailer");
 const dbOtp = require("../models/otpModel");
 const multer = require("multer")
+const Cartdb = require("../models/cartModel" );
+const Productdb = require("../models/productModels");
+const Addressdb = require("../models/addressModel")
+const Orderdb = require("../models/orderModel");
+const { getProductDetails } = require("../controller/userController");
 
 
 
@@ -31,7 +36,7 @@ async function sendOtp(email,id) {
   const Otp = generateOtp();
 
   try {
-    const expireTimeInMilliseconds = 5 * 60 * 1000; 
+    const expireTimeInMilliseconds = 2 * 60 * 1000; 
 
 const otpinfo = await dbOtp.otpCollection.updateOne(
   { otpId: id },
@@ -88,16 +93,62 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000);
 }
 
+
+
+
+//////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//funciton of fetching product, cart and order details 
+
+
+
+const cartDetails = async (userId) => {
+  try {
+    const cart = await Cartdb.cartCollection.findOne({ userId: userId }).populate('products.productId').exec();
+    if (!cart) {
+        throw new Error('Cart not found');
+    }
+    return cart;
+} catch (error) {
+    console.error('Error fetching cart details:', error);
+    throw error;
+}
+}
+
+const orderDetails = async (userId) => {
+  try {
+    const order = await Orderdb.orderCollection.findOne({ userId: userId });
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return order;
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    throw error;
+  }
+}
+
+const productDetails = async (productId) => {
+  try {
+    const product = await Productdb.productCollection.findById(productId).exec();
+    if (!product) {
+        throw new Error('Product not found');
+    }
+    return product;
+} catch (error) {
+    console.error('Error fetching product details:', error);
+    throw error;
+}
+}
+
+
 module.exports = { 
   sendOtp,
   resendOtp,
-  upload
+  upload,
+  cartDetails,
+  orderDetails,
+  productDetails
+
 
   };
-
-
-
-
-
-
 

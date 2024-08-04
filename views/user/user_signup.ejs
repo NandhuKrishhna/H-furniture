@@ -1,0 +1,140 @@
+<div class="container">
+  <div class="row align-items-center min-vh-100">
+    <div class="col-md-6 d-none d-md-block">
+      <img src="/images/blocks-P5mBXg1sFDA-unsplash.jpg" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-md-6">
+      <div class="login-form p-4">
+        <h3 class="mb-4 text-center">User Signup</h3>
+        <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
+        <form id="signupForm">
+          <div class="form-group">
+            <input type="text" class="form-control" id="fname" name="fname" placeholder="">
+            <label for="fname">First Name</label>
+            <div id="fnameError" class="text-danger"></div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="lname" name="lname" placeholder="">
+            <label for="lname">Last Name</label>
+            <div id="lnameError" class="text-danger"></div>
+          </div>
+          <div class="form-group">
+            <input type="" class="form-control" id="email" name="email" placeholder="">
+            <label for="email">Email</label>
+            <div id="emailError" class="text-danger"></div>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" id="password" name="password" placeholder="">
+            <label for="password">Password</label>
+            <i class="fa-solid fa-eye-slash toggle-password" id="togglePassword" style="cursor:pointer;"></i>
+            <div id="passwordError" class="text-danger"></div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="">
+            <label for="phone">Phone No</label>
+            <div id="phoneError" class="text-danger"></div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-dark btn-block">Sign Up</button>
+          </div>
+        </form>
+        <div class="col-lg-12 d-flex justify-content-center my-3" style="color: gray;">
+          <span class="text-center">Already Have an Account? <a style="color: #aaa;" href="/user/login">Login</a></span>
+        </div>
+        <a href="/auth/google" class="btn btn-outline-secondary my-3" style="width: 100%">
+          <i class="fa-brands fa-google"></i> <span>Login with Google</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  
+  body {
+    background-color: #f8f9fa;
+  }
+
+  .login-form {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-form h3 {
+    font-weight: bold;
+  }
+
+  .form-control {
+    border-radius: 5px;
+  }
+
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+    min-height: 50px; /* Adjust this height to fit your design */
+  }
+
+  .form-group label {
+    position: absolute;
+    top: -4px;
+    left: 5px;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -1.5rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+  }
+
+  .text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-left: 5px;
+  }
+  .alert-danger {
+    background: none;
+    border: none;
+    color: rgb(255, 25, 25);
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 29px; /* Adjust margin-bottom */
+    margin-top: -5px; /* Adjust margin-top to move the error message up */
+  }
+
+  .toggle-password {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  transform: translateY(-50%);
+}
+</style>

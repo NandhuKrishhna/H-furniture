@@ -1,0 +1,129 @@
+
+<div class="container">
+  <div class="row align-items-center min-vh-100">
+    <div class="col-md-6 d-none d-md-block">
+      <img src="/images/blocks-P5mBXg1sFDA-unsplash.jpg" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-md-6">
+      <div class="login-form p-4">
+        <h3 class="mb-4 text-center">Enter OTP</h3>
+        <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
+
+        <form id="otpForm">
+          <div class="form-group">
+            <input type="text" class="form-control" id="otp" name="otp" placeholder="">
+            <label for="otp">Enter OTP</label>
+            <div id="otpError" class="text-danger"></div>
+          </div>
+
+          <div class="mt-3">
+            <button type="submit" class="btn btn-dark btn-block">Submit</button>
+          </div>
+
+          <div class="text-center mt-5">
+            <span class="d-block mobile-text" id="countdown"></span>
+            <span class="d-block mobile-text" id="resend"></span>
+            <span class="d-block mobile-text" id="message"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  
+  .text-danger {
+    color: red;
+    font-weight: bold;
+  }
+
+  .login-form {
+    max-width: 400px; /* Adjust the max-width as needed */
+    margin: 0 auto;   /* Center the form */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-form h3 {
+    font-weight: bold;
+  }
+
+  .form-control {
+    border-radius: 5px;
+  }
+
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .alert-danger {
+    background: none;
+    border: none;
+    color: red;
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 29px;
+    margin-top: -5px;
+  
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+  }
+
+  .resend-link {
+  display: inline;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+.message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+</style>
+

@@ -6,15 +6,16 @@ const Categorydb = require("../models/categoryModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { ObjectId } = require("mongodb")
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
-const {handleError, } = require("../utils/errorhandling");
+const sharp = require("sharp");
+const Orderdb = require("../models/orderModel");
 
 
 
 
 // Get login page
-const getAdminLogin = async (req, res, next) => {
+exports.getAdminLogin = async (req, res, next) => {
   try {
     if (req.cookies.adminToken) {
       const token = req.cookies.adminToken;
@@ -23,17 +24,29 @@ const getAdminLogin = async (req, res, next) => {
         const admin = jwt.verify(token, process.env.ADMIN_SECRET);
         console.log("Admin:", admin);
         if (admin) {
-          return res.redirect("/admin/user_panel",);
+          return res.redirect("/admin/user_panel");
         } else {
-          return res.status(200).render("admin/login", {admin: true});
+          return res.status(200).render("admin/login", {
+            message: null,
+          
+            // Set the title here
+          });
         }
       } catch (err) {
         console.log("Token verification failed:", err);
-        return res.status(200).render("admin/login", {admin: true});
+        return res.status(200).render("admin/login", {
+          message: null,
+          
+            // Set the title here
+        });
       }
     } else {
       console.log("No token found, rendering login page");
-      return res.status(200).render("admin/login", {admin: true});
+      return res.status(200).render("admin/login", {
+        message: null,
+       
+       
+      });
     }
   } catch (error) {
     console.log("Error in getAdminLogin:", error);
@@ -41,30 +54,35 @@ const getAdminLogin = async (req, res, next) => {
   }
 };
 
+
+
 // Verify admin login
 
-const verifyAdminLogin = async (req, res, next) => {
+exports.verifyAdminLogin = async (req, res, next) => {
   const { email, password } = req.body;
   console.log(req.body);
 
-  if (!email || !password) {
-    const errors = handleError({ message: "empty fields" });
-    return res.status(400).render("admin/login", { errors, admin: false });
-  }
+
+  
 
   try {
     const admin = await Admindb.adminCollection.findOne({ email: req.body.email });
 
     if (!admin) {
-      const errors = handleError({ message: "incorrect email" });
-      return res.status(404).render("admin/login", { errors, admin: false });
+      return res.status(404).render("admin/login", {
+        message: "Incorrect email or password",
+      })
+    
+    
     }
 
     const passwordValid = await bcrypt.compare(req.body.password, admin.password);
 
     if (!passwordValid) {
-      const errors = handleError({ message: "incorrect password" });
-      return res.status(404).render("admin/login", { errors, admin: false });
+      return res.status(404).render("admin/login", {
+        message: "Incorrect email or password",
+     
+      });
     }
 
     const { _id } = admin;
@@ -72,7 +90,7 @@ const verifyAdminLogin = async (req, res, next) => {
       const adminToken = jwt.sign({ _id }, process.env.ADMIN_SECRET);
       res.cookie("adminToken", adminToken, { httpOnly: true });
       console.log("Hi, admin entered the admin panel");
-      return res.redirect("/admin/user_panel" );
+      return res.redirect("/admin/user_panel");
     }
   } catch (error) {
     console.log(error);
@@ -81,21 +99,40 @@ const verifyAdminLogin = async (req, res, next) => {
 };
 
 
-const userManagement = async (req, res, next) => {
+
+exports.userManagement = async (req, res, next) => {
   try {
+    console.log(req.query);
       const users = await Userdb.userCollection.find({}).lean();
       const userData = convertDate(users);
 
       res.status(200).render("admin/user_panel", {
           adminUser: true,
           users: users, 
-          userData: userData
+          userData ,
+         
       });
   } catch (error) {
       next(error);
   }
 };
+exports.userSearch = async (req, res, next) => {
+  try {
+    const users = await Userdb.userCollection.find(req.query)
+    res.status(200).json({
+       success: true,
+       data: users
+    })
 
+
+
+  } catch (error) {
+    res.status(400).json({
+      sucess: false,
+      error: error.message
+    });
+  }
+}
 
 
 // to convert data to a readable format
@@ -108,7 +145,7 @@ function convertDate(users){
   return users;
 }
 
-const blockUser = async (req, res, next) => {
+exports.blockUser = async (req, res, next) => {
   try {
     const id = new ObjectId(req.params.id);
     const user = await Userdb.userCollection.updateOne(
@@ -123,7 +160,7 @@ const blockUser = async (req, res, next) => {
   }
 };
 
-const unblockUser = async (req, res, next) => {
+exports.unblockUser = async (req, res, next) => {
   try {
     const id = new ObjectId(req.params.id);
     const user = await Userdb.userCollection.updateOne(
@@ -142,7 +179,7 @@ const unblockUser = async (req, res, next) => {
 
 
 // getting Catergory Page
-const getCategory = async (req, res, next) => {
+exports.getCategory = async (req, res, next) => {
   try {
     const category = await Categorydb.categoryCollection
       .find({ isDeleted: false })
@@ -152,7 +189,8 @@ const getCategory = async (req, res, next) => {
       adminUser: true,
       category: true,
       category,
-      categoryData
+      categoryData,
+     
     });
   } catch (er) {
     next(er);
@@ -160,11 +198,12 @@ const getCategory = async (req, res, next) => {
 };
 
 // getting Add catergory Page
-const getAddCategory = (req, res, next) => {
+exports.getAddCategory = (req, res, next) => {
   try {
     res.status(200).render("admin/add-category", {
       adminUser: true,
       addCategory: true,
+     
     });
   } catch (err) {
     console.log(err);
@@ -173,7 +212,7 @@ const getAddCategory = (req, res, next) => {
 };
 
 // Add new catergory
-const addCategory = async (req, res, next) => {
+exports.addCategory = async (req, res, next) => {
   try {
     const category = await Categorydb.categoryCollection.find({
       categoryName: { $regex: req.body.categoryName, $options: "i" },
@@ -184,13 +223,14 @@ const addCategory = async (req, res, next) => {
         adminUser: true,
         addCategory: true,
         categoryExist: true,
+        
       });
     } else {
       const data = {
         categoryName: req.body.categoryName.toUpperCase(),
       };
       console.log(req.body.categoryName);
-      console.log("this is the category data:" + JSON.stringify(data));
+      
 
       const addCategory = await Categorydb.categoryCollection.insertMany(data);
       res.redirect("/admin/category");
@@ -201,7 +241,7 @@ const addCategory = async (req, res, next) => {
   }
 };
 
-const deleteCategory = async (req, res, next) => {
+exports.deleteCategory = async (req, res, next) => {
   try {
     const deletedProduct =
       await Categorydb.categoryCollection.findByIdAndUpdate(req.params.id, {
@@ -216,7 +256,7 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 // getting the edit category page
-const getEditcategory = async (req, res, next) => {
+exports.getEditcategory = async (req, res, next) => {
   try {
     const category = await Categorydb.categoryCollection
       .findById(req.params.id)
@@ -226,6 +266,7 @@ const getEditcategory = async (req, res, next) => {
       adminUser: true,
       editCategory: true,
       categoryInfo: category,
+    
     });
   } catch (err) {
     console.log(err);
@@ -235,7 +276,7 @@ const getEditcategory = async (req, res, next) => {
 
 
 
-const editCategory = async (req, res, next) => {
+exports.editCategory = async (req, res, next) => {
   try {
     const category = await Categorydb.categoryCollection.find({
       categoryName: { $regex: req.body.categoryName, $options: "i" },
@@ -264,12 +305,14 @@ const editCategory = async (req, res, next) => {
     next(error);
   }
 };
-//getting admin add product
-const getAdminProduct = async (req, res, next) => {
+//getting admin product
+exports.getAdminProduct = async (req, res, next) => {
   try {
     const products = await Productdb.productCollection.aggregate([
-      { $match: { isDeleted: false } },
-      {
+      { $match: {
+         isDeleted: false,
+         orginalprice:{$gt:20} },  },
+      {     
         $lookup: {
           from: "category_datas",
           localField: "category",
@@ -286,6 +329,7 @@ const getAdminProduct = async (req, res, next) => {
       adminUser: true,
       products: true,
       productsData,
+    
     });
   } catch (err) {
     next(err);
@@ -294,13 +338,14 @@ const getAdminProduct = async (req, res, next) => {
 
 
 // getting product adding page
-const adminaddProduct = async (req, res, next) => {
+exports.adminaddProduct = async (req, res, next) => {
   try {
     const category = await Categorydb.categoryCollection.find().lean();
     res.status(200).render("admin/add-products", {
       adminUser: true,
       addProducts: true,
       category,
+  
     });
   } catch (error) {
     next(error);
@@ -311,20 +356,47 @@ const adminaddProduct = async (req, res, next) => {
 
 
 // admin adding products
-const addProduct = async (req, res, next) => {
-  console.log("Request Body:", req.body);
-  console.log("Request Files:", req.files);
-
- 
-
+exports.addProduct = async (req, res, next) => {
   try {
-    
+    console.log("Request Body:", req.body);
+    console.log("Request Files:", req.files);
 
+    const resizedImages = await Promise.all(req.files.map(async (file) => {
+      const imagePath = `uploads/${file.filename}`;
+      const resizedImagePath = `uploads/resized_${file.filename}`;
+
+      try {
+      
+        await sharp(imagePath)
+          .resize(400, 400, {
+            fit: sharp.fit.cover,
+            position: sharp.strategy.entropy
+          })
+          .withMetadata() 
+          .sharpen() 
+          .toFormat('jpeg', { quality: 90 })
+          .toFile(resizedImagePath);
+
+     
+        await fs.unlink(imagePath);
+        console.log("Image deleted successfully:", imagePath);
+        
+        return resizedImagePath;
+      } catch (sharpError) {
+        console.error("Error resizing image:", sharpError);
+        throw sharpError;
+      }
+    }));
+    
+    console.log('Resized images:', resizedImages);
     const category = await Categorydb.categoryCollection.findOne({
       categoryName: { $regex: req.body.category, $options: "i" }
     });
 
-  
+    if (!category) {
+      throw new Error('Category not found');
+    }
+
     const productdata = {
       productName: req.body.productname,
       description: req.body.description,
@@ -339,7 +411,7 @@ const addProduct = async (req, res, next) => {
       polishmaterial: req.body.polishmaterial,
       color: req.body.color,
       material: req.body.material,
-      images: req.files.map((file) => file.path),
+      images: resizedImages,
       countryofOrigin: req.body.countryofOrigin,
       warranty: req.body.warranty,
       dimension: req.body.dimension,
@@ -347,6 +419,7 @@ const addProduct = async (req, res, next) => {
     };
     
     console.log(productdata);
+
     const product = await Productdb.productCollection.insertMany(productdata);
     res.redirect("/admin/products");
   } catch (error) {
@@ -356,7 +429,7 @@ const addProduct = async (req, res, next) => {
 };
 
 //getting edit product page
-const getEditProduct = async (req, res, next) => {
+exports.getEditProduct = async (req, res, next) => {
   try {
     const categoryData = await Categorydb.categoryCollection.find({}).lean();
 
@@ -379,21 +452,25 @@ const getEditProduct = async (req, res, next) => {
       editProduct: true,
       categoryData,
       product,
+   
     });
-  } catch (err) {
-    console.log(err);
-    next(err); 
+  } catch (error) {
+    console.log(error);
+    next(error); 
 };
 
 }
 
 
 // admin editing products
-const editProduct = async (req, res, next) => {
+exports.editProduct = async (req, res, next) => {
   try {
-    console.log(req.body);
-    console.log(req.files);
+    // console.log(req.body);
+    // console.log(req.files);
+
     const id = new ObjectId(req.params.id);
+
+   
     const product = await Productdb.productCollection.aggregate([
       { $match: { _id: id } },
       {
@@ -406,6 +483,8 @@ const editProduct = async (req, res, next) => {
       },
       { $unwind: '$category' },
     ]);
+
+
     const updateProduct = await Productdb.productCollection.findOneAndUpdate(
       { _id: id },
       {
@@ -432,40 +511,55 @@ const editProduct = async (req, res, next) => {
       },
       { returnDocument: 'after' }
     );
+
+    
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file) => file.filename);
-      for (const image of updateProduct.images) {
-        const imagePath = path.join('uploads', image);
-        await fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      }
+      const resizedImages = await Promise.all(req.files.map(async (file) => {
+        const imagePath = `uploads/${file.filename}`;
+        const resizedImagePath = `uploads/resized_${file.filename}`;
+
+        try {
+          // Resize image using Sharp
+          await sharp(imagePath)
+            .resize({ width: 400, height: 400 })
+            .toFile(resizedImagePath);
+
+          // Delete original image after resizing
+          await fs.unlink(imagePath);
+          console.log("Image deleted successfully:", imagePath);
+
+          return resizedImagePath;
+        } catch (sharpError) {
+          console.error("Error resizing image:", sharpError);
+          throw sharpError;
+        }
+      }));
+
+      
       await Productdb.productCollection.findOneAndUpdate(
         { _id: id },
-        { $set: { images: newImages } },
+        { $set: { images: resizedImages } },
         { returnDocument: 'after' }
       );
     }
-    if (req.body.category) {
-      if (req.body.category !== product[0].category.categoryName) {
-        const category = await Categorydb.categoryCollection.findOne({
-          categoryName: { $regex: req.body.category, $options: 'i' },
-        });
-        const updateProduct =
-          await Productdb.productCollection.findOneAndUpdate(
-            { _id: id },
-            {
-              $set: {
-                category: category._id,
-              },
-            },
-            { returnDocument: 'after' }
-          );
-      }
-    }
-    res.redirect('/admin/products');
+
+
+    if (req.body.category){
+      
+      const category = await Categorydb.categoryCollection.findOne({
+        categoryName: { $regex: req.body.category, $options: 'i' },
+      });
+
+    
+      await Productdb.productCollection.findOneAndUpdate(
+        { _id: id },
+        { $set: { category: category._id } },
+        { returnDocument: 'after' }
+      );
+    
+
+  
+  }res.redirect('/admin/products');
   } catch (err) {
     console.log(err);
     next(err);
@@ -476,7 +570,8 @@ const editProduct = async (req, res, next) => {
 
 
 
-const deleteProduct = async (req, res, next) => {
+
+exports.deleteProduct = async (req, res, next) => {
   try {
     const deleteProduct = await Productdb.productCollection.findByIdAndUpdate(
       req.params.id,
@@ -491,7 +586,10 @@ const deleteProduct = async (req, res, next) => {
 };
 
 
-const adminLogout = async (req, res, next) => {
+
+
+
+exports.adminLogout = async (req, res, next) => {
   try {
     res.clearCookie("adminToken");
     res.redirect("/admin/login");
@@ -500,28 +598,84 @@ const adminLogout = async (req, res, next) => {
   }
 }
 
-const sample =  async (req, res, next) => {
-  res.render("user/sample")
-}
-module.exports = {
-  
-  getAdminLogin,
-  verifyAdminLogin, 
-  userManagement,
-  blockUser, 
-  unblockUser,
-  getCategory,
-  getAddCategory,
-  addCategory,
-  deleteCategory,
-  editCategory,
-  getEditcategory,
-  getAdminProduct,   
-  addProduct,
-  adminaddProduct,
-  adminLogout,
-  deleteProduct,
-  editProduct,
-  getEditProduct
- , sample
-   }
+
+exports.getOrdersPage = async (req, res, next) => {
+  try {
+   
+   
+    
+    const orders = await Orderdb.orderCollection.find({ }).lean();
+    
+
+    const userId = [];
+     orders.forEach((order)=> {
+       userId.push(order.userId)
+     })
+    const userInfo = await Userdb.userCollection.findById(userId).lean();
+    const productIds = [];
+    orders.forEach(order => {
+      order.orderItems.forEach(item => {
+        productIds.push(item.productId);
+      });
+    });
+
+    
+    const products = await Productdb.productCollection.find({ _id: { $in: productIds } }).lean();
+
+    
+    const productMap = {};
+    products.forEach(product => {
+      productMap[product._id] = {
+        name: product.productName,
+        image: product.images
+      };
+    });
+
+   
+    const orderDetails = orders.map(order => {
+     
+      const totalPrice = order.orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+      return {
+        _id: order._id,
+        transactionId: order.transactionId,
+        items: order.orderItems.map(item => ({
+          quantity: item.quantity,
+          price: item.price,
+          name: productMap[item.productId]?.name || 'Unknown',
+          image: productMap[item.productId]?.image || 'No image'
+        })),
+        totalPrice,
+        orderStatus: order.orderStatus,
+        paymentStatus: order.paymentStatus,
+        orderDate: order.orderDate,
+        paymentMethod: order.paymentMethod
+      };
+    });
+
+    
+    res.status(200).render("admin/order_management",{
+    orders: orderDetails,
+    userInfo,
+
+    
+  })
+} catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+
+exports.updateOrderStatus = async (req, res, next) => {
+  try {
+      const { orderId, status } = req.body;
+      console.log(req.body);
+      await Orderdb.orderCollection.findByIdAndUpdate(orderId, { orderStatus: status });
+      res.status(200).json({ message: 'Order status updated successfully.' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error updating order status.' });
+  }
+};
+

@@ -1,0 +1,126 @@
+
+
+<style>
+  .side-menu {
+      background-color: #f8f9fa;
+      padding: 20px;
+      height: 100%;
+  }
+  .logout-btn {
+      width: 100%;
+      margin-top: 20px;
+  }
+  .address-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  width: 35%;
+  
+}
+.address-card .btn {
+  margin-right: 10px;
+}
+.address-card .badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.main{
+  padding-top: 50px;
+}
+
+.addButton{
+  position: absolute;
+  right: 100px;
+}
+</style>
+<section class="main">
+  <%- include("../partials/userSidenav.ejs") %>
+
+  <div class="col-lg-9">
+    <div class="row mt-4">
+      <div class="col-12">
+        <h5>Saved Addresses</h5>
+        <a href="/user/add_address" class="btn btn-dark addButton"> Add New Address</a>
+        <% if (userInfo && address.length > 0) { %>
+          <% address.forEach(addr => { %>
+            <div class="address-card">
+              <span class="badge badge-dark">Home</span>
+              <strong><%= addr.firstName %> <%= addr.lastName %></strong><br>
+              <%= addr.homeAddress %>, <%= addr.street %>, <%= addr.city %>, <%= addr.state %>, <%= addr.country %>, <%= addr.pincode %><br>
+              Mob: <%= Array.isArray(addr.phone) ? addr.phone.join(", ") : addr.phone %><br><br><br>
+              <i style="color: red;" class="fa-solid fa-trash-can delete-address" data-address-id="<%= addr._id %>"></i> Remove &nbsp;&nbsp;
+              <i style="color: chocolate;" class="fa-solid fa-pen-to-square edit-address"  data-address-id="<%= addr._id %>"></i> Edit
+            </div>
+          <% }) %>
+        <% } %>
+      
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // delete address
+  $(document).ready(function () {
+    $(".delete-address").click(function () {
+        const addressId = $(this).data("address-id");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to delete this address?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#000000', // Black color
+            cancelButtonColor: '#746d6b',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/user/delete_address/${addressId}`,
+                    method: "DELETE",
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                'The address has been deleted.',
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                response.message,
+                                'error'
+                            );
+                        }
+                    },
+                    error: function () {
+                        Swal.fire(
+                            'Error!',
+                            'Error occurred while deleting the address.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    });
+});
+
+
+
+// redirecting to edit address
+  $(document).ready(function () {
+    $(".edit-address").click(function() {
+        const addressId = $(this).data("address-id");
+        // Redirect to the edit address page
+        window.location.href = `/user/edit_address/${addressId}`;
+    });
+});
+
+  </script>
+  

@@ -1,0 +1,238 @@
+<style>
+  .side-menu {
+    background-color: #f8f9fa;
+    padding: 20px;
+    height: 100%;
+  }
+
+  .logout-btn {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .form-control {
+    border: 1px solid #ced4da;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    width: 80%;
+  }
+
+  .form-control:focus {
+    border-color: #000;
+    box-shadow: none;
+    outline: none;
+  }
+
+  .form-control:focus,
+  .form-control:hover {
+    border-color: #000;
+    box-shadow: none;
+  }
+
+  .alert-danger {
+    background: none;
+    border: none;
+    color: red;
+    font-weight: 600;
+  }
+  .custom-swal-popup {
+  width: 400px; /* Set the width of the alert dialog */
+  max-width: 90%; /* Ensure it doesn't exceed the viewport width */
+  padding: 20px; /* Add padding inside the alert */
+}
+
+/* Customize the title font size */
+.custom-swal-title {
+  font-size: 24px; /* Set the font size for the title */
+}
+
+/* Customize the content font size */
+.custom-swal-content {
+  font-size: 16px; /* Set the font size for the content */
+}
+
+/* Customize the confirm button appearance */
+.custom-swal-confirm-button {
+  background-color: #272727; /* Button background color */
+  color: #fff; /* Button text color */
+  border-radius: 5px; /* Round the corners of the button */
+  padding: 10px 20px; /* Adjust padding for the button */
+}
+
+/* Optional: Adjust the position of the button */
+.custom-swal-confirm-button {
+  margin-top: 20px; 
+}
+
+/* Button hover state */
+.custom-swal-confirm-button:hover {
+  background-color: #000000; 
+}
+
+/* Button active state */
+.custom-swal-confirm-button:active {
+  background-color: #363636; 
+}
+.swal2-confirm-black {
+            background-color: black !important;
+            color: white !important;
+        }
+
+        .swal2-cancel-grey {
+            background-color: grey !important;
+            color: white !important;
+        }
+</style>
+
+<%- include("../partials/userSidenav.ejs") %>
+    <!-- Account Settings Form -->
+    <div class="col-md-9">
+      <h3>Account Setting</h3>
+      <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" name="fname" placeholder="Firstname" value="<%= userInfo ? userInfo.firstName : '' %>">
+            <div class="text-danger" id="fname-error"></div>
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" name="lname" placeholder="Lastname" value="<%= userInfo ? userInfo.lastName : '' %>">
+            <div class="text-danger" id="lname-error"></div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" class="form-control" name="phone" placeholder="Mobile No" value="<%= userInfo ? userInfo.phone : '' %>">
+            <div class="text-danger" id="phone-error"></div>
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" name="email" placeholder="Email" value="<%= userInfo ? userInfo.email : '' %>">
+            <div class="text-danger" id="email-error"></div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-dark" style="width: 200px; border-radius: 0;">Save</button>
+      </form>
+    </div>
+    </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    function validateForm() {
+      var fname = document.forms["account-form"]["fname"].value;
+      var lname = document.forms["account-form"]["lname"].value;
+      var phone = document.forms["account-form"]["phone"].value;
+      var email = document.forms["account-form"]["email"].value;
+      var isValid = true;
+    
+      // Clear previous error messages
+      document.getElementById('fname-error').innerText = '';
+      document.getElementById('lname-error').innerText = '';
+      document.getElementById('phone-error').innerText = '';
+      document.getElementById('email-error').innerText = '';
+    
+      if (!fname) {
+        document.getElementById('fname-error').innerText = 'Firstname is required';
+        isValid = false;
+      }
+      if (!lname) {
+        document.getElementById('lname-error').innerText = 'Lastname is required';
+        isValid = false;
+      }
+      if (!phone) {
+        document.getElementById('phone-error').innerText = 'Mobile No is required';
+        isValid = false;
+      }
+      if (!email) {
+        document.getElementById('email-error').innerText = 'Email is required';
+        isValid = false;
+      }
+    
+      if (!isValid) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please fill all required fields',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+          }
+        });
+        return false;
+      }
+    
+      $.ajax({
+        type: "POST",
+        url: "/user/my-account",
+        data: {
+          fname: fname,
+          lname: lname,
+          phone: phone,
+          email: email
+        },
+        success: function (data) {
+          if (data.success) {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'success',
+              title: 'Account updated successfully',
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+              }
+            }).then(() => {
+              if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+              }
+            });
+          } else {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'error',
+              title: data.error || 'An error occurred',
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+              }
+            });
+          }
+        },
+        error: function (error) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'An error occurred',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer);
+              toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+          });
+        }
+      });
+    
+      return false;
+
+
+
+
+    }
+
+    
+
+    </script>
+    

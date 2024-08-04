@@ -1,0 +1,133 @@
+<%- include('../partials/adminSideNav.ejs') %>
+    <div class="main p-3">
+      <!-- Main content here -->
+      <div class="container">
+        <h1>User List</h1>
+<div class="row">
+  <div class="col-md-12">
+    
+    <table class="table mt-3">
+      <thead>
+        <tr>
+
+          <th>Username</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Updated At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr>
+            <td><%= user.firstName %> <%= user.lastName %></td>
+            <td class="text-truncate"><%= user.email %></td>
+            <td><%= user.phone %></td>
+            <td>
+              <button class="btn btn-<%= user.isBlocked ? 'danger' : 'success' %>">
+                <%= user.isBlocked ? 'Blocked' : 'Active' %>
+              </button>
+            </td>
+            <td><%= user.createdAt %></td>
+            <td><%= user.updatedAt %></td>
+            <td>
+              <% if (user.isBlocked) { %>
+                <button class="btn unblock-button" data-user-id="<%= user._id %>">
+                  <i class="user-blocked-icon<%= user._id %> fa-solid text-danger fa-user-slash"></i>
+                </button>
+              <% } else { %>
+                <button class="btn px-2 block-button" data-user-id="<%= user._id %>">
+                  <i class="user-block-icon<%= user._id %> fa-solid text-success fa-user"></i>
+                </button>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal HTML -->
+  <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div style="height:fit-content; width:100%;">
+          <div class="row p-2">
+            <span class="d-flex justify-content-center font-weight-bold text-white fs-6 p-2 modal-body-alert">
+  
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel_crop_button" class="btn btn-light" style="width:fit-content;"
+            data-bs-dismiss="modal">Cancel</button>
+          <button style="width: 110px;" id="confirmAction" type="button" class="btn btn-danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="alert-button" class="btn" hidden data-bs-toggle="modal" data-bs-target="#imageCropModal"></button>
+  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div style="height:fit-content; width:100%;">
+          <div class="row p-2">
+  
+            <div class="d-flex justify-content-center align-items-center">
+              <div>
+                <span class="font-weight-bold text-white fs-6 px-3 me-2 modal-body-msg">
+  
+                </span>
+              </div>
+              <div class="loader">
+  
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel_button" class="btn btn-danger text-white" style="width:fit-content;"
+            data-bs-dismiss="modal">Cancel</button>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="msg-button" hidden class="btn" data-bs-toggle="modal" data-bs-target="#alertModal"></button>
+  
+  
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamBurger = document.querySelector(".toggle-btn");
+      hamBurger.addEventListener("click", function () {
+        document.querySelector("#sidebar").classList.toggle("expand");
+      });
+  
+  
+    });
+  
+  </script>
+  </body>
+  
+  </html>

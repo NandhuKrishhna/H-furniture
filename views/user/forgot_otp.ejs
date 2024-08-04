@@ -1,0 +1,299 @@
+<style>
+  .text-danger {
+    color: red;
+    font-weight: bold;
+  }
+
+  .login-form {
+    max-width: 400px; /* Adjust the max-width as needed */
+    margin: 0 auto;   /* Center the form */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-form h3 {
+    font-weight: bold;
+  }
+
+  .form-control {
+    border-radius: 5px;
+  }
+
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .alert-danger {
+    background: none;
+    border: none;
+    color: red;
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 29px;
+    margin-top: -5px;
+  
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: black;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+  }
+
+  .resend-link {
+  display: inline;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+.message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+.cursor {
+ cursor: pointer;
+ }
+.cursor:hover {
+  color: cadetblue;
+}
+.cursor:active {
+  color: #003a66; /* Change color when clicked */
+  transform: scale(0.98); /* Slightly reduce size to give a pressed effect */
+}
+.button {
+  padding: 5px 10px;  /* Adjust padding to reduce size */
+  font-size: 12px;    /* Reduce font size */
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: white;
+  background-color: black;
+  border: none;
+  border-radius: 5px; /* Reduce border radius */
+  box-shadow: 0 4px #999;
+  width: 55px; /* Adjust width to desired size */
+  height: auto; /* Allow height to be adjusted based on padding */
+}
+
+
+
+.button:active {
+  background-color: gray;
+  box-shadow: 0 2px #666;
+  transform: translateY(4px);
+}
+</style>
+
+<div class="container">
+  <div class="row align-items-center min-vh-100">
+    <div class="col-md-6 d-none d-md-block">
+      <img src="/images/blocks-P5mBXg1sFDA-unsplash.jpg" class="img-fluid" alt="Responsive image">
+    </div>
+    <div class="col-md-6">
+      <div class="login-form p-4">
+        <h3 class="mb-4 text-center">Submit OTP</h3>
+    
+        
+        <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
+
+        <form id="OtpForm">
+          <div class="form-group">
+            <input type="text" class="form-control" id="otp" name="Otp" placeholder="">
+            <label for="otp">Enter OTP</label>
+            <div id="otpError" class="text-danger"></div>
+          </div>
+
+          <div class="mt-3">
+            <button type="submit" class="btn btn-dark btn-block">Submit</button>
+          </div>
+
+          <div class="text-center mt-5">
+            <span class="d-block mobile-text" id="countdown"></span>
+            <span class="d-block mobile-text" id="resend"></span>
+            <span class="d-block mobile-text" id="message"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+  document.getElementById('OtpForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const formObject = Object.fromEntries(formData.entries());
+    
+    try {
+      const response = await fetch('/user/forgot_otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formObject)
+      });
+      
+      const data = await response.json();
+      
+      // Clear previous errors
+      document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
+      document.getElementById('formErrors').style.display = 'none';
+
+      if (response.ok) {
+    console.log('Redirection URL:', data.redirect); // Check if this logs the correct URL
+    window.location.href = data.redirect;
+} else {
+    console.log('Response data:', data); 
+        if (data.errors) {
+          for (const key in data.errors) {
+            document.getElementById(`${key}Error`).innerHTML = data.errors[key].msg;
+          }
+        }
+        // Display custom errors
+        if (data.customError) {
+          document.getElementById('formErrors').style.display = 'block';
+          document.getElementById('formErrors').innerHTML = data.customError;
+        }
+        if (data.success) {
+          document.getElementById('formErrors').style.display = 'block';
+          document.getElementById('formErrors').innerHTML = data.success;
+        }
+
+        // Hide errors after 3 seconds
+        setTimeout(() => {
+          document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
+          document.getElementById('formErrors').style.display = 'none';
+        }, 3000); // 3000 milliseconds = 3 seconds
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const resendOtpLink = document.getElementById('resend');
+    const messageContainer = document.getElementById('message');
+    let countdownTimer;
+
+    resendOtpLink.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent default link behavior
+
+      // Make AJAX request to resend OTP
+      fetch('/user/resend_forgot_otp', {
+        method: 'POST', // Assuming you use POST for resending OTP
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ /* Include necessary data if needed */ })
+      })
+      .then(response => {
+        if (!response.ok) {
+          // Handle non-2xx HTTP responses
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          messageContainer.textContent = 'OTP has been resent to your email!';
+          messageContainer.style.color = 'green';
+          // Reset timer
+          resetTimer(120); // Start the timer from 120 seconds
+        } else {
+          messageContainer.textContent = 'Failed to resend OTP. Please try again.';
+        }
+        // Hide message after 3 seconds
+        setTimeout(() => {
+          messageContainer.textContent = '';
+        }, 10000); // 3000 milliseconds = 3 seconds
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        messageContainer.textContent = 'An error occurred. Please try again.';
+        // Hide message after 3 seconds
+        setTimeout(() => {
+          messageContainer.textContent = '';
+        }, 3000); // 3000 milliseconds = 3 seconds
+      });
+    });
+
+    let timerOn = true;
+
+    function timer(remaining) {
+      var m = Math.floor(remaining / 60);
+      var s = remaining % 60;
+      m = m < 10 ? "0" + m : m;
+      s = s < 10 ? "0" + s : s;
+      document.getElementById("countdown").innerHTML = `<b>Time left: ${m} : ${s}</b>`;
+
+      remaining -= 1;
+      if (remaining >= 0 && timerOn) {
+        countdownTimer = setTimeout(function() {
+          timer(remaining);
+        }, 1000);
+        document.getElementById("resend").innerHTML = ``;
+        return;
+      }
+      if (!timerOn) {
+        return;
+      }
+      document.getElementById("resend").innerHTML = `Didn't receive the code? 
+      <span class="font-weight-bold text-color cursor" onclick="resetTimer(60)"><button class="button">Resend</button></span>`;
+    }
+
+    function resetTimer(seconds) {
+      clearTimeout(countdownTimer); // Clear any existing timers
+      timerOn = true;
+      timer(seconds);
+      
+    }
+
+    // Initialize timer
+    resetTimer(120);
+  });
+</script>
