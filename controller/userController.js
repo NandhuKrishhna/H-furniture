@@ -1111,9 +1111,18 @@ exports.getCheckout = async (req, res, next) => {
     if (!req.cookies.token) {
       return res.redirect('/user/login');
     }
-    
+  
     const decodedToken = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
     const userId = decodedToken._id;
+    const user = await Userdb.userCollection.findById(userId)
+    console.log(user,"==");
+    // checking if the user if blocked or not
+    if(user.isBlocked){
+       return res.status(400).json({
+        success:false,
+        message:"User access is denied"
+       })
+    }
     const address = await Addressdb.addressCollection.find({ userId , isDeleted:false})
     const cartDetails = await calculateCartDetails(userId);
 
