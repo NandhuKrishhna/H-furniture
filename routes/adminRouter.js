@@ -12,6 +12,7 @@ const {
   validateCategory,
   validateAddress
 } = require('../utils/errorhandling');
+const { userCollection } = require("../models/UserModels");
 
 
 
@@ -71,18 +72,10 @@ router.get("/admin/orders", adminController.getOrdersPage)
 
 router.post('/admin/orders/update-status', adminController.updateOrderStatus);
 
-
-
-
-
-
-
-module.exports = router;
-// router.get("/sample", adminController.sample);
-
-
-
-
+// coupon managemnt
+router.get("/admin/coupons", adminController.couponManagement)
+router.get("/admin/coupons/add-coupon",adminController.getAddCouponPage)
+router.post("/admin/coupons/add-coupon",adminController.addCoupon)
 
 
 

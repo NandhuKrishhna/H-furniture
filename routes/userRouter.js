@@ -48,51 +48,65 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
     res.redirect("/");
 });
 //------------------------------------------------------------
-//user homepage
+//---------user homepage
 router.get("/", userController.userHomePage)
-//user products-----------------
+//---------user products-----------------
 router.get("/user/products",userController.getUserProducts)
 router.get("/user/search",userController.getUserProducts) // for serach
 
-//user products details-------------
+//---------user products details-------------
 router.get("/user/product/:id", userController.getProductDetails);
-//cart routes-----------
+
+
+//---------cart routes-----------
 router.get("/user/cart/:id", userController.getCart )
 router.put("/user/cart/:id", userController.addToCart)
+router.put("/user/update-cart", userController.updateCart)
 router.delete("/user/cart/:id", userController.removeFromCart);
 
+//---------apply coupon-------
+router.post("/user/cart/:id/apply-coupon", userController.applyCoupon);
+router.post("/user/cart/:id/remove-coupon", userController.removeCoupon);
 
+router.route("/user/checkout_address_details/:id")
+.get(userController.checkout)
+.post(userController.checkout)
 
-router.post("/user/make_payment/:id", userController.confirmPayment)
 
 // my accound details--------
-router.get("/user/my-account",  userController.getMyAccount)
-router.post("/user/my-account", userController.postMyAccount)
+router.route("/user/my-account")
+.get(userController.getMyAccount)
+.post(userController.postMyAccount)
+
 // getting my address details page
 router.get("/user/my-address",  userController.getMyAddress)
 // getting add address , edit , delete----------
-router.get("/user/add_address",  userController.getAddMyAddress)
-router.post("/user/add_address", validateAddress,validate,userController.addMyAddress)
-router.get("/user/edit_address/:id",  userController.getEditMyAddress)
-router.put("/user/edit_address/:id", userController.editMyAddress)
+
+router.route("/user/add_address")
+.get(userController.getAddMyAddress)
+.post(validateAddress,validate,userController.addMyAddress)
+
+router.route("/user/edit_address/:id")
+.get(userController.getEditMyAddress)
+.post(userController.editMyAddress)
+
 router.delete("/user/delete_address/:id", userController.deleteAddress);
 
 
 // set new password
-router.get("/user/set_new_password",  userController.getSetNewPassword)
-router.post("/user/set_new_password", validateChangePass,validate,  userController.setNewPassword)
+router.route("/user/set_new_password")
+.get(userController.getSetNewPassword)
+.post(validateChangePass,validate,  userController.setNewPassword)
 
-router.route("/user/checkout_address_details/:id")
-.get(userController.getCheckout)
-.post(userController.getCheckout)
-router.get("/user/payment_method/:id", userController.getPaymentMethod);
-router.post("/user/payment_method/:id", userController.confirmPayment);
+router.route("/user/payment_method/:id")
+.get(userController.getPaymentMethod)
+.post(userController.paymentMethod)
+router.post("/user/payment_callback", userController.paymentVerification)
+router.get("/user/orders/:id",userController.getMyOrders)
 
-router.get("/user/orders/:id", userController.getMyOrders)
-router.post('/user/cancel-order', userController.cancelOrder);
+router.post('/order/:orderId/item/:itemId/cancel', userController.cancelOrderItem);
+router.get("/user/coupons", userController.getAddCouponPage)
 
-
-// logout
 router.post("/user/logout", userController.userLogout)
 
 

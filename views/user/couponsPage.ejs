@@ -1,0 +1,62 @@
+<style>
+    .main-content {
+      padding: 20px;
+      padding-left: 50px;
+    }
+    .coupon {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .coupon button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <%- include('../partials/userSidenav.ejs') %>
+      <main role="main" class="col-md-9 main-content">
+        <h2>Coupons & Vouchers</h2>
+        <div class="row">
+          <% coupons.forEach(coupon => { %>
+            <div class="col-md-4">
+              <div class="coupon">
+                <p><strong>Code:</strong> <%= coupon.code %></p>
+                <p><strong>Max Discount:</strong> <%= coupon.maxDiscount ? coupon.maxDiscount : 'N/A' %></p>
+                <p><strong>Min Purchase:</strong> <%= coupon.minPurchaseAmount ? coupon.minPurchaseAmount : 'N/A' %></p>
+                <p><strong>Valid From:</strong> <%= new Date(coupon.validFrom).toLocaleDateString() %></p>
+                <p><strong>Valid Until:</strong> <%= new Date(coupon.validUntil).toLocaleDateString() %></p>
+                <button class="btn btn-dark copy-btn" data-code="<%= coupon.code %>">Copy</button>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+ document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const code = this.getAttribute('data-code');
+          const tempInput = document.createElement('input');
+          tempInput.value = code;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempInput);
+          Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'Coupon code copied: ' + code,
+            showConfirmButton: false,
+            timer: 1500
+          });
+        });
+      });
+    });
+  </script>

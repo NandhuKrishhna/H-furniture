@@ -11,30 +11,36 @@ const orderSchema = new mongoose.Schema({
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: 'product_data' },
       quantity: { type: Number, required: true },
-      price: { type: Number, required: true }
+      price: { type: Number, required: true },
+      name: { type: String, required: true },
+      image: { type: String, required: true },
+      transactionId: { type: String, required: true },
+      status: { type: String, enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Pending' } 
     }
   ],
   shippingAddress: addressSchema,
   billingAddress: addressSchema,
   totalAmount: { type: Number, required: true },
-  paymentMethod: { type: String, required: true },
-  transactionId: { type: String, required: true },
   orderDate: { type: Date, default: Date.now },
   orderStatus: {
     type: String,
     enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
     default: 'Pending'
   },
-  fulfilledStatus: {
-    type: Boolean,
-    default: false
-  },
   paymentStatus: {
     type: String,
     enum: ["Paid", "Pending", "COD", "Failed", "Refunded", "Cancelled"],
     default: "Pending"
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['COD', 'Razorpay', 'Credit Card', 'Debit Card', 'Net Banking'],
+    required: true
   }
 });
+
+
+
 
 const orderCollection = mongoose.model('order_data', orderSchema);
 

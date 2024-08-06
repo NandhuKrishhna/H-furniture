@@ -269,3 +269,7 @@ exports.validateAddress = [
     .notEmpty().withMessage('Phone number is required')
     .isLength({ min: 10, max: 10 }).withMessage('Phone number must be exactly 10 digits'),
 ];
+
+exports.validateCoupon =[
+   check("")
+]

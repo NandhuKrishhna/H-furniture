@@ -10,7 +10,8 @@ const fs = require("fs").promises;
 const path = require("path");
 const sharp = require("sharp");
 const Orderdb = require("../models/orderModel");
-
+const { isError } = require("util");
+const Coupondb = require("../models/couponModel")
 
 
 
@@ -309,9 +310,7 @@ exports.editCategory = async (req, res, next) => {
 exports.getAdminProduct = async (req, res, next) => {
   try {
     const products = await Productdb.productCollection.aggregate([
-      { $match: {
-         isDeleted: false,
-         orginalprice:{$gt:20} },  },
+      { $match: { isDeleted: false, },  },
       {     
         $lookup: {
           from: "category_datas",
@@ -602,69 +601,17 @@ exports.adminLogout = async (req, res, next) => {
 exports.getOrdersPage = async (req, res, next) => {
   try {
    
-   
+   const orders = await Orderdb.orderCollection.find().lean();
     
-    const orders = await Orderdb.orderCollection.find({ }).lean();
-    
+    res.status(200).render("user/orders",{orders})
 
-    const userId = [];
-     orders.forEach((order)=> {
-       userId.push(order.userId)
-     })
-    const userInfo = await Userdb.userCollection.findById(userId).lean();
-    const productIds = [];
-    orders.forEach(order => {
-      order.orderItems.forEach(item => {
-        productIds.push(item.productId);
-      });
-    });
 
-    
-    const products = await Productdb.productCollection.find({ _id: { $in: productIds } }).lean();
-
-    
-    const productMap = {};
-    products.forEach(product => {
-      productMap[product._id] = {
-        name: product.productName,
-        image: product.images
-      };
-    });
-
-   
-    const orderDetails = orders.map(order => {
-     
-      const totalPrice = order.orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-      return {
-        _id: order._id,
-        transactionId: order.transactionId,
-        items: order.orderItems.map(item => ({
-          quantity: item.quantity,
-          price: item.price,
-          name: productMap[item.productId]?.name || 'Unknown',
-          image: productMap[item.productId]?.image || 'No image'
-        })),
-        totalPrice,
-        orderStatus: order.orderStatus,
-        paymentStatus: order.paymentStatus,
-        orderDate: order.orderDate,
-        paymentMethod: order.paymentMethod
-      };
-    });
-
-    
-    res.status(200).render("admin/order_management",{
-    orders: orderDetails,
-    userInfo,
-
-    
-  })
-} catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
+   } catch (error) {
+    console.log(error);
+    next(error)
+   }
+}
+  
 
 
 exports.updateOrderStatus = async (req, res, next) => {
@@ -679,3 +626,64 @@ exports.updateOrderStatus = async (req, res, next) => {
   }
 };
 
+exports.couponManagement = async (req, res, next ) => {
+    try{
+      
+    const coupons =   await Coupondb.couponCollection.find()
+
+   
+      res.status(200).render("admin/coupons",{
+        coupons
+      })
+    
+
+    }catch(error){
+     console.log(error);
+     next(error)
+    }
+}
+
+exports.getAddCouponPage =  async (req,res,next)=>{
+     try {
+      res.status(200).render("admin/add-coupons")
+
+     } catch (error) {
+      console.log(error);
+      next(error)
+     }
+}
+exports.addCoupon = async (req,res,next)=>{
+  try {
+    const data = {
+      code: req.body.code,
+      discountType: req.body.discountType,
+      discountValue: req.body.discountValue,
+      maxDiscount: req.body.maxDiscount,
+      minPurchaseAmount: req.body.minPurchaseAmount,
+      usageLimit: req.body.usageLimit,
+      validFrom: req.body.validFrom,
+      validUntil: req.body.validUntil,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    console.log(data);
+    const dataExit = await Coupondb.couponCollection.findOne({code: req.body.code})
+    if(dataExit){
+      return res.status(400).json({
+        success:false,
+        message: "Coupon code already exist"
+      })
+    }
+     const coupon = new Coupondb.couponCollection(data)
+     await coupon.save()
+     res.status(200).redirect('/admin/coupons').json({
+      success:true,
+      message: "Coupon added successfully"
+     })
+  
+    
+  } catch (error) {
+    console.log(error);
+    next(error)
+  }
+}

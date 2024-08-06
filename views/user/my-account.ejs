@@ -1,15 +1,4 @@
 <style>
-  .side-menu {
-    background-color: #f8f9fa;
-    padding: 20px;
-    height: 100%;
-  }
-
-  .logout-btn {
-    width: 100%;
-    margin-top: 20px;
-  }
-
   .form-control {
     border: 1px solid #ced4da;
     transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -34,58 +23,63 @@
     color: red;
     font-weight: 600;
   }
+
   .custom-swal-popup {
-  width: 400px; /* Set the width of the alert dialog */
-  max-width: 90%; /* Ensure it doesn't exceed the viewport width */
-  padding: 20px; /* Add padding inside the alert */
-}
+    width: 400px;
+    max-width: 90%;
+    padding: 20px;
+  }
 
-/* Customize the title font size */
-.custom-swal-title {
-  font-size: 24px; /* Set the font size for the title */
-}
 
-/* Customize the content font size */
-.custom-swal-content {
-  font-size: 16px; /* Set the font size for the content */
-}
+  .custom-swal-title {
+    font-size: 24px;
+  }
 
-/* Customize the confirm button appearance */
-.custom-swal-confirm-button {
-  background-color: #272727; /* Button background color */
-  color: #fff; /* Button text color */
-  border-radius: 5px; /* Round the corners of the button */
-  padding: 10px 20px; /* Adjust padding for the button */
-}
+  .custom-swal-content {
+    font-size: 16px;
+  }
 
-/* Optional: Adjust the position of the button */
-.custom-swal-confirm-button {
-  margin-top: 20px; 
-}
 
-/* Button hover state */
-.custom-swal-confirm-button:hover {
-  background-color: #000000; 
-}
+  .custom-swal-confirm-button {
+    background-color: #272727;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px 20px;
+  }
 
-/* Button active state */
-.custom-swal-confirm-button:active {
-  background-color: #363636; 
-}
-.swal2-confirm-black {
-            background-color: black !important;
-            color: white !important;
-        }
 
-        .swal2-cancel-grey {
-            background-color: grey !important;
-            color: white !important;
-        }
+  .custom-swal-confirm-button {
+    margin-top: 20px;
+  }
+
+
+  .custom-swal-confirm-button:hover {
+    background-color: #000000;
+  }
+
+
+  .custom-swal-confirm-button:active {
+    background-color: #363636;
+  }
+
+  .swal2-confirm-black {
+    background-color: black !important;
+    color: white !important;
+  }
+
+  .swal2-cancel-grey {
+    background-color: grey !important;
+    color: white !important;
+  }
+  .main-content {
+    margin-top: 30px;
+    padding-left:50px
+  }
 </style>
 
 <%- include("../partials/userSidenav.ejs") %>
     <!-- Account Settings Form -->
-    <div class="col-md-9">
+    <div class="col-md-9  main-content">
       <h3>Account Setting</h3>
       <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
         <div class="row mb-3">

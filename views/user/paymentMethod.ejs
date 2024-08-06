@@ -1,9 +1,5 @@
 <style>
-  .cart-summary {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-  }
+ 
   .cart-summary h5, .cart-summary p {
     margin: 0;
     padding: 0;
@@ -53,62 +49,296 @@
   .form-check-label {
     font-size: 12px;
   }
-  order-body {
+  .order-body {
     padding-top: 100px;
   
   }
+  .cart-item img {
+    max-width: 100px;
+    margin-right: 10px;
+  }
+
+  .cart-summary {
+    background: #f9f9f9;
+    border-radius: 2px;
+    padding: 20px;
+    border: 0.3px solid #dcdcdc;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .total-savings {
+    color: green;
+    font-weight: bold;
+  }
+
+  .cart {
+    margin-top: 20px;
+    position: relative;
+    /* right: -95px; */
+    left: 70px;
+
+  }
+
+  .form-control {
+    border-radius: 0;
+
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #757575;
+  }
+
+  .apply {
+    border-radius: 0;
+
+  }
+
+  .cart-item img {
+    max-width: 100px;
+    margin-right: 10px;
+  }
+
+  .cart-summary {
+    background: #f9f9f9;
+    border-radius: 2px;
+    padding: 20px;
+    border: 0.3px solid #dcdcdc;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .total-savings {
+    color: green;
+    font-weight: bold;
+  }
+
+  .cart {
+    margin-top: 20px;
+    position: relative;
+    /* right: -95px; */
+    left: 70px;
+
+  }
+
+  .form-control {
+    border-radius: 0;
+
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #757575;
+  }
+
+  .apply {
+    border-radius: 0;
+  }
 </style>
 
-<body>
-  <div class="orders-body container mt-5">
-    <div class="row">
-      <div class="col-md-8">
-        <h5>Choose Payment Mode</h5>
-        <form id="paymentForm" method="POST" action="/user/payment_method/<%= userId %>">
-          <div class="payment-card">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod1" value="creditCard">
-              <label class="form-check-label" for="paymentMethod1">
-                <i class="fa-regular fa-credit-card"></i> Credit Card/Debit Card/UPI/Net Banking/Wallets
-              </label>
-            </div>
-          </div>
-          <div class="payment-card">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodCOD" value="COD">
-              <label class="form-check-label d-flex align-items-center" for="paymentMethodCOD">
-                <img style="width: 35px; margin-right: 10px;" src="/images/money_14341827.png" alt=""> Cash On Delivery
-              </label>
-            </div>
-          </div>
-          <div id="paymentError" class="text-danger mt-2" style="display: none;">
-            Please select a payment method.
-          </div>
-          <button type="submit" style="width: 40%;" class="btn btn-dark btn-block mt-3">Place Order</button>
-        </form>
-      </div>
-  
-      <div class="col-md-4">
-        <div class="cart-summary">
-          <h5>Cart Summary</h5>
-          <ul class="list-unstyled">
-            <li class="d-flex justify-content-between">
-              <span>SubTotal</span>
-              <span>₹<%= total.toFixed(2) %></span>
-            </li>
-          </ul>
-          <p>Packing Charges: <span class="float-right">₹<%= packingCharges.toFixed(2) %></span></p>
-          <p>Shipping & Handling: <span class="float-right"><del>₹4,000</del> FREE</span></p>
-          <p>Negotiated Discount: <span class="float-right">₹0</span></p>
-          <p>Tax: <span class="float-right">₹<%= tax.toFixed(2) %></span></p>
-          <h5>Total Amount: <span class="float-right">₹<%= total.toFixed(2) %></span></h5>
-          <h6 style="color: green">Total Savings: <span class="float-right" style="color: green">₹<%= savings.toFixed(2) %></span></h6>
-          <div class="form-check mt-3">
-            <input type="checkbox" class="form-check-input" id="terms">
-            <label class="form-check-label" for="terms">I read the home delivery terms and conditions. <a href="#">Know more</a></label>
+<div class="orders-body container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <h5>Choose Payment Mode</h5>
+      <form id="paymentForm" method="POST" action="/user/payment_method/<%= userId %>">
+        <!-- Radio buttons for payment methods -->
+        <div class="payment-card">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod1" value="creditCard">
+            <label class="form-check-label" for="paymentMethod1">
+              <i class="fa-regular fa-credit-card"></i> Credit Card/Debit Card/UPI/Net Banking/Wallets
+            </label>
           </div>
         </div>
+        <div class="payment-card">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodCOD" value="COD">
+            <label class="form-check-label d-flex align-items-center" for="paymentMethodCOD">
+              <img style="width: 35px; margin-right: 10px;" src="/images/money_14341827.png" alt=""> Cash On Delivery
+            </label>
+          </div>
+        </div>
+        <div class="payment-card">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodRazorpay" value="Razorpay">
+            <label class="form-check-label d-flex align-items-center" for="paymentMethodRazorpay">
+              <i class="fa fa-credit-card"></i> Razorpay
+            </label>
+          </div>
+        </div>
+        <input type="hidden" name="userId" value="<%= userId %>">
+        <input type="hidden" name="totalAmount" value="<%= cart.totalAmount %>">
+        <div id="paymentError" class="text-danger mt-2" style="display: none;">
+          Please select a payment method.
+        </div>
+        <button type="submit" style="width: 40%;" class="btn btn-dark btn-block mt-3">Place Order</button>
+      </form>
+    </div>
+
+    <div class="col-md-4 cart">
+      <div class="cart-summary">
+        <h5>Apply Coupon Code</h5><br>
+        <div class="input-group mb-3">
+          <input type="text" id="couponCode" class="form-control" placeholder="Enter Coupon Code" required>
+          <div class="input-group-append">
+            <button id="applyCoupon" class="btn btn-dark">Apply</button>
+          </div>
+        </div>
+        <div id="appliedCouponMessage" class="text-success mb-3" style="display: none;">
+          Applied Coupon: <span id="appliedCouponCode"></span>
+          <span id="removeCoupon" style="cursor: pointer; color: red; margin-left: 10px;">&times;</span>
+        </div>
+        <br>
+        <h5>Cart Summary</h5>
+        <ul class="list-unstyled">
+          <li class="d-flex justify-content-between">
+            <span>SubTotal</span>
+            <span>₹<%= cart && cart.totalAmount ? cart.totalAmount.toFixed(2) : '0.00' %></span>
+          </li>
+        </ul>
+        <p>Packing Charges: <span class="float-right">₹0</span></p>
+        <% if (cart && cart.products.length > 0) { %>
+          <p>Shipping & Handling: <span class="float-right"><del>₹4,000</del> FREE</span></p>
+        <% } else { %>
+          <p>Shipping & Handling: <span class="float-right"><del>₹0</del></span></p>
+        <% } %>
+        <p>Negotiated Discount: <span class="float-right" id="negotiatedDiscount">₹0</span></p>
+        <div class="d-flex justify-content-between">
+          <span>Total Amount</span>
+          <span id="totalAmount" class="total-amount">₹<%= cart && cart.finalAmount ? cart.finalAmount.toFixed(2) : '0.00' %></span>
+        </div>
+        <button class="continue-btn btn btn-dark btn-block mt-3" data-user-id="<%= userId %>">Continue</button>
+        <small class="text-muted d-block mt-2">By continuing, you agree to Habus's Terms of Use and Privacy Policy.</small>
       </div>
     </div>
   </div>
-  
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#applyCoupon').on('click', function () {
+      var couponCode = $('#couponCode').val().trim();
+      var userId = "<%= userId %>";
+
+      if (!couponCode) {
+        alert('Please enter a coupon code.');
+        return;
+      }
+
+      $.ajax({
+        url: '/user/cart/' + userId + '/apply-coupon',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ couponCode: couponCode }),
+        success: function (response) {
+          if (response.success) {
+            $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
+            $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
+            $('#appliedCouponMessage').show();
+            $('#appliedCouponCode').text(couponCode);
+          } else {
+            alert(response.message);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error applying coupon:', error);
+          alert('An error occurred while applying the coupon. Please try again.');
+        }
+      });
+    });
+
+    $('#removeCoupon').on('click', function () {
+      var userId = "<%= userId %>";
+      $.ajax({
+        url: '/user/cart/' + userId + '/remove-coupon',
+        method: 'POST',
+        contentType: 'application/json',
+        success: function (response) {
+          if (response.success) {
+            $('#appliedCouponMessage').hide();
+            $('#couponCode').val('');
+            $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
+            $('#negotiatedDiscount').text('₹0');
+          } else {
+            alert(response.message);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error removing coupon:', error);
+          alert('An error occurred while removing the coupon. Please try again.');
+        }
+      });
+    });
+
+    document.getElementById('paymentForm').addEventListener('submit', function (event) {
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+      if (!paymentMethod) {
+        event.preventDefault();
+        document.getElementById('paymentError').style.display = 'block';
+      } else if (paymentMethod.value === 'Razorpay') {
+        event.preventDefault(); // Prevent form submission
+        initiateRazorpayPayment(); // Call function to handle Razorpay payment
+      }
+    });
+  });
+
+  function initiateRazorpayPayment() {
+  $.ajax({
+    url: '/user/payment_method/<%= userId %>',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      paymentMethod: $('input[name="paymentMethod"]:checked').val(),
+      userId: "<%= userId %>",
+      totalAmount: "<%= cart.finalAmount %>"
+    }),
+    success: function (response) {
+      const options = {
+        "key": "<%= process.env.RAZORPAY_KEY_ID %>", // Use actual Key ID here
+        "amount": response.amount,
+        "currency": response.currency,
+        "name": "Habus",
+        "description": "Order Payment",
+        "order_id": response.orderId,
+        "handler": function (response) {
+          $.ajax({
+            url: '/user/payment_callback',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+              payment_id: response.razorpay_payment_id,
+              order_id: response.razorpay_order_id,
+              signature: response.razorpay_signature
+            }),
+            success: function (callbackResponse) {
+              window.location.href = '/user/orders/<%= userId %>';
+            },
+            error: function (xhr, status, error) {
+              alert('Payment verification failed. Please try again.');
+            }
+          });
+        },
+        "theme": {
+          "color": "#3399cc"
+        }
+      };
+      const rzp1 = new Razorpay(options);
+      rzp1.open();
+    },
+    error: function (xhr, status, error) {
+      console.error('Error initiating Razorpay payment:', error);
+      alert('An error occurred while initiating the payment. Please try again.');
+    }
+  });
+}
+
+</script>

@@ -20,11 +20,38 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-
+      productName: {
+        type: String,
+        required: true,
+      },
+      image: {
+        type: String,
+        required: true,
+      },
     },
   ],
-});
+  totalAmount: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  appliedCoupon: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'coupon_data', 
+    default: null,
+  },
+  discountValue: {
+    type: Number,
+    default: 0,
+  },
+  finalAmount: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+}, { timestamps: true });
 
-const cartCollection = new mongoose.model("Cart_Data", cartSchema);
+
+const cartCollection = new mongoose.model("cart_data", cartSchema);
 
 module.exports = { cartCollection };

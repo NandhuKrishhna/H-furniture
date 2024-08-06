@@ -1,14 +1,18 @@
 <style>
-       .side-menu {
-  background-color: #ffffff;
-  height: 100%;
-  border: 0.5px solid #ced4da; /* Thinner border */
-  
-}
-main-content{
-    position: absolute;
-    left: 300px;
-}
+    .side-menu {
+        background-color: #ffffff;
+        height: 100%;
+        border: 0.5px solid #ced4da;
+        position: relative;
+        left: 30px;
+        top: 40px;
+    }
+
+    .logout-btn {
+        width: 100%;
+        margin-top: 20px;
+    }
+
 </style>
 <div class="container-fluid mt-4 main-content">
     <div class="row">
@@ -30,7 +34,7 @@ main-content{
               Wishlist</a></li>
           <li class="list-group-item"><a href="/user/set_new_password"
               style="color: rgb(90, 90, 90); text-decoration: none;">Change Password</a></li>
-          <li class="list-group-item"><a href="/user/coupons-vouchers"
+          <li class="list-group-item"><a href="/user/coupons"
               style="color: rgb(90, 90, 90); text-decoration: none;">Coupons and Vouchers</a></li>
         </ul>
         <button id="logout" class="btn btn-dark logout-btn" style="border-radius: 0;">LOGOUT</button>

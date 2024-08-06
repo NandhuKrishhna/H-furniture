@@ -84,68 +84,67 @@
     right: 45%;
     top: 28%;
 }
-
+.order-card{
+  margin-left: 40px;
+}
 </style>
 
 <%- include("../partials/userSidenav.ejs") %>
-<div class="col-md-9">
-  <h3>Your Orders</h3>
-  <% orders.forEach(order => { %>
-    <div class="order-card">
-      <div class="card-header">
-        <h6>Order No: <%= order.transactionId %></h6>
-        <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
-  
-      </div>
-      <ul class="order-items-list">
-        <% if (order.items && Array.isArray(order.items) && order.items.length > 0) { %>
-          <% order.items.forEach(item => { %>
-            <li class="order-item">
-              <% if (item.image && item.image.length > 0) { %>
-                <img src="/<%= item.image[0] %>" alt="<%= item.name %>" class="product-image">
-              <% } else { %>
-                <img src="/path/to/default-image.jpg" alt="No Image Available" class="product-image">
-              <% } %>
-              <div class="product-details">
-                <div><strong><%= item.name || 'Unknown Product' %></strong></div>
-                <div>Qty: <%= item.quantity || 0 %></div>
-                <div>Price: ₹<%= item.price.toFixed(2) %></div>
-              </div>
-            </li>
-          <% }) %>
-        <% } else { %>
-          <li>No items found for this order.</li>
-        <% } %>
-      </ul>
-      <div class="order-total">
-        <div>Status: <%= order.orderStatus %></div>
-        <div>Order Total: ₹<%= order.totalPrice.toFixed(2) %></div>
-        <% if (order.orderStatus !== 'Cancelled') { %>
-          <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>">Cancel</button>
-        <% } %>
-      </div>
+<div class="col-md-9 order-body">
+ <h3>Your Orders</h3>
+ <% orders.forEach(order => { %>
+  <div class="order-card">
+    <div class="card-header">
+      <h6>Order No: <%= order.transactionId %></h6>
+      <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
     </div>
-  <% }) %>
+    <ul class="order-items-list">
+      <% order.orderItems.forEach(item => { %>
+        <li class="order-item">
+          <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
+          <div class="product-details">
+            <div><strong><%= item.name || 'Unknown Product' %></strong></div>
+            <div>Qty: <%= item.quantity || 0 %></div>
+            <div>Price: ₹<%= item.price.toFixed(2) %></div>
+            <% if (item.status !== 'Cancelled') { %>
+              <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
+              <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+    <div class="order-total">
+      <div>Status: <%= order.orderStatus %></div>
+      <div>Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
+    </div>
+  </div>
+<% }) %>
+
 </div>
+
+
 
 
 <script>
 $(document).ready(function() {
   $('.cancel-order-btn').click(function() {
     const orderId = $(this).data('order-id');
-    console.log('Order ID:', orderId); // Log orderId to verify it's correct
-    if (!orderId) {
+    const itemId = $(this).data('item-id'); 
+    console.log('Order ID:', orderId);
+    console.log('Item ID:', itemId);
+
+    if (!orderId || !itemId) {
       Swal.fire({
         icon: 'error',
-        title: 'Invalid order ID',
-        text: 'The order ID is invalid. Please try again.',
+        title: 'Invalid IDs',
+        text: 'Order ID or Item ID is missing. Please try again.',
       });
       return;
     }
 
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you really want to cancel this order?",
+      text: "Do you really want to cancel this item?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -154,10 +153,8 @@ $(document).ready(function() {
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
-          url: '/user/cancel-order',
+          url: `/order/${orderId}/item/${itemId}/cancel`,
           type: 'POST',
-          data: JSON.stringify({ orderId: orderId.toString() }), // Convert to string
-          contentType: 'application/json',
           success: function(response) {
             if (response.success) {
               Swal.fire({
@@ -165,7 +162,7 @@ $(document).ready(function() {
                 title: 'Cancelled',
                 text: response.message,
               }).then(() => {
-                location.reload(); // Reload the page to reflect changes
+                location.reload(); 
               });
             } else {
               Swal.fire({
@@ -180,7 +177,7 @@ $(document).ready(function() {
             Swal.fire({
               icon: 'error',
               title: 'An error occurred',
-              text: 'An error occurred while cancelling the order. Please try again.',
+              text: 'An error occurred while cancelling the item. Please try again.',
             });
           }
         });
@@ -188,6 +185,8 @@ $(document).ready(function() {
     });
   });
 });
+
+
 </script>
 
 

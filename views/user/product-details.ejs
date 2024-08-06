@@ -325,17 +325,17 @@
 const originalPrice = '<%= calculateDiscountedPrice(product.originalprice, product.discount) %>';
 const numberInput = document.getElementById('numberInput');
 const totalPriceElement = document.getElementById('totalPrice');
-const addToCartButton = document.querySelector('.btn-dark'); // Button selector
-const productId = "<%= product._id %>"; // Product ID from EJS template
+const addToCartButton = document.querySelector('.btn-dark'); 
+const productId = "<%= product._id %>";
 console.log("The product id is " + productId);
-const productPrice = '<%= product.price %>'; // Product price from EJS template
+const productPrice = '<%= product.price %>'; 
 
 function addToCart() {
   console.log('Add to Cart button clicked');
   const quantity = parseInt(numberInput.value, 10);
   console.log('Quantity:', quantity);
 
-  // Validate quantity
+ 
   if (isNaN(quantity) || quantity <= 0) {
     alert('Please enter a valid quantity.');
     return;
@@ -373,7 +373,6 @@ function addToCart() {
   } else if (status === 400 && data.message === 'Product is out of stock') {
     
     Swal.fire({
-      icon: 'warning',
       title: 'Out of Stock',
       text: 'The product you are trying to add is out of stock.',
       customClass: {
@@ -385,7 +384,7 @@ function addToCart() {
   }
     });
   } else {
-    // Use SweetAlert2 for other errors
+  
     Swal.fire({
       icon: 'error',
       title: 'Error!',
@@ -402,7 +401,6 @@ function addToCart() {
 })
 .catch(error => {
   console.error('Error:', error);
-  // Use SweetAlert2 for general error message
   Swal.fire({
     icon: 'error',
     title: 'Oops...',

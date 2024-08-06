@@ -1,61 +1,134 @@
+<style>
+  .address-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .cart-item img {
+    max-width: 100px;
+    margin-right: 10px;
+  }
 
-    <style>
-        .address-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .cart-summary {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-top: 46px;
-        }
-        .cart-summary h5 {
-            margin-bottom: 15px;
-        }
-        .cart-summary .summary-item {
-            display: flex;
-            justify-content: space-between;
-        }
-        .cart-summary .summary-item span {
-            margin-bottom: 10px;
-        }
-        .custom-control-label::before {
-            top: 0.25rem;
-        }
-        .container{
-          padding-top: 50px;
-          padding-bottom: 50px;
-        }
-  
-    </style>
-   
-   <div class="container">
+  .cart-summary {
+    background: #f9f9f9;
+    border-radius: 2px;
+    padding: 20px;
+    border: 0.3px solid #dcdcdc;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .total-savings {
+    color: green;
+    font-weight: bold;
+  }
+
+  .cart {
+    margin-top: 20px;
+    position: relative;
+    /* right: -95px; */
+    left: 70px;
+
+  }
+
+  .form-control {
+    border-radius: 0;
+
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #757575;
+  }
+
+  .apply {
+    border-radius: 0;
+
+  }
+
+  .cart-item img {
+    max-width: 100px;
+    margin-right: 10px;
+  }
+
+  .cart-summary {
+    background: #f9f9f9;
+    border-radius: 2px;
+    padding: 20px;
+    border: 0.3px solid #dcdcdc;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+
+  .total-savings {
+    color: green;
+    font-weight: bold;
+  }
+
+  .cart {
+    margin-top: 20px;
+    position: relative;
+    /* right: -95px; */
+    left: 70px;
+
+  }
+
+  .form-control {
+    border-radius: 0;
+
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #757575;
+  }
+
+  .apply {
+    border-radius: 0;
+  }
+</style>
+
+<div class="container">
   <div class="row mt-4">
     <!-- Main Content Column -->
     <div class="col-lg-8">
       <!-- Address and Shipping Methods Section -->
       <h2>Select Delivery Address</h2>
-      <form id="addressForm" action="/user/checkout_address_details/<%= id %> "method="POST">
-        <% if (address && address.length > 0) { %>
+      <form id="addressForm" action="/user/checkout_address_details/<%= userId %> " method="POST">
+        <% if (address && address.length> 0) { %>
           <% address.forEach(function(addr) { %>
             <div class="address-card">
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= addr._id %>" value="<%= addr._id %>" <%= addr.isPrimary ? 'checked' : '' %>>
+                <input class="form-check-input" type="radio" name="selectedAddress" id="address<%= addr._id %>"
+                  value="<%= addr._id %>" <%=addr.isPrimary ? 'checked' : '' %>>
                 <label class="form-check-label" for="address<%= addr._id %>">
-                  <strong><%= addr.firstName %> <%= addr.lastName %></strong><br>
-                  <%= addr.homeAddress %>, <%= addr.street %>, <%= addr.city %>, <%= addr.state %>, <%= addr.country %>, <%= addr.pincode %><br>
-                  Mob: <%= Array.isArray(addr.phone) ? addr.phone.join(", ") : addr.phone %>
-                </label>
-              </div>
-              <div class="mt-2">
-                <button type="button" class="btn btn-outline-secondary btn-sm delete-address" data-address-id="<%= addr._id %>">Remove</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm edit-address" data-address-id="<%= addr._id %>">Edit</button>
+                  <strong>
+                    <%= addr.firstName %>
+                      <%= addr.lastName %>
+                  </strong><br>
+                  <%= addr.homeAddress %>, <%= addr.street %>, <%= addr.city %>, <%= addr.state %>, <%= addr.country %>,
+                            <%= addr.pincode %><br>
+                              Mob: <%= Array.isArray(addr.phone) ? addr.phone.join(", ") : addr.phone %>
+          </label>
+        </div>
+        <div class=" mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm delete-address"
+                                  data-address-id="<%= addr._id %>">Remove</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm edit-address"
+                                  data-address-id="<%= addr._id %>">Edit</button>
               </div>
             </div>
-          <% }) %>
-        <% } %>
-        <button type="submit" class="btn btn-dark mt-3">Confirm Address</button>
+            <% }) %>
+              <% } %>
+                <button type="submit" class="btn btn-dark mt-3">Confirm Address</button>
       </form>
       <a href="/user/add_address" class="btn btn-dark mt-3"> Add New Address</a><br><br>
       <h3>Shipping Methods</h3>
@@ -80,102 +153,147 @@
           <label class="form-check-label" for="differentAddress">
             Use different billing address
           </label>
-                </div>
-            </div>
         </div>
-
-        <!-- Cart Summary Column -->
-        <div class="col-lg-4">
-            <div class="cart-summary">
-                <h5>Apply Coupon Code</h5>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Enter Coupon Code">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button">Apply</button>
-                    </div>
-                </div>
-                <h5>Cart Summary</h5>
-                <div class="summary-item">
-                    <span>SubTotal</span>
-                    <span><%= total.toFixed(2) %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Packing Charges</span>
-                    <span>₹<%=packingCharges.toFixed(2) %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Shipping & Handling</span>
-                    <span>₹<%=shippingHandling.toFixed(2) %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Negotiated Discount</span>
-                    <span>₹0</span>
-                </div>
-                <div class="summary-item">
-                    <span>Tax</span>
-                    <span>₹<%= tax.toFixed(2) %></span>
-                </div>
-                <div class="summary-item">
-                    <strong>Total Amount</strong>
-                    <strong>₹<%= total.toFixed(2) %></strong>
-                </div>
-                <div class="summary-item">
-                    <span>Total savings</span>
-                    <span><%= savings.toFixed(2) %></span>
-                </div>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" id="termsCheckbox">
-                    <label class="form-check-label" for="termsCheckbox">
-                        I read the home delivery terms and conditions. <a href="#">Know more</a>
-                    </label>
-                </div>
-                <button class="continue-btn btn btn-dark btn-block mt-3" data-user-id="<%= userInfo._id %>">Continue</button>
-                <p class="text-muted mt-2">By continuing to Checkout, you agree to DTALE Terms of use and Privacy Policy</p>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <!-- Cart Summary Partials -->
+    <div class="col-md-4 cart">
+      <div class="cart-summary">
+        <h5>Apply Coupon Code</h5><br>
+        <div class="input-group mb-3">
+          <input type="text" id="couponCode" class="form-control" placeholder="Enter Coupon Code" required>
+          <div class="input-group-append">
+            <button id="applyCoupon" class="btn btn-dark">Apply</button>
+          </div>
+        </div>
+        <div id="appliedCouponMessage" class="text-success mb-3" style="display: none;">
+          Applied Coupon: <span id="appliedCouponCode"></span>
+          <span id="removeCoupon" style="cursor: pointer; color: red; margin-left: 10px;">&times;</span>
+        </div>
+        <br>
+        <h5>Cart Summary</h5>
+        <ul class="list-unstyled">
+          <li class="d-flex justify-content-between">
+            <span>SubTotal</span>
+            <span>₹<span id="subtotalAmount"><%= cart && cart.totalAmount ? cart.totalAmount.toFixed(2) : '0.00' %></span></span>
+          </li>
+        </ul>
+        <p>Packing Charges: <span class="float-right">₹0</span></p>
+        <% if (cart && cart.products.length> 0) { %>
+          <p>Shipping & Handling: <span class="float-right"><del>₹4,000</del> FREE</span></p>
+          <% } else { %>
+            <p>Shipping & Handling: <span class="float-right"><del>₹0</del></span></p>
+            <% } %>
+              <p>Negotiated Discount: <span class="float-right" id="negotiatedDiscount">₹0</span></p>
+              <div class="d-flex justify-content-between">
+                <span>Total Amount</span>
+                <span id="totalAmount" class="total-amount">₹<%= cart && cart.finalAmount ? cart.finalAmount.toFixed(2) : '0.00' %></span>
+              </div>
+              <button class="continue-btn btn btn-dark btn-block mt-3" data-user-id="<%= userId %>">Continue</button>
+              <small class="text-muted d-block mt-2">By continuing, you agree to Habus's Terms of Use and Privacy
+                Policy.</small>
+      </div>
+    </div>
+  </div>
 </div>
 
 
 <script>
-    $(document).ready(function () {
-        $(".delete-address").click(function(){
-            const addressId = $(this).data("address-id");
-            $.ajax({
-                url: `/user/delete_address/${addressId}`,
-                method: "DELETE",
-                success: function(response) {
-                    if (response.success) {
-                        window.location.reload();
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function() {
-                    alert("Error occurred while deleting the address");
-                }
-            });
+  $(document).ready(function () {
+        $('#applyCoupon').on('click', function () {
+          var couponCode = $('#couponCode').val().trim();
+          var userId = "<%= userId %>";
+    
+          if (!couponCode) {
+            alert('Please enter a coupon code.');
+            return;
+          }
+    
+          $.ajax({
+            url: '/user/cart/' + userId + '/apply-coupon',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ couponCode: couponCode }),
+            success: function (response) {
+              if (response.success) {
+                $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
+                $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
+                $('#appliedCouponMessage').show();
+                $('#appliedCouponCode').text(couponCode);
+              } else {
+                alert(response.message);
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('Error applying coupon:', error);
+              alert('An error occurred while applying the coupon. Please try again.');
+            }
+          });
         });
-    });
+    
+        $('#removeCoupon').on('click', function () {
+          var userId = "<%= userId %>";
+          $.ajax({
+            url: '/user/cart/' + userId + '/remove-coupon',
+            method: 'POST',
+            contentType: 'application/json',
+            success: function (response) {
+              if (response.success) {
+                $('#appliedCouponMessage').hide();
+                $('#couponCode').val('');
+                $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
+                $('#negotiatedDiscount').text('₹0');
+              } else {
+                alert(response.message);
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('Error removing coupon:', error);
+              alert('An error occurred while removing the coupon. Please try again.');
+            }
+          });
+        });
+      });
+      
+  $(document).ready(function () {
+      $(".delete-address").click(function(){
+          const addressId = $(this).data("address-id");
+          $.ajax({
+              url: `/user/delete_address/${addressId}`,
+              method: "DELETE",
+              success: function(response) {
+                  if (response.success) {
+                      window.location.reload();
+                  } else {
+                      alert(response.message);
+                  }
+              },
+              error: function() {
+                  alert("Error occurred while deleting the address");
+              }
+          });
+      });
+  });
 
-// redirecting to edit address
+
 $(document).ready(function () {
-    $(".edit-address").click(function() {
-        const addressId = $(this).data("address-id");
-        // Redirect to the edit address page
-        window.location.href = `/user/edit_address/${addressId}`;
-    });
+  $(".edit-address").click(function() {
+      const addressId = $(this).data("address-id");
+   
+      window.location.href = `/user/edit_address/${addressId}`;
+  });
 });
 
 $(document).ready(function () {
-    $(".continue-btn").click(function() {
-        const userId = $(this).data("user-id");
-        // Redirect to the edit address page
-        window.location.href = `/user/payment_method/${userId}`;
-    });
+  $(".continue-btn").click(function() {
+      const userId = $(this).data("user-id");
+    
+      window.location.href = `/user/payment_method/${userId}`;
+  });
 });
 
 
-  
 
-  </script>
+
+    </script>
