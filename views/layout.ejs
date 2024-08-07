@@ -16,12 +16,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Rokkitt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/calibri-light" rel="stylesheet">
     <link rel="stylesheet" href="/style/sidenavbar.css">
+    <% if (typeof productDetails !== 'undefined' && productDetails) { %>
+         <link rel="stylesheet" href="/style/user/product_details.css">
+    <% } %>
   </head>
   <style>
+    
     body {
   font-family: 'Calibri', 'Arial', sans-serif;
   background-color: #f8f9fa;
@@ -59,7 +65,7 @@ h3 {
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
 <!-- SweetAlert2 JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
@@ -78,7 +84,12 @@ h3 {
         <script src="/script/user/userlogin.js"></script>
     <% } else if(typeof userOtpSubmit !== 'undefined' && userOtpSubmit){ %>
          <script src="/script/user/otp_submit.js"></script>
-    <% } %>
+    <% } else if(typeof userProducts !== 'undefined' && userProducts){ %> 
+        <script src="/script/user/userProducts.js"></script>
+    <% }else if (typeof productDetails !== 'undefined' && productDetails){ %>
+        <script src="/script/user/productDetails.js"></script>
+    <% }  %>
+
     
   </body>
 </html>

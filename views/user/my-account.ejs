@@ -1,115 +1,68 @@
 <style>
-  .form-control {
-    border: 1px solid #ced4da;
-    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    width: 80%;
-  }
-
-  .form-control:focus {
-    border-color: #000;
-    box-shadow: none;
-    outline: none;
-  }
-
-  .form-control:focus,
-  .form-control:hover {
-    border-color: #000;
-    box-shadow: none;
-  }
-
-  .alert-danger {
-    background: none;
-    border: none;
-    color: red;
-    font-weight: 600;
-  }
-
-  .custom-swal-popup {
-    width: 400px;
-    max-width: 90%;
+  .form-section {
     padding: 20px;
   }
 
-
-  .custom-swal-title {
-    font-size: 24px;
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-control{
+    width: 75%;
   }
 
-  .custom-swal-content {
-    font-size: 16px;
-  }
-
-
-  .custom-swal-confirm-button {
-    background-color: #272727;
-    color: #fff;
-    border-radius: 5px;
-    padding: 10px 20px;
-  }
-
-
-  .custom-swal-confirm-button {
-    margin-top: 20px;
-  }
-
-
-  .custom-swal-confirm-button:hover {
-    background-color: #000000;
-  }
-
-
-  .custom-swal-confirm-button:active {
-    background-color: #363636;
-  }
-
-  .swal2-confirm-black {
-    background-color: black !important;
-    color: white !important;
-  }
-
-  .swal2-cancel-grey {
-    background-color: grey !important;
-    color: white !important;
-  }
   .main-content {
-    margin-top: 30px;
-    padding-left:50px
+    padding-left: 100px;
+    padding-top: 50px;
   }
-</style>
+  input::placeholder {
+        font-size: 12px;
+    }
 
-<%- include("../partials/userSidenav.ejs") %>
-    <!-- Account Settings Form -->
-    <div class="col-md-9  main-content">
-      <h3>Account Setting</h3>
-      <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" name="fname" placeholder="Firstname" value="<%= userInfo ? userInfo.firstName : '' %>">
-            <div class="text-danger" id="fname-error"></div>
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" name="lname" placeholder="Lastname" value="<%= userInfo ? userInfo.lastName : '' %>">
-            <div class="text-danger" id="lname-error"></div>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <input type="text" class="form-control" name="phone" placeholder="Mobile No" value="<%= userInfo ? userInfo.phone : '' %>">
-            <div class="text-danger" id="phone-error"></div>
-          </div>
-          <div class="col">
-            <input type="text" class="form-control" name="email" placeholder="Email" value="<%= userInfo ? userInfo.email : '' %>">
-            <div class="text-danger" id="email-error"></div>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-dark" style="width: 200px; border-radius: 0;">Save</button>
-      </form>
+    input {
+        font-size: 12px;
+    }
+  
+</style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <%- include("../partials/userSidenav.ejs") %>
+        <!-- Form Section -->
+        <div class="col-md-9 main-content">
+          <h5>Account Setting</h5>
+          <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
+              <div class="row mb-3">
+                  <div class="col">
+                      <input type="text" class="form-control" name="fname" placeholder="Firstname" value="<%= userInfo ? userInfo.firstName : '' %>">
+                      <div class="text-danger" id="fname-error"></div>
+                  </div>
+                  <div class="col">
+                      <input type="text" class="form-control" name="lname" placeholder="Lastname" value="<%= userInfo ? userInfo.lastName : '' %>">
+                      <div class="text-danger" id="lname-error"></div>
+                  </div>
+              </div>
+              <div class="row mb-3">
+                  <div class="col">
+                      <input type="text" class="form-control" name="phone" placeholder="Mobile No" value="<%= userInfo ? userInfo.phone : '' %>">
+                      <div class="text-danger" id="phone-error"></div>
+                  </div>
+                  <div class="col">
+                      <input type="text" class="form-control" name="email" placeholder="Email" value="<%= userInfo ? userInfo.email : '' %>">
+                      <div class="text-danger" id="email-error"></div>
+                  </div>
+              </div>
+              <button type="submit" class="btn btn-dark" style="width: 200px; border-radius: 0;">Save</button>
+          </form>
+      </div>
+      
     </div>
-    </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</div>
+
+
+
     <script>
     function validateForm() {
       var fname = document.forms["account-form"]["fname"].value;

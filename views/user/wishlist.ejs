@@ -1,0 +1,138 @@
+
+    <style>
+   .wishlist-item .card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.wishlist-item .card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.wishlist-item img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.wishlist-item .card-body {
+  text-align: center;
+}
+
+.wishlist-item .btn {
+  margin: 5px 0;
+}
+
+        .wishlist-item  {
+         
+           margin-left: 56px;
+        }
+    
+    </style>
+
+<div class="container-fluid">
+  <div class="row">
+    <%- include('../partials/userSidenav.ejs') %>
+    <!-- Main content -->
+    <main role="main" class="col-md-9">
+      <div class="wishlist mt-5">
+        <h4 style="margin-left: 60px;">Wishlist</h4>
+        <div class="row">
+          <% if (productDetails && productDetails.length > 0) { %>
+            <% productDetails.forEach(product => { %>
+              <div class="col-md-6 col-lg-3 wishlist-item mb-4">
+                <div class="card">
+                  <img src="/<%= product.image %>" class="card-img-top img-fluid" alt="Product Image">
+                  <div class="card-body">
+                    <h6 class="card-title"><%= product.name %></h6>
+                    <p class="card-text">₹<%= product.price %></p>
+                    <!-- Optional: Add buttons for removing from wishlist or adding to cart -->
+                    <i data-product-id="<%= product._id %>" class="fa-solid fa-square-minus remove-from-wishlist"></i>&nbsp;Remove&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <i data-product-id="<%= product._id %>" class="fa-solid fa-square-plus add-to-cart-from-wishlist" data-quantity="1"></i>&nbsp; Add to cart
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center">Your wishlist is empty.</p>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.add-to-cart-from-wishlist').forEach(button => {
+    button.addEventListener('click', async (event) => {
+      const productId = event.target.getAttribute('data-product-id');
+      const quantity = 1; 
+
+      try {
+        const response = await fetch(`/user/cart/${productId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Product added to cart',
+            text: 'You have successfully added the product to your cart.',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed to add product',
+            text: 'There was an issue adding the product to your cart.',
+            confirmButtonText: 'OK'
+          });
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An unexpected error occurred while adding the product to your cart.',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  });
+});
+
+document.querySelectorAll('.remove-from-wishlist').forEach(button => {
+  button.addEventListener('click', async () => {
+    const productId = button.getAttribute('data-product-id');
+
+    try {
+      const response = await fetch('/user/remove-wishlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+
+        location.reload();
+        button.closest('.wishlist-item').remove();
+      } else {
+       
+      }
+    } catch (error) {
+      console.error('Error removing product from wishlist:', error);
+    }
+  });
+});
+
+</script>

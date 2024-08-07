@@ -1,122 +1,149 @@
-<section>
-    <footer class="bg-light py-4 shadow-sm footer mt-5">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-3">
-                    <h5>About Us</h5>
-                    <div class="footer-links">
-                        <a href="#">Why Us</a><br>
-                        <a href="#">Testimonials</a><br>
-                        <a href="#">Awards & Recognition</a><br>
-                        <a href="#">Measure Your Space</a><br>
-                        <a href="#">Care and Maintenance</a>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <h5>Services</h5>
-                    <div class="footer-links">
-                        <a href="#">Partner Program</a><br>
-                        <a href="#">Design Projects</a><br>
-                        <a href="#">Collaborators</a><br>
-                        <a href="#">FAQ</a>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <h5>Terms and Conditions</h5>
-                    <div class="footer-links">
-                        <a href="#">Privacy Policy</a><br>
-                        <a href="#">Return Policy</a><br>
-                        <a href="#">Shipping Policy</a><br>
-                        <a href="#">Warranty Policy</a>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <h5>Sign Up for Emails</h5>
-                    <form class="d-flex">
-                        <input type="email" class="form-control me-2" placeholder="Enter your Email">
-                        <button type="submit" class="btn btn-dark">Subscribe</button>
-                    </form>
-                    <div class="social-links mt-3">
-                        <a href="#"><img src="/images/2515845_black and white_dark grey_facebook_icon (1).png" alt="Facebook" width="30"></a>
-                        <a href="#"><img src="/images/5279112_camera_instagram_social media_instagram logo_icon (1).png" alt="Instagram" width="30"></a>
-                        <a href="#"><img src="/images/twitter.png" alt="Twitter" width="30"></a>
-                    </div>
-                </div>
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <ul>
+                <li><a href="#">Why Us</a></li>
+                <li><a href="#">Testimonials</a></li>
+                <li><a href="#">Awards & Recognition</a></li>
+                <li><a href="#">Measure Your Space</a></li>
+                <li><a href="#">Care and Maintenance</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="#">Partner Program</a></li>
+                <li><a href="#">Design Projects</a></li>
+                <li><a href="#">Collaborators</a></li>
+                <li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Terms and Conditions</h3>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Return Policy</a></li>
+                <li><a href="#">Shipping Policy</a></li>
+                <li><a href="#">Warranty Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Sign Up for Emails</h3>
+            <form>
+                <input type="email" placeholder="Enter your email" style="font-size: 12px ;">
+                <button style="font-size: 12px;" type="submit">Subscribe</button >
+            </form>
+            <div class="social-media">
+                <a href="#"><img src="/images/2515845_black and white_dark grey_facebook_icon (1).png" alt="Facebook"width="30"></a>
+                <a href="#"><img src="/images/5279112_camera_instagram_social media_instagram logo_icon (1).png"alt="Instagram" width="30"></a>
+                <a href="#"><img src="/images/twitter.png" alt="Twitter" width="30"></a>
             </div>
         </div>
-    </footer>
-</section>
+    </div>
+    </div>
+</footer>
+
+
 
 <style>
-
-.carousel-item img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.feature-icons img {
-    width: 50px;
-    height: 50px;
+footer {
+    background-color: #f9f9f9;
+    padding: 20px 0;
+    margin-top: 100px;
 }
 
-.footer-links a {
-    color: #000;
-    text-decoration: none;
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
-}
-
-.footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    width: 100%; 
-    margin: 0; 
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-
-}
-
-.footer .container {
-    max-width: fit-content; /* Adjust max width to align with your main content width */
-    margin: 0 auto;
-    
-}
-
-.footer .row {
+.footer-container {
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.footer h5 {
-    margin-bottom: 15px;
-    font-weight: bold;
+.footer-section {
+    flex: 1;
+    padding: 0 20px;
 }
 
-.footer .footer-links {
+.footer-section h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+.footer-section ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
-.footer .footer-links a {
-    color: #000;
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section ul li a {
     text-decoration: none;
+    color: #333;
+    font-size: 13px;
 }
 
-.footer .footer-links a:hover {
-    text-decoration: underline;
+.footer-section form {
+    display: flex;
+    flex-direction: column;
 }
 
-.footer .social-links {
-    display: flex; /* Use flexbox for horizontal alignment */
-    justify-content: center; /* Center the icons horizontally */
-    gap: 10px; /* Adjust spacing between icons as needed */
+.footer-section input[type="email"] {
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.footer .social-links a {
-    display: flex; /* Ensure the icons are flex items */
-    align-items: center; /* Align icons vertically */
+.footer-section button {
+    padding: 8px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
+
+.footer-section .social-media {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.footer-section .social-media a img {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-section {
+        padding: 10px 0;
+    }
+}
+
 </style>
+
+
+
+
+
+
+
+   

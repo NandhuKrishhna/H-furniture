@@ -8,15 +8,16 @@ const Orderdb = require("../models/orderModel")
 const Categroydb = require("../models/categoryModel")
 const CountryList = require("country-list")
 const countries = CountryList.getNames()
-const uuidv4 = require("uuid").v4;
-const Cartdb = require("../models/cartModel");
-const { ObjectId, ReturnDocument, TopologyDescriptionChangedEvent } = require("mongodb");
 const Addressdb = require("../models/addressModel");
-const { configDotenv } = require("dotenv");
+const Cartdb = require("../models/cartModel");
 const Coupondb = require("../models/couponModel");
-const { getAddCouponPage } = require("./adminController");
+const WishListdb = require("../models/wishListModel");
+const uuidv4 = require("uuid").v4;
+const { ObjectId } = require("mongodb");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const { whitelist } = require("validator");
+//  <<<<<<<Razorpay>>>>>>>>
 var instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -34,7 +35,6 @@ const verifyToken = (req) => {
 function calculateDiscountedPrice(originalPrice, discount) {
   return originalPrice - (originalPrice * discount / 100);
 }
-
 
 module.exports={
 
@@ -146,7 +146,6 @@ submitSignupotp : async (req, res, next) => {
   }
 },
 
-
 //resend signup otp
 resendSignUpOtp : async (req, res, next) => {
   try {
@@ -175,7 +174,6 @@ resendSignUpOtp : async (req, res, next) => {
     });
   }
 },
-
 
 //get user Login
 getUserLogin : (req, res, next) => {
@@ -393,7 +391,7 @@ resendForgortPass : async (req, res, next) => {
 
 //change password
 getChangePassword : async (req, res, next) => {
-
+ 
   res.status(200).render("user/changepassword", {
     changePassword: true
   })
@@ -472,7 +470,7 @@ getUserProducts : async (req, res, next) => {
 
     let pipeline = [
       {
-        $match: { isDeleted: { $in: [true, false] } }
+        $match: { isDeleted: false }
       }
     ];
 
@@ -574,7 +572,8 @@ getUserProducts : async (req, res, next) => {
       totalPages,
       totalProducts,
       products,
-      calculateDiscountedPrice: calculateDiscountedPrice
+      calculateDiscountedPrice: calculateDiscountedPrice,
+      userProducts:true,
     });
 
   } catch (err) {
@@ -607,7 +606,8 @@ getProductDetails : async (req, res, next) => {
         product,
         userInfo,
         calculateDiscountedPrice: calculateDiscountedPrice,
-        length
+        length,
+        productDetails:true,
       })
 
     } else {
@@ -615,7 +615,8 @@ getProductDetails : async (req, res, next) => {
         user: true,
         product,
         calculateDiscountedPrice: calculateDiscountedPrice,
-        length
+        length,
+        productDetails:true,
       })
     }
   console.log(length, "-------------");
@@ -641,17 +642,20 @@ getMyAccount : async (req, res, next) => {
           userInfo: userInfo
         });
       } catch (error) {
-        // Token verification failed
+       
         res.status(200).render("user/my-account", {
           user: true,
-          userInfo: null
+          userInfo: null,
+          myAccount: true,
         });
       }
     } else {
-      // No token provided
+      
       res.status(200).render("user/my-account", {
         user: true,
-        userInfo: null
+        userInfo: null,
+        myAccount: true,
+        
       });
     }
   } catch (error) {
@@ -899,7 +903,8 @@ addToCart : async (req, res, next) => {
     const user = verifyToken(req);
     const userId = user._id;
     const productId = req.params.id;
-    const { quantity } = req.body;
+    //----quantity default 1-for wishlist-----
+    const { quantity = 1 } = req.body;
 
     const product = await Productdb.productCollection.findById(productId);
   
@@ -983,7 +988,6 @@ addToCart : async (req, res, next) => {
     next(error);
   }
 },
-
 
 getCart : async (req, res, next) => {
   try {
@@ -1200,7 +1204,6 @@ applyCoupon : async (req, res, next) => {
   }
 },
 
-
 //------remove coupon and update total amount-------
 removeCoupon: async (req, res, next) => {
   try {
@@ -1300,7 +1303,6 @@ getPaymentMethod : async (req,res,next) => {
 
 //--------payment method--------
 
-
 paymentMethod: async (req, res, next) => {
   try {
     console.log(req.body);  
@@ -1371,13 +1373,12 @@ paymentMethod: async (req, res, next) => {
   }
 },
 
-
 paymentVerification: async (req, res, next) => {
   try {
     const { payment_id, order_id, signature } = req.body;
     const userId = req.params.id;
 
-    // Generate a signature from the server
+    
     const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(order_id + '|' + payment_id)
       .digest('hex');
@@ -1393,7 +1394,7 @@ paymentVerification: async (req, res, next) => {
       { $set: { paymentStatus: 'Paid', paymentId: payment_id } }
     );
 
-    res.redirect(`/user/orders/${userId}`); // Redirect to orders page or display success message
+    res.redirect(`/user/orders/${userId}`); 
 
   } catch (error) {
     console.error('Error verifying payment:', error);
@@ -1421,7 +1422,6 @@ getMyOrders : async (req,res, next)=> {
     next(error)
    }
 },
-
 
 cancelOrderItem : async (req, res, next) => {
   try {
@@ -1473,4 +1473,147 @@ getAddCouponPage: async (req, res, next) => {
     next(error)
   }
 },
+
+
+
+// ------add to wishlist--------- \\
+getWishList : async (req, res, next) => {
+  try {
+    const user = verifyToken(req);
+    const userId = user._id;
+    const userInfo = await Userdb.userCollection.findById(userId);
+    const wishlist = await WishListdb.wishListCollection.findOne({ userId: userId });
+
+    if (wishlist && wishlist.items) {
+      const productDetails = [];
+      const productIds = wishlist.items.map(item => item.productId);
+      
+      const products = await Productdb.productCollection.find({ _id: { $in: productIds } });
+      //--------getting product details-------
+      for(const product of products){
+        productDetails.push({
+          _id: product._id,
+          name: product.productName,
+          price: calculateDiscountedPrice(product.originalprice, product.discount),
+          image: product.images[0],
+          discount: product.discount,
+          originalprice: product.originalprice
+        })
+      }
+
+      console.log(productDetails, "productDetails");
+      // console.log(products, "products");
+      res.status(200).render("user/wishlist", {
+        wishlist,
+        user: true,
+        userInfo,
+        productDetails
+      });
+    } else {
+      console.log("Wishlist is empty");
+      res.status(200).render("user/wishlist", {
+        wishlist: [],
+        user: true,
+        userInfo,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+},
+
+addToWishList: async (req, res, next) => {
+  try {
+    const user = verifyToken(req);
+    const userId = user._id;
+    const { productId } = req.body;
+
+   
+    const userInfo = await Userdb.userCollection.findById(userId);
+
+    
+    let wishList = await WishListdb.wishListCollection.findOne({ userId });
+
+    if (!wishList) {
+    
+      wishList = new WishListdb.wishListCollection({
+        userId,
+        items: [{ productId }]
+      });
+    } else {
+      
+      const itemIndex = wishList.items.findIndex(item => {
+        return item.productId.toString() === productId.toString(); 
+      });
+
+      if (itemIndex === -1) {
+     
+        wishList.items.push({ productId });
+      } else {
+      
+        return res.status(400).json({
+          success: false,
+          message: "Product is already in the wishlist"
+        });
+      }
+    }
+
+   
+    await wishList.save();
+
+    
+    res.status(200).json({
+      success: true,
+      message: "Product added to wishlist successfully"
+    });
+
+  } catch (error) {
+    console.error("Error adding product to wishlist:", error);
+    next(error); 
+  }
+},
+
+removeFromWishList: async (req, res, next) => {
+  try {
+    const user = verifyToken(req);
+    const userId = user._id;
+    const { productId } = req.body;
+
+    const userInfo = await Userdb.userCollection.findById(userId);
+    let wishList = await WishListdb.wishListCollection.findOne({ userId });
+    if (wishList) {
+      const itemIndex = wishList.items.findIndex(item => {
+        return item.productId.toString() === productId.toString();
+      });
+
+      if (itemIndex !== -1) {
+        wishList.items.splice(itemIndex, 1); 
+
+        await wishList.save();
+
+        return res.status(200).json({
+          success: true,
+          message: "Product removed from wishlist successfully"
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Product not found"
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Wishlist not found"
+      });
+    }
+  } catch (error) {
+    console.log("Error removing product from wishlist:", error);
+    next(error);
+  }
+},
+
+
+
 }

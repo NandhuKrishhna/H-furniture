@@ -107,6 +107,13 @@ router.get("/user/orders/:id",userController.getMyOrders)
 router.post('/order/:orderId/item/:itemId/cancel', userController.cancelOrderItem);
 router.get("/user/coupons", userController.getAddCouponPage)
 
+router.get("/user/wishlist", userController.getWishList)
+router.post("/user/addwishlist",userController.addToWishList)
+router.post("/user/remove-wishlist",userController.removeFromWishList)
+
+
+
+
 router.post("/user/logout", userController.userLogout)
 
 
