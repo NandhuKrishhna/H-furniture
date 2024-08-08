@@ -110,8 +110,9 @@ router.get("/user/coupons", userController.getAddCouponPage)
 router.get("/user/wishlist", userController.getWishList)
 router.post("/user/addwishlist",userController.addToWishList)
 router.post("/user/remove-wishlist",userController.removeFromWishList)
-
-
+//-----get wallet-------->
+router.get("/user/wallet", userController.getWallet)
+router.post("/user/wallet", userController.addMoneyToWallet)
 
 
 router.post("/user/logout", userController.userLogout)

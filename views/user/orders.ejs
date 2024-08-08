@@ -89,38 +89,47 @@
 }
 </style>
 
-<%- include("../partials/userSidenav.ejs") %>
-<div class="col-md-9 order-body">
- <h3>Your Orders</h3>
- <% orders.forEach(order => { %>
-  <div class="order-card">
-    <div class="card-header">
-      <h6>Order No: <%= order.transactionId %></h6>
-      <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
-    </div>
-    <ul class="order-items-list">
-      <% order.orderItems.forEach(item => { %>
-        <li class="order-item">
-          <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
-          <div class="product-details">
-            <div><strong><%= item.name || 'Unknown Product' %></strong></div>
-            <div>Qty: <%= item.quantity || 0 %></div>
-            <div>Price: ₹<%= item.price.toFixed(2) %></div>
-            <% if (item.status !== 'Cancelled') { %>
-              <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
-              <% } %>
-          </div>
-        </li>
-      <% }) %>
-    </ul>
-    <div class="order-total">
-      <div>Status: <%= order.orderStatus %></div>
-      <div>Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
-    </div>
+<div class="container-fluid">
+  <div class="row">
+      <!-- Sidebar -->
+      <%- include("../partials/userSidenav.ejs") %>
+      <!-- Form Section -->
+      <div class="col-md-9 order-body">
+        <h3>Your Orders</h3>
+        <% orders.forEach(order => { %>
+         <div class="order-card">
+           <div class="card-header">
+             <h6>Order No: <%= order.transactionId %></h6>
+             <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
+           </div>
+           <ul class="order-items-list">
+             <% order.orderItems.forEach(item => { %>
+               <li class="order-item">
+                 <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
+                 <div class="product-details">
+                   <div><strong><%= item.name || 'Unknown Product' %></strong></div>
+                   <div>Qty: <%= item.quantity || 0 %></div>
+                   <div>Price: ₹<%= item.price.toFixed(2) %></div>
+                   <% if (item.status !== 'Cancelled') { %>
+                     <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
+                     <% } %>
+                 </div>
+               </li>
+             <% }) %>
+           </ul>
+           <div class="order-total">
+             <div>Status: <%= order.orderStatus %></div>
+             <div>Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
+              <div>Payment :<%= order.paymentMethod %></div>
+           </div>
+         </div>
+       <% }) %>
+       
+       </div>
+    
   </div>
-<% }) %>
-
 </div>
+
 
 
 
@@ -188,5 +197,7 @@ $(document).ready(function() {
 
 
 </script>
+
+
 
 
