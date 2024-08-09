@@ -2,75 +2,115 @@
   <div class="row">
     <!-- Sidebar -->
     <%- include("../partials/userSidenav.ejs") %>
-    
-    <div class="col-md-5 offset-md-1 mt-5"> 
-      <div class="card wallet-card"> 
+
+    <div class="col-md-5 offset-md-1 mt-5">
+      <div class="card wallet-card">
         <div class="card-body text-center">
           <h4>My Wallet</h4>
-        <p class="display-4"><%= wallet.balance %> </p>
-        <p class="font-weight-bold">Available Balance</p>
+          <p style="font-weight: 700;color: yellowgreen;" class="display-4">₹<%= wallet.balance %></p>
+          <p class="font-weight-bold" style="font-family: monospace;">Available Balance</p>
           <!-- Stylish Input Field -->
           <div class="input-group mb-3 stylish-input-group">
-            <input type="number" id="amount" class="form-control" placeholder="Enter amount" aria-label="Amount" aria-describedby="addMoney" min="1">
+            <input type="number" id="amount" class="form-control" placeholder="Enter amount" aria-label="Amount"
+              aria-describedby="addMoney" min="1">
             <div class="input-group-append">
               <button id="addMoney" class="btn btn-dark" style="border-radius: 0;">Add Money</button>
             </div>
           </div>
-          
+
+          <!-- History Button -->
+          <button id="historyBtn" class="btn btn-info">View Transaction History</button>
         </div>
       </div>
     </div>
-    
+
+    <!-- Transaction History (Initially Hidden) -->
+    <div class="col-md-5 mt-5" id="transactionHistory" style="display: none;">
+      <div class="card transaction-card">
+        <div class="card-body">
+          <h4>Transaction History</h4>
+          <div class="transaction-list">
+            <% wallet.history.forEach(function(transaction) { %>
+            <div class="transaction-item">
+              <p>Date: <%= new Date(transaction.date).toLocaleDateString() %></p>
+              <p>Type: <%= transaction.transactionType %></p>
+              <p>Amount: <%= transaction.amount %> ₹</p>
+              <p>Transaction ID: <%= transaction._id %></p>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+
 <style>
+  .wallet-card {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  }
+
+  .wallet-card:hover {
+    transform: translateY(3px);
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);
+  }
 
 
-.wallet-card {
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); 
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
-}
+  .stylish-input-group .form-control {
+    border-right: none;
+    border-radius: 0;
+  }
 
-.wallet-card:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3); 
-}
-
-
-.stylish-input-group .form-control {
-    border-right: none; 
-    border-radius: 0; 
-}
-
-.stylish-input-group .input-group-append .btn {
-    border-radius: 0; 
+  .stylish-input-group .input-group-append .btn {
+    border-radius: 0;
     background-color: #343a40;
-    color: #fff; 
-}
+    color: #fff;
+  }
 
-.stylish-input-group .form-control:focus {
+  .stylish-input-group .form-control:focus {
     box-shadow: none;
-    border-color: #343a40; 
-}
+    border-color: #343a40;
+  }
 
+
+  .swal2-popup {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+  }
+
+  .swal2-title {
+    font-weight: bold;
+  }
+
+  .swal2-content {
+    color: #333;
+  }
+
+  .swal2-confirm {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px;
+  }
 </style>
 
+
+
 <script>
-  document.getElementById("addMoney").onclick = async function(e) {
+  document.getElementById("addMoney").onclick = async function (e) {
     e.preventDefault();
-  
+
     const amount = document.getElementById("amount").value;
-    if(!amount || amount <= 0){
-     Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Please enter a valid amount',
-      confirmButtonText: 'OK'
-     });
-     return;
+    if (!amount || amount <= 0) {
+      Swal.fire({
+        text: 'Please enter a valid amount',
+        confirmButtonText: 'OK'
+      });
+      return;
     }
-     
+
     try {
       const response = await fetch("/user/wallet", {
         method: "POST",
@@ -79,7 +119,7 @@
         },
         body: JSON.stringify({ amount })
       });
-  
+
       const result = await response.json();
       if (result.success) {
         const options = {
@@ -89,14 +129,19 @@
           name: 'Mazen Furniture',
           description: 'Add Money to Wallet',
           order_id: result.orderId,
-          handler: function(response) {
+          handler: function (response) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
               text: 'Money added to the wallet successfully',
-              confirmButtonText: 'OK'
+              confirmButtonText: 'OK',
+              customClass: {
+                popup: 'swal2-popup',
+                title: 'swal2-title',
+                content: 'swal2-content',
+                confirmButton: 'swal2-confirm'
+              }
             }).then(() => {
-             
               location.reload();
             });
           },
@@ -113,7 +158,13 @@
           icon: 'error',
           title: 'Oops...',
           text: result.message,
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
+          customClass: {
+            popup: 'swal2-popup',
+            title: 'swal2-title',
+            content: 'swal2-content',
+            confirmButton: 'swal2-confirm'
+          }
         });
       }
     } catch (error) {
@@ -122,10 +173,24 @@
         icon: 'error',
         title: 'Oops...',
         text: 'An error occurred while adding money to the wallet',
-        confirmButtonText: 'OK'
+        confirmButtonText: 'OK',
+        customClass: {
+          popup: 'swal2-popup',
+          title: 'swal2-title',
+          content: 'swal2-content',
+          confirmButton: 'swal2-confirm'
+        }
       });
     }
   };
 
-  </script>
-  
+  document.getElementById('historyBtn').addEventListener('click', function() {
+  var transactionHistory = document.getElementById('transactionHistory');
+  if (transactionHistory.style.display === "none" || transactionHistory.style.display === "") {
+    transactionHistory.style.display = "block";
+  } else {
+    transactionHistory.style.display = "none";
+  }
+});
+
+</script>

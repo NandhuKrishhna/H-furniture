@@ -1,120 +1,93 @@
 
 <style>
-    .side-menu {
-background-color: #f8f9fa;
-padding: 20px;
-height: 100%;
-}
-.logout-btn {
-width: 100%;
-margin-top: 20px;
-}
 
-  .container {
-      margin-top: 50px;
-  }
-  .form-section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  .form-section h2 {
-      margin-bottom: 20px;
-  }
   .btn-primary, .btn-secondary {
       width: 50%;
   }
+  .address-body{
+      padding-left: 50px;
+      padding-top: 20px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
 </style>
 
-<%- include('../partials/userSidenav.ejs') %>
-<div class="col-lg-8">
-    <div class="form-section">
-        <h4>Shipping Address</h4> <br>
-        <% if (Array.isArray(address) && address.length > 0) { %>
-            <% address.forEach(add => { %>
-                <form action="/user/edit_address/<%= add._id %>?_method=PUT" method="post">
-                    <input type="hidden" name="_method" value="PUT">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="firstName">First Name</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%= add.firstName %>">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="lastName">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%= add.lastName %>">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="mobileNo">Mobile No</label>
-                            <input type="tel" class="form-control" id="mobileNo" name="phone" value="<%= add.phone %>">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="zipcode">Pincode/Zipcode</label>
-                            <input type="text" class="form-control" id="pincode" name="pincode" value="<%= add.pincode %>">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" value="<%= add.homeAddress %>">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="street">Street / Locality</label>
-                            <input type="text" class="form-control" id="street" name="street" value="<%= add.street %>">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="landmark">Landmark (Optional)</label>
-                            <input type="text" class="form-control" id="landmark" name="landmark" value="<%= add.landmark %>">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="city">City</label>
-                            <input type="text" class="form-control" id="city" name="city" value="<%= add.city %>">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="country">Country</label>
-                            <select id="country" class="form-control" name="country">
-                                <option selected>Select Country</option>
-                                <option <%= add.country === "India" ? "selected" : "" %>>India</option>
-                                <option <%= add.country === "USA" ? "selected" : "" %>>USA</option>
-                                <option <%= add.country === "UK" ? "selected" : "" %>>UK</option>
-                                <option <%= add.country === "Canada" ? "selected" : "" %>>Canada</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="state">Enter State</label>
-                            <input type="text" class="form-control" id="state" name="state" value="<%= add.state %>">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="addressType" id="home" value="home" <%= add.addressType === "home" ? "checked" : "" %>>
-                            <label class="form-check-label" for="home">Home</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="addressType" id="work" value="work" <%= add.addressType === "work" ? "checked" : "" %>>
-                            <label class="form-check-label" for="work">Work</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="defaultAddress" name="defaultAddress" <%= add.defaultAddress ? "checked" : "" %>>
-                            <label class="form-check-label" for="defaultAddress">
-                                Set as default shipping address
-                            </label>
-                        </div>
-                    </div>
-                    <span><button type="submit" class="btn btn-dark">Save Address</button></span>
-                    <span><button type="button" class="btn btn-grey">Cancel</button></span>
-                </form>
-            <% }) %>
-        <% } %>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <%- include("../partials/userSidenav.ejs") %>
+        <!-- Form Section -->
+        <div class="col-lg-8 address-body">
+            <div class="form-section">
+                <br><h4 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Shipping Address</h4> <br>
+                <% if (Array.isArray(address) && address.length > 0) { %>
+                    <% address.forEach(add => { %>
+                        <form action="/user/edit_address/<%= add._id %>?_method=PUT" method="post">
+                            <input type="hidden" name="_method" value="PUT">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" value="<%= add.firstName %>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" value="<%= add.lastName %>">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="mobileNo">Mobile No</label>
+                                    <input type="tel" class="form-control" id="mobileNo" name="phone" value="<%= add.phone %>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="zipcode">Pincode/Zipcode</label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode" value="<%= add.pincode %>">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" value="<%= add.homeAddress %>">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="street">Street / Locality</label>
+                                    <input type="text" class="form-control" id="street" name="street" value="<%= add.street %>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="landmark">Landmark (Optional)</label>
+                                    <input type="text" class="form-control" id="landmark" name="landmark" value="<%= add.landmark %>">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="city">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" value="<%= add.city %>">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="country">Country</label>
+                                    <select id="country" class="form-control" name="country">
+                                        <option selected>Select Country</option>
+                                        <option <%= add.country === "India" ? "selected" : "" %>>India</option>
+                                        <option <%= add.country === "USA" ? "selected" : "" %>>USA</option>
+                                        <option <%= add.country === "UK" ? "selected" : "" %>>UK</option>
+                                        <option <%= add.country === "Canada" ? "selected" : "" %>>Canada</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label for="state">Enter State</label>
+                                    <input type="text" class="form-control" id="state" name="state" value="<%= add.state %>">
+                                </div>
+                            </div>
+    
+
+                            <span><button type="submit" class="btn btn-dark">Save Address</button></span>
+                            <span><button type="button" class="btn btn-grey">Cancel</button></span>
+                        </form>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+      
     </div>
-</div>
-</div>
 </div>
 
 

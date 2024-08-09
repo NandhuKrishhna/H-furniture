@@ -1,33 +1,55 @@
+<style>
+  .wishlist-item .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+  }
 
-    <style>
-   .wishlist-item .card {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease-in-out;
-}
+  .wishlist-item .card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
 
-.wishlist-item .card:hover {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-}
+  .wishlist-item img {
+    height: 200px;
+    object-fit: cover;
+  }
 
-.wishlist-item img {
-  height: 200px;
-  object-fit: cover;
-}
+  .wishlist-item .card-body {
+    text-align: center;
+  }
 
-.wishlist-item .card-body {
-  text-align: center;
-}
+  .wishlist-item .btn {
+    margin: 5px 0;
+  }
 
-.wishlist-item .btn {
-  margin: 5px 0;
-}
+  .wishlist-item {
 
-        .wishlist-item  {
-         
-           margin-left: 56px;
-        }
-    
-    </style>
+    margin-left: 56px;
+  }
+
+  .remove-from-wishlist,
+  .add-to-cart-from-wishlist {
+    cursor: pointer;
+  }
+
+  .swal-title,
+  .swal-content,
+  .swal-confirm-button {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+
+
+  .swal-title {
+    font-size: 1.5rem;
+  }
+
+  .swal-content {
+    font-size: 1rem;
+  }
+
+  .swal-confirm-button {
+    font-size: 1rem;
+  }
+</style>
 
 <div class="container-fluid">
   <div class="row">
@@ -84,14 +106,24 @@
             icon: 'success',
             title: 'Product added to cart',
             text: 'You have successfully added the product to your cart.',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            customClass: {
+              title: 'swal-title',
+              content: 'swal-content',
+              confirmButton: 'swal-confirm-button'
+            }
           });
         } else {
           Swal.fire({
             icon: 'error',
             title: 'Failed to add product',
             text: 'There was an issue adding the product to your cart.',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            customClass: {
+              title: 'swal-title',
+              content: 'swal-content',
+              confirmButton: 'swal-confirm-button'
+            }
           });
         }
       } catch (error) {
@@ -100,12 +132,18 @@
           icon: 'error',
           title: 'Error',
           text: 'An unexpected error occurred while adding the product to your cart.',
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'swal-title',
+            content: 'swal-content',
+            confirmButton: 'swal-confirm-button'
+          }
         });
       }
     });
   });
 });
+
 
 document.querySelectorAll('.remove-from-wishlist').forEach(button => {
   button.addEventListener('click', async () => {

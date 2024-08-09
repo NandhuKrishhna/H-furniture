@@ -354,40 +354,35 @@ exports.adminaddProduct = async (req, res, next) => {
 
 
 
-// admin adding products
+
 exports.addProduct = async (req, res, next) => {
   try {
-    console.log("Request Body:", req.body);
-    console.log("Request Files:", req.files);
+    console.log(req.body);
+    console.log(req.files);
 
-    const resizedImages = await Promise.all(req.files.map(async (file) => {
+    const resizedImages = [];
+    for (const file of req.files) {
       const imagePath = `uploads/${file.filename}`;
       const resizedImagePath = `uploads/resized_${file.filename}`;
 
-      try {
-      
-        await sharp(imagePath)
-          .resize(400, 400, {
-            fit: sharp.fit.cover,
-            position: sharp.strategy.entropy
-          })
-          .withMetadata() 
-          .sharpen() 
-          .toFormat('jpeg', { quality: 90 })
-          .toFile(resizedImagePath);
+      await sharp(imagePath)
+        .resize(400, 400, {
+          fit: sharp.fit.cover,
+          position: sharp.strategy.entropy
+        })
+        .withMetadata()
+        .sharpen()
+        .toFormat('jpeg', { quality: 90 })
+        .toFile(resizedImagePath);
 
-     
-        await fs.unlink(imagePath);
-        console.log("Image deleted successfully:", imagePath);
-        
-        return resizedImagePath;
-      } catch (sharpError) {
-        console.error("Error resizing image:", sharpError);
-        throw sharpError;
-      }
-    }));
-    
+      await fs.unlink(imagePath);
+      console.log("Image deleted successfully:", imagePath);
+
+      resizedImages.push(resizedImagePath);
+    }
+
     console.log('Resized images:', resizedImages);
+
     const category = await Categorydb.categoryCollection.findOne({
       categoryName: { $regex: req.body.category, $options: "i" }
     });
@@ -416,16 +411,17 @@ exports.addProduct = async (req, res, next) => {
       dimension: req.body.dimension,
       fabric_options: req.body.fabric_options,
     };
-    
+
     console.log(productdata);
 
-    const product = await Productdb.productCollection.insertMany(productdata);
+    await Productdb.productCollection.insertMany(productdata);
     res.redirect("/admin/products");
   } catch (error) {
     console.log(error);
     next(error);
   }
 };
+
 
 //getting edit product page
 exports.getEditProduct = async (req, res, next) => {
@@ -464,12 +460,9 @@ exports.getEditProduct = async (req, res, next) => {
 // admin editing products
 exports.editProduct = async (req, res, next) => {
   try {
-    // console.log(req.body);
-    // console.log(req.files);
-
     const id = new ObjectId(req.params.id);
 
-   
+ 
     const product = await Productdb.productCollection.aggregate([
       { $match: { _id: id } },
       {
@@ -483,87 +476,69 @@ exports.editProduct = async (req, res, next) => {
       { $unwind: '$category' },
     ]);
 
+   
+    const updateFields = {
+      productName: req.body.productname,
+      description: req.body.description,
+      originalprice: req.body.originalprice,
+      discount: req.body.discount,
+      weight: req.body.weight,
+      quantity: req.body.quantity,
+      brand: req.body.brand,
+      primarymaterial: req.body.primarymaterial,
+      floorstanding: req.body.floorstanding,
+      polishmaterial: req.body.polishmaterial,
+      color: req.body.color,
+      material: req.body.material,
+      countryofOrigin: req.body.countryofOrigin,
+      warranty: req.body.warranty,
+      dimension: req.body.dimension,
+      fabric_options: req.body.fabric_options,
+      inStock: req.body.quantity > 0,
+      updatedAt: Date.now(),
+    };
 
-    const updateProduct = await Productdb.productCollection.findOneAndUpdate(
+    await Productdb.productCollection.findOneAndUpdate(
       { _id: id },
-      {
-        $set: {
-          productName: req.body.productname,
-          description: req.body.description,
-          originalprice: req.body.originalprice,
-          discount: req.body.discount,
-          weight: req.body.weight,
-          quantity: req.body.quantity,
-          brand: req.body.brand,
-          primarymaterial: req.body.primarymaterial,
-          floorstanding: req.body.floorstanding,
-          polishmaterial: req.body.polishmaterial,
-          color: req.body.color,
-          material: req.body.material,
-          countryofOrigin: req.body.countryofOrigin,
-          warranty: req.body.warranty,
-          dimension: req.body.dimension,
-          fabric_options: req.body.fabric_options,
-          inStock: req.body.quantity > 0 ? true : false,
-          updatedAt: Date.now(),
-        },
-      },
+      { $set: updateFields },
       { returnDocument: 'after' }
     );
 
-    
+  
     if (req.files && req.files.length > 0) {
-      const resizedImages = await Promise.all(req.files.map(async (file) => {
+      for (const file of req.files) {
         const imagePath = `uploads/${file.filename}`;
         const resizedImagePath = `uploads/resized_${file.filename}`;
 
-        try {
-          // Resize image using Sharp
-          await sharp(imagePath)
-            .resize({ width: 400, height: 400 })
-            .toFile(resizedImagePath);
+        await sharp(imagePath)
+          .resize({ width: 400, height: 400 })
+          .toFile(resizedImagePath);
 
-          // Delete original image after resizing
-          await fs.unlink(imagePath);
-          console.log("Image deleted successfully:", imagePath);
-
-          return resizedImagePath;
-        } catch (sharpError) {
-          console.error("Error resizing image:", sharpError);
-          throw sharpError;
-        }
-      }));
-
-      
-      await Productdb.productCollection.findOneAndUpdate(
-        { _id: id },
-        { $set: { images: resizedImages } },
-        { returnDocument: 'after' }
-      );
+        await fs.unlink(imagePath);
+        console.log("Image resized and deleted:", imagePath);
+      }
     }
 
-
-    if (req.body.category){
-      
+    
+    if (req.body.category) {
       const category = await Categorydb.categoryCollection.findOne({
         categoryName: { $regex: req.body.category, $options: 'i' },
       });
 
-    
       await Productdb.productCollection.findOneAndUpdate(
         { _id: id },
         { $set: { category: category._id } },
         { returnDocument: 'after' }
       );
-    
+    }
 
-  
-  }res.redirect('/admin/products');
+    res.redirect('/admin/products');
   } catch (err) {
     console.log(err);
     next(err);
   }
 };
+
 
 
 
@@ -600,16 +575,13 @@ exports.adminLogout = async (req, res, next) => {
 
 exports.getOrdersPage = async (req, res, next) => {
   try {
-   
-   const orders = await Orderdb.orderCollection.find().lean();
-    
-    res.status(200).render("user/orders",{orders})
-
-
-   } catch (error) {
+    const orders = await Orderdb.orderCollection.find().lean();
+    console.log('Orders:', orders); 
+    res.status(200).render("admin/order_management",{orders})
+  } catch (error) {
     console.log(error);
     next(error)
-   }
+  }
 }
   
 

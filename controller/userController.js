@@ -467,19 +467,20 @@ module.exports = {
   getUserProducts: async (req, res, next) => {
     try {
       const page = parseInt(req.query.page) || 1;
-      const limit = 12;
+      const limit = 8;
       const sort = req.query.sort || 'featured';
-
+  
       let pipeline = [
         {
           $match: { isDeleted: false }
         }
       ];
-
+  
+      // Add search functionality
       if (req.query.search) {
         const search = req.query.search;
         const regex = new RegExp(search, 'i');
-
+  
         pipeline.push(
           {
             $lookup: {
@@ -505,7 +506,50 @@ module.exports = {
           }
         );
       }
-
+  
+      if (req.query.category) {
+        const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'category_datas', 
+              localField: 'category',
+              foreignField: '_id',
+              as: 'categoryInfo'
+            }
+          },
+          {
+            $unwind: "$categoryInfo"
+          },
+          {
+            $match: {
+              'categoryInfo.name': { $in: categories }
+            }
+          }
+        );
+      }
+      
+  
+      // Handle Brand Filter
+      if (req.query.brand) {
+        const brands = Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand];
+        pipeline.push({
+          $match: {
+            brand: { $in: brands }
+          }
+        });
+      }
+  
+      // Handle Discount Filter
+      if (req.query.discount) {
+        const discount = parseInt(req.query.discount);
+        pipeline.push({
+          $match: {
+            discount: { $gte: discount }
+          }
+        });
+      }
+  
       // Add field for case-insensitive sorting
       if (sort === 'name_asc' || sort === 'name_desc') {
         pipeline.push({
@@ -514,7 +558,7 @@ module.exports = {
           }
         });
       }
-
+  
       // Sorting
       switch (sort) {
         case 'price_asc':
@@ -536,35 +580,25 @@ module.exports = {
           pipeline.push({ $sort: { _id: 1 } });
           break;
       }
-
+  
       // Total products count
       const totalProductsResult = await Productdb.productCollection.aggregate([
         ...pipeline,
         { $count: "total" }
       ]).exec();
-
+  
       const totalProducts = totalProductsResult.length > 0 ? totalProductsResult[0].total : 0;
       const totalPages = Math.ceil(totalProducts / limit);
       const nextPage = page < totalPages ? page + 1 : null;
-
+  
       // Pagination
       pipeline.push(
         { $skip: (page - 1) * limit },
         { $limit: limit }
       );
-
+  
       const products = await Productdb.productCollection.aggregate(pipeline).exec();
 
-      // Check if the request is an AJAX call
-      if (req.xhr) {
-        return res.json({
-          products,
-          totalPages,
-          page,
-        });
-      }
-
-      // Render the page for non-AJAX requests
       res.status(200).render("user/user_products", {
         user: true,
         page,
@@ -577,13 +611,13 @@ module.exports = {
         calculateDiscountedPrice: calculateDiscountedPrice,
         userProducts: true,
       });
-
+  
     } catch (err) {
       console.error("Error in getUserProducts:", err);
       next(err);
     }
   },
-
+  
   //product details
   getProductDetails: async (req, res, next) => {
     try {

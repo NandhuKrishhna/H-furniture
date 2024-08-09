@@ -1,166 +1,257 @@
 <style>
+  .card {
+    margin-bottom: 20px;
+    width: 273px;
+    gap: 10px;
+    height: 400px;
+    border-radius: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    /* Ensure image doesn't overflow the card */
+  }
 
-.card {
-  margin-bottom: 20px;
-  width: 273px;
-  gap: 10px;
-  height: 400px;
-  border-radius: 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
-  overflow: hidden; /* Ensure image doesn't overflow the card */
-}
+  .card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
 
-.card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
+  .card img {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+    /* Add transition for image effect */
+  }
 
-.card img {
-  width: 100%;
-  height: 270px;
-  object-fit: cover;
-  transition: transform 0.3s ease-in-out; /* Add transition for image effect */
-}
+  .card:hover img {
+    transform: scale(1.05);
+    /* Slightly zoom the image on hover */
+  }
 
-.card:hover img {
-  transform: scale(1.05); /* Slightly zoom the image on hover */
-}
+  .product-card .card-body {
+    padding: 15px;
+  }
 
-.product-card .card-body {
-  padding: 15px;
-}
+  .wishlist-heart {
+    cursor: pointer;
+    color: #ffffff;
+    /* Default color */
+  }
 
-.wishlist-heart {
-  cursor: pointer;
-  color: #ffffff;
-  /* Default color */
-}
+  .wishlist-heart.clicked {
+    color: rgb(0, 0, 0);
+  }
 
-.wishlist-heart.clicked {
-  color: rgb(0, 0, 0);
-}
+  .image-container {
+    position: relative;
+    display: inline-block;
+  }
 
-.image-container {
-  position: relative;
-  display: inline-block;
-}
+  .wishlist-heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    z-index: 10;
+  }
 
-.wishlist-heart {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  z-index: 10;
-}
+  .main-body {
+    padding-top: 50px;
+    font-family: monospace;
+  }
 
-.main-body {
-  padding-top: 50px;
-}
+  .dropdown {
+    margin-right: 60px;
+  }
 
-.dropdown {
-  margin-right: 60px;
-}
+  .dropdown-toggle {
+    border-radius: 0;
+    border: none;
+    border-color: #ffffff;
+  }
 
-.dropdown-toggle {
-  border-radius: 0;
-  border: none;
-  border-color: #ffffff;
-}
+  .dropdown-toggle:focus {
+    box-shadow: none;
+  }
 
-.dropdown-toggle:focus {
-  box-shadow: none;
-}
-
-.image-container {
-  position: relative;
-}
-
-.container {
-  padding-left: 50px;
-}
-
-.dropdown-toggle {
-  position: absolute;
-  right: 20px;
-  top: -13px;
-}
+  .image-container {
+    position: relative;
+  }
 
 
+  .dropdown-toggle {
+    position: absolute;
+    right: 20px;
+    top: -13px;
+  }
+
+
+  .filter-card {
+    height: 600px;
+    margin-top: 20px;
+    font-family: monospace;
+    width: 250px;
+  }
+
+  .filter-title {
+    font-family: monospace;
+  }
 </style>
-
-
 
 <div class="container-fluid main-body">
   <div class="row mt-4">
-    <!-- Updated Sidebar -->
-    
 
-    <!-- Main Content -->
-    <div class="dropdown">
-      <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Sort: Featured 
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a class="dropdown-item" href="?sort=price_asc">Price: Low to High</a></li>
-        <li><a class="dropdown-item" href="?sort=price_desc">Price: High to Low</a></li>
-        <li><a class="dropdown-item" href="?sort=name_asc">Name: A to Z</a></li>
-        <li><a class="dropdown-item" href="?sort=name_desc">Name: Z to A</a></li>
-        <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
-      </ul>
-    </div>
-    <div class="container">
-      <div id="product-list" class="row">
-        <% products.forEach(function(product) { %>
-          <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-            <div class="card">
-              <!-- Image container with wishlist button -->
-              <div class="image-container">
-                <a href="/user/product/<%= product._id %>" class="product-link" data-id="<%= product._id %>">
-                  <img src="/<%= product.images[0] %>" class="card-img-top" alt="<%= product.productName %>">
-                </a>
-  
-              </div>
-              <div class="card-body">
-                <span class="badge badge-dark" style="position: absolute; top: 10px; left: 10px; font-weight: 700; border-radius: 0;">
-                  Ready to Ship
-                </span>
-                <p class="card-title" style="font-size: 12px;"><%= product.productName %></p>
-                <p class="card-text text-muted">
-                  <% if (product.discount) { %>
-                    <span style="text-decoration: line-through; font-size: small;">₹<%= product.originalprice %></span>
-                    <span style="font-weight: 800;color: black;">₹<%= calculateDiscountedPrice(product.originalprice, product.discount) %></span>
-                    <span style="color: coral; font-weight: 700;"><%= product.discount %>% OFF</span>
-                  <% } else { %>
-                    <span style="font-weight: 700;">₹<%= product.originalprice %></span>
-                  <% } %>
-                </p>
+    <div class="col-lg-3 col-md-4 col-sm-12 mb-4">
+      <div class=" filter-card">
+        <div class="card-header">
+          Browse by
+        </div>
+        <div class="card-body">
+          <form id="filter-form" method="GET" action="/user/products">
+            <!-- Product Type Filter -->
+            <div class="filter-group">
+              <h5 class="filter-title" data-bs-toggle="collapse" href="#collapseProductType" role="button"
+                aria-expanded="false" aria-controls="collapseProductType">
+                Product Type 
+                <span class="float-end"><i class="bi bi-plus"></i></span>
+              </h5>
+              <div class="collapse" id="collapseProductType">
+                <label><input type="checkbox" name="category" value="SOFA">SOFA</label><br>
+                <label><input type="checkbox" name="category" value="END TABLE">END TABLE</label><br>
+                <label><input type="checkbox" name="category" value="DECOR">DECOR</label><br>
+                <label><input type="checkbox" name="category" value="COFFEE TABLE">COFFEE TABLE</label><br>
+                <label><input type="checkbox" name="category" value="OTTOMANS">OTTOMANS</label><br>
+                <label><input type="checkbox" name="category" value="CHAIRS">CHAIRS</label><br>
+                <label><input type="checkbox" name="category" value="NIGHT STAND">NIGHTSTAND</label>
+
               </div>
             </div>
-          </div>
-        <% }); %>
+
+            <div class="filter-group">
+              <h5 class="filter-title" data-bs-toggle="collapse" href="#collapseChooseBrand" role="button"
+                aria-expanded="false" aria-controls="collapseChooseBrand">
+                Choose Brand
+                <span class="float-end"><i class="bi bi-plus"></i></span>
+              </h5>
+              <div class="collapse" id="collapseChooseBrand">
+                <input type="checkbox" id="brandHermanMiller" name="brand" value="Herman Miller">
+                <label for="brandHermanMiller">Herman Miller</label><br>
+
+                <input type="checkbox" id="brandKnoll" name="brand" value="Knoll">
+                <label for="brandKnoll">Knoll</label><br>
+
+                <input type="checkbox" id="brandVitra" name="brand" value="Vitra">
+                <label for="brandVitra">Vitra</label><br>
+
+                <input type="checkbox" id="brandBoffi" name="brand" value="Boffi">
+                <label for="brandBoffi">Boffi</label><br>
+
+                <input type="checkbox" id="brandMinotti" name="brand" value="Minotti">
+                <label for="brandMinotti">Minotti</label><br>
+
+                <input type="checkbox" id="brandBBItalia" name="brand" value="B&B Italia">
+                <label for="brandBBItalia">B&B Italia</label><br>
+              </div>
+            </div>
+            <div class="filter-group">
+              <h5 class="filter-title" data-bs-toggle="collapse" href="#collapseDiscount" role="button"
+                aria-expanded="false" aria-controls="collapseDiscount">
+                Discount
+                <span class="float-end"><i class="bi bi-dash"></i></span>
+              </h5>
+              <div class="collapse show" id="collapseDiscount">
+                <input type="checkbox" id="discount20" name="discount" value="20">
+                <label for="discount20">20% and above</label><br>
+                <!-- Add more discount options as needed -->
+              </div>
+            </div>
+            <button type="submit" class="btn btn-dark">Apply Filters</button><br><br>
+           
+          </form>
+        </div>
       </div>
-      <nav aria-label="Page navigation">
-        <ul id="pagination" class="pagination justify-content-center mt-4">
-          <% if (totalProducts > 0) { %>
-            <% for (let i = 1; i <= totalPages; i++) { %>
-              <% if (i === page) { %>
-                <li class="page-item active m-0">
-                  <a href="#" class="page-link" data-page="<%= i %>"><%= i %></a>
-                </li>
-              <% } else { %>
-                <li class="page-item">
-                  <a href="#" class="page-link" data-page="<%= i %>"><%= i %></a>
-                </li>
-              <% } %>
-            <% } %>
-          <% } %>
-        </ul>
-      </nav>
     </div>
-  
-      
-    
-    
-      <script>
-  
-      </script>
+
+    <!-- Main Content -->
+    <div class="col-lg-9 col-md-8 col-sm-12">
+      <div class="dropdown mb-4">
+        <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort: Featured
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a class="dropdown-item" href="?sort=price_asc">Price: Low to High</a></li>
+          <li><a class="dropdown-item" href="?sort=price_desc">Price: High to Low</a></li>
+          <li><a class="dropdown-item" href="?sort=name_asc">Name: A to Z</a></li>
+          <li><a class="dropdown-item" href="?sort=name_desc">Name: Z to A</a></li>
+          <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
+        </ul>
+      </div>
+      <div class="container">
+        <div id="product-list" class="row">
+          <% products.forEach(function(product) { %>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+              <div class="card">
+                <!-- Image container with wishlist button -->
+                <div class="image-container">
+                  <a href="/user/product/<%= product._id %>" class="product-link" data-id="<%= product._id %>">
+                    <img src="/<%= product.images[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                  </a>
+                </div>
+                <div class="card-body">
+                  <span class="badge badge-dark"
+                    style="position: absolute; top: 10px; left: 10px; font-weight: 700; border-radius: 0;">
+                    Ready to Ship
+                  </span>
+                  <p class="card-title" style="font-size: 12px;">
+                    <%= product.productName %>
+                  </p>
+                  <p class="card-text text-muted">
+                    <% if (product.discount) { %>
+                      <span style="text-decoration: line-through; font-size: small;">₹<%= product.originalprice %>
+                          </span>
+                      <span style="font-weight: 800;color: black;">₹<%= calculateDiscountedPrice(product.originalprice,
+                          product.discount) %></span>
+                      <span style="color: coral; font-weight: 700;">
+                        <%= product.discount %>% OFF
+                      </span>
+                      <% } else { %>
+                        <span style="font-weight: 700;">₹<%= product.originalprice %></span>
+                        <% } %>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+        </div>
+        <nav aria-label="Page navigation">
+          <ul id="pagination" class="pagination justify-content-center mt-4">
+            <% if (totalProducts> 0) { %>
+              <% for (let i=1; i <=totalPages; i++) { %>
+                <li class="page-item <%= i === page ? 'active' : '' %>">
+                  <a href="?page=<%= i %>&search=<%= search %>&sort=<%= sort %>" class="page-link">
+                    <%= i %>
+                  </a>
+                </li>
+                <% } %>
+                  <% } %>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+
+
+  function calculateDiscountedPrice(originalPrice, discount) {
+
+    return (originalPrice - (originalPrice * (discount / 100))).toFixed(2);
+  }
+
+
+</script>

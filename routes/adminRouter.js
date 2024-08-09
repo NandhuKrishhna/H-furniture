@@ -47,8 +47,8 @@ router.get("/admin/products", auth.isadminAuthenticated, adminController.getAdmi
 router.get("/admin/products/add-product", auth.isadminAuthenticated, adminController.adminaddProduct);
 
 router.post(
-  "/admin/products/add-product", auth.isadminAuthenticated,  upload.array("files", 4),
- validateProduct,validate, adminController.addProduct
+  "/admin/products/add-product",auth.isadminAuthenticated, upload.array("files", 4),
+  adminController.addProduct
 );
 
 router.delete("/admin/products/delete-product/:id", adminController.deleteProduct);

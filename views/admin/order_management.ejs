@@ -4,43 +4,42 @@
       <h1 style="position: relative; left: 80px;" class="text-start">ORDER MANAGEMENT</h1>
   </div>
   <div class="container">
-      <div style="margin-bottom: 50px;">
-          <table class="table table-striped">
-              <thead>
-                  <tr>
-                      <th>TRANSACTION ID</th>
-                      <th>PRODUCT NAME</th>
-                      <th>STATUS</th>
-                      <th>TIME</th>
-                      <th>QUANTITY</th>
-                      <th>PRICE</th>
-                      <th>ACTIONS</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <% orders.forEach(order => { %>
-                      <% order.items.forEach(item => { %>
-                          <tr>
-                              <td style="font-size: small;"><%= order.transactionId %></td>
-                              <td>
-                                  <!-- <img src="/<%= item.image[0] %>" alt="<%= item.name %>" style="width: 50px;"> -->
-                                  <%= item.name %>
-                              </td>
-                              <td><%= order.orderStatus %></td>
-                              <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
-                              <td><%= item.quantity %></td>
-                              <td>₹<%= item.price.toFixed(2) %></td>
-                              <td>
-                                  <button class="btn btn-dark edit-status-button" data-order-id="<%= order._id %>">Edit</button>
-                              </td>
-                          </tr>
-                      <% }); %>
-                  <% }); %>
-              </tbody>
-          </table>
-      </div>
+    <div style="margin-bottom: 50px;">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>TRANSACTION ID</th>
+            <th>PRODUCT NAME</th>
+            <th>STATUS</th>
+            <th>TIME</th>
+            <th>QUANTITY</th>
+            <th>PRICE</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <% if (order.orderItems) { %>
+              <% order.orderItems.forEach(item => { %>
+                <tr>
+                  <td style="font-size: small;"><%= item.transactionId %></td>
+                  <td><%= item.name %></td>
+                  <td><%= order.orderStatus %></td>
+                  <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                  <td><%= item.quantity %></td>
+                  <td>₹<%= item.price.toFixed(2) %></td>
+                  <td>
+                    <button class="btn btn-dark edit-status-button" data-order-id="<%= order._id %>">Edit</button>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+  
 
 
 
