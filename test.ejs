@@ -1,0 +1,103 @@
+
+  
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', () => {
+            const productId = button.dataset.productId;
+      
+            console.log(`Remove item with ID: ${productId}`);
+      
+            $.ajax({
+              url: `/user/cart/${productId}`,
+              type: 'DELETE',
+              success: function (response) {
+                if (response.success) {
+                  location.reload();
+                  document.getElementById(`cart-item-${productId}`).remove();
+                  document.querySelector('#subtotalAmount').innerText = `₹${response.updatedTotalAmount.toFixed(2)}`;
+                  document.querySelector('#totalAmount').innerText = `₹${response.finalAmount.toFixed(2)}`;
+      
+                  console.log('Product removed successfully.');
+                } else {
+                  console.error('Failed to remove product from cart:', response.message || 'No message provided');
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('An error occurred:', status, error);
+                console.error('Response:', xhr.responseText);
+              }
+            });
+          });
+        });
+      
+        $(document).ready(function () {
+          $('#applyCoupon').on('click', function () {
+            var couponCode = $('#couponCode').val().trim();
+            var userId = "<%= userId %>";
+      
+            if (!couponCode) {
+              alert('Please enter a coupon code.');
+              return;
+            }
+      
+            $.ajax({
+              url: '/user/cart/' + userId + '/apply-coupon',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({ couponCode: couponCode }),
+              success: function (response) {
+                if (response.success) {
+                  $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
+                  $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
+                  $('#appliedCouponMessage').show();
+                  $('#appliedCouponCode').text(couponCode);
+                } else {
+                  alert(response.message);
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('Error applying coupon:', error);
+                alert('An error occurred while applying the coupon. Please try again.');
+              }
+            });
+          });
+      
+          $('#removeCoupon').on('click', function () {
+            var userId = "<%= userId %>";
+            $.ajax({
+              url: '/user/cart/' + userId + '/remove-coupon',
+              method: 'POST',
+              contentType: 'application/json',
+              success: function (response) {
+                if (response.success) {
+                  $('#appliedCouponMessage').hide();
+                  $('#couponCode').val('');
+                  $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
+                  $('#negotiatedDiscount').text('₹0');
+                } else {
+                  alert(response.message);
+                }
+              },
+              error: function (xhr, status, error) {
+                console.error('Error removing coupon:', error);
+                alert('An error occurred while removing the coupon. Please try again.');
+              }
+            });
+          });
+        });
+  
+      
+  
+  
+    function proceedToCheckout(hadAddress, userId) {
+      if (hadAddress === 'true') {
+        window.location.href = `/user/checkout_address_details/${userId}`;
+      } else {
+        window.location.href = `/user/add_checkout_address/${userId}`;
+      }
+    }
+  
+  
+  
+  
+  </script>
+  

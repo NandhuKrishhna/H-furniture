@@ -27,129 +27,30 @@
   .payment-card {
     height: 60px;
   }
-  .row {
-    padding-top: 50px;
-    padding-bottom: 50px;
+  .payment-body{
+    margin-top:100px;
   }
-  .cart-summary-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-  }
-  .col-md-8, .col-md-4 {
-    flex: 1;
-    margin-right: 15px;
-  }
-  .col-md-4 {
-    max-width: 400px;
-  }
-  .col-md-8 {
-    max-width: 700px;
-  }
-  .form-check-label {
-    font-size: 12px;
-  }
-  .order-body {
-    padding-top: 100px;
-  
-  }
-  .cart-item img {
-    max-width: 100px;
-    margin-right: 10px;
-  }
+  #couponAppliedContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
 
-  .cart-summary {
-    background: #f9f9f9;
-    border-radius: 2px;
-    padding: 20px;
-    border: 0.3px solid #dcdcdc;
-  }
+#couponAppliedMessage {
+  font-weight: bold;
+}
 
-  .total-amount {
-    font-size: 24px;
-    font-weight: bold;
-    color: #000;
-  }
+#removeCoupon {
+  font-size: 20px;
+}
 
-  .total-savings {
-    color: green;
-    font-weight: bold;
-  }
-
-  .cart {
-    margin-top: 20px;
-    position: relative;
-    /* right: -95px; */
-    left: 70px;
-
-  }
-
-  .form-control {
-    border-radius: 0;
-
-  }
-
-  .form-control:focus {
-    box-shadow: none;
-    border-color: #757575;
-  }
-
-  .apply {
-    border-radius: 0;
-
-  }
-
-  .cart-item img {
-    max-width: 100px;
-    margin-right: 10px;
-  }
-
-  .cart-summary {
-    background: #f9f9f9;
-    border-radius: 2px;
-    padding: 20px;
-    border: 0.3px solid #dcdcdc;
-  }
-
-  .total-amount {
-    font-size: 24px;
-    font-weight: bold;
-    color: #000;
-  }
-
-  .total-savings {
-    color: green;
-    font-weight: bold;
-  }
-
-  .cart {
-    margin-top: 20px;
-    position: relative;
-    /* right: -95px; */
-    left: 70px;
-
-  }
-
-  .form-control {
-    border-radius: 0;
-
-  }
-
-  .form-control:focus {
-    box-shadow: none;
-    border-color: #757575;
-  }
-
-  .apply {
-    border-radius: 0;
-  }
 </style>
 
-<div class="orders-body container mt-5">
+<div class="container mt-5">
+  <h3 class="mb-4 payment-body">Shopping Cart</h3>
   <div class="row">
-    <div class="col-md-8">
-      <h5>Choose Payment Mode</h5>
-      <form id="paymentForm" method="POST" action="/user/payment_method/<%= userId %>">
+    <div class="col-lg-8">
+      <form id="paymentForm" method="POST" action="/user/payment_method">
         <!-- Radio buttons for payment methods -->
         <div class="payment-card">
           <div class="form-check">
@@ -182,131 +83,175 @@
         </div>
         <button type="submit" style="width: 40%;" class="btn btn-dark btn-block mt-3">Place Order</button>
       </form>
+      
     </div>
-
-    <div class="col-md-4 cart">
-      <div class="cart-summary">
-        <h5>Apply Coupon Code</h5><br>
-        <div class="input-group mb-3">
-          <input type="text" id="couponCode" class="form-control" placeholder="Enter Coupon Code" required>
-          <div class="input-group-append">
-            <button id="applyCoupon" class="btn btn-dark">Apply</button>
-          </div>
-        </div>
-        <div id="appliedCouponMessage" class="text-success mb-3" style="display: none;">
-          Applied Coupon: <span id="appliedCouponCode"></span>
-          <span id="removeCoupon" style="cursor: pointer; color: red; margin-left: 10px;">&times;</span>
-        </div>
-        <br>
-        <h5>Cart Summary</h5>
-        <ul class="list-unstyled">
-          <li class="d-flex justify-content-between">
-            <span>SubTotal</span>
-            <span>₹<%= cart && cart.totalAmount ? cart.totalAmount.toFixed(2) : '0.00' %></span>
+    <div class="col-lg-4">
+      <div class="card">
+        <form id="couponForm">
+          <div class="card-body">
+            <h5 class="card-title">Apply Coupon Code</h5>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="couponCode" placeholder="Enter Coupon Code">
+              <button class="btn btn-dark" type="button" id="applyCoupon">Apply</button>
+            </div>
+            <div id="couponAppliedContainer" class="d-none">
+              <span id="couponAppliedMessage" class="text-success">
+                Coupon "<span id="appliedCouponCode"></span>" applied!
+              </span>
+              <i id="removeCoupon" class="fa-solid fa-square-minus text-danger" style="cursor: pointer; margin-left: 10px;"></i>
+            </div>
+    
+        </form>
+    
+        <h5 class="card-title">Cart Summary</h5>
+        <ul class="list-group mb-3">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            SubTotal
+            <span id="subtotalAmount">₹<%= cart && cart.totalAmount ? cart.totalAmount.toFixed(2) : '0.00' %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Packing Charges
+            <span>₹0.00</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Shipping & Handling
+            <span>₹0.00</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Negotiated Discount
+            <span id="discountAmount" class="discount-amount">₹<%= cart && cart.discountValue ? cart.discountValue.toFixed(2) : '0.00' %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong>Total Amount</strong>
+            <span id="totalAmount" class="total-amount">₹<%= cart && cart.finalAmount ? cart.finalAmount.toFixed(2) : '0.00' %></span>
           </li>
         </ul>
-        <p>Packing Charges: <span class="float-right">₹0</span></p>
-        <% if (cart && cart.products.length > 0) { %>
-          <p>Shipping & Handling: <span class="float-right"><del>₹4,000</del> FREE</span></p>
-        <% } else { %>
-          <p>Shipping & Handling: <span class="float-right"><del>₹0</del></span></p>
-        <% } %>
-        <p>Negotiated Discount: <span class="float-right" id="negotiatedDiscount">₹0</span></p>
-        <div class="d-flex justify-content-between">
-          <span>Total Amount</span>
-          <span id="totalAmount" class="total-amount">₹<%= cart && cart.finalAmount ? cart.finalAmount.toFixed(2) : '0.00' %></span>
-        </div>
-        <button class="continue-btn btn btn-dark btn-block mt-3" data-user-id="<%= userId %>">Continue</button>
-        <small class="text-muted d-block mt-2">By continuing, you agree to Habus's Terms of Use and Privacy Policy.</small>
+        <!-- <button id="proceed-btn" class="btn btn-dark btn-block mt-3" <%=cart.products.length===0 ? 'disabled' : '' %>>Proceed to Checkout</button> -->
+        <p class="mt-3 text-muted">By continuing, you agree to Habus's Terms of Use and Privacy Policy.</p>
       </div>
     </div>
   </div>
+ </div>
 </div>
 
+
 <script>
-  $(document).ready(function () {
-    $('#applyCoupon').on('click', function () {
-      var couponCode = $('#couponCode').val().trim();
-      var userId = "<%= userId %>";
+document.addEventListener('DOMContentLoaded', () => {
+  const applyCouponButton = document.querySelector('#applyCoupon');
+  const appliedCouponSection = document.querySelector('#couponAppliedContainer');
+  const appliedCouponCodeSpan = document.querySelector('#appliedCouponCode');
+  const removeCouponButton = document.querySelector('#removeCoupon');
+  const couponCodeInput = document.querySelector('#couponCode');
 
-      if (!couponCode) {
-        alert('Please enter a coupon code.');
-        return;
+  applyCouponButton.addEventListener('click', () => {
+    const couponCode = couponCodeInput.value.trim();
+
+    if (!couponCode) {
+      alert('Please enter a coupon code.');
+      return;
+    }
+
+    fetch('/user/apply-coupon', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ couponCode: couponCode }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.querySelector('#totalAmount').innerText = `₹${data.finalAmount.toFixed(2)}`;
+        document.querySelector("#discountAmount").innerText = `₹${data.discountValue.toFixed(2)}`;
+        appliedCouponCodeSpan.innerText = couponCode;
+        appliedCouponSection.classList.remove('d-none');
+        couponCodeInput.value = '';
+      } else {
+        alert(data.message);
       }
-
-      $.ajax({
-        url: '/user/cart/' + userId + '/apply-coupon',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ couponCode: couponCode }),
-        success: function (response) {
-          if (response.success) {
-            $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
-            $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
-            $('#appliedCouponMessage').show();
-            $('#appliedCouponCode').text(couponCode);
-          } else {
-            alert(response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('Error applying coupon:', error);
-          alert('An error occurred while applying the coupon. Please try again.');
-        }
-      });
-    });
-
-    $('#removeCoupon').on('click', function () {
-      var userId = "<%= userId %>";
-      $.ajax({
-        url: '/user/cart/' + userId + '/remove-coupon',
-        method: 'POST',
-        contentType: 'application/json',
-        success: function (response) {
-          if (response.success) {
-            $('#appliedCouponMessage').hide();
-            $('#couponCode').val('');
-            $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
-            $('#negotiatedDiscount').text('₹0');
-          } else {
-            alert(response.message);
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('Error removing coupon:', error);
-          alert('An error occurred while removing the coupon. Please try again.');
-        }
-      });
-    });
-
-    document.getElementById('paymentForm').addEventListener('submit', function (event) {
-      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-      if (!paymentMethod) {
-        event.preventDefault();
-        document.getElementById('paymentError').style.display = 'block';
-      } else if (paymentMethod.value === 'Razorpay') {
-        event.preventDefault(); // Prevent form submission
-        initiateRazorpayPayment(); // Call function to handle Razorpay payment
-      }
+    })
+    .catch(error => {
+      console.error('Error applying coupon:', error);
+      alert('An error occurred while applying the coupon.');
     });
   });
 
-  function initiateRazorpayPayment() {
+  removeCouponButton.addEventListener('click', () => {
+  fetch('/user/remove-coupon', {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+  console.log("Response Data:", data); 
+  if (data.success) {
+    appliedCouponSection.classList.add('d-none');
+    document.querySelector('#totalAmount').innerText = `₹${data.finalAmount.toFixed(2)}`;
+    document.querySelector("#discountAmount").innerText = `₹${(data.discountValue || 0).toFixed(2)}`;
+  } else {
+    alert(data.message);
+  }
+})
+
+  .catch(error => {
+    console.error('Error removing coupon:', error);
+    alert('An error occurred while removing the coupon.');
+  });
+});
+
+
+});
+
+document.getElementById('paymentForm').addEventListener('submit', function (event) {
+  event.preventDefault(); // Prevent default form submission
+
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+  if (!paymentMethod) {
+    document.getElementById('paymentError').style.display = 'block';
+    return;
+  }
+
+  const userId = document.querySelector('input[name="userId"]').value;
+  const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+
+  // Show SweetAlert confirmation dialog
+  Swal.fire({
+    title: 'Confirm Your Order',
+    text: `You have selected ${paymentMethod.nextElementSibling.textContent}. Do you want to proceed with the payment of ₹${totalAmount}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, Place Order!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (paymentMethod.value === 'Razorpay') {
+        initiateRazorpayPayment(); // Call function to handle Razorpay payment
+      } else {
+        document.getElementById('paymentForm').submit(); // Submit the form if not Razorpay
+      }
+    }
+  });
+});
+
+function initiateRazorpayPayment() {
   $.ajax({
-    url: '/user/payment_method/<%= userId %>',
+    url: '/user/payment_method',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({
       paymentMethod: $('input[name="paymentMethod"]:checked').val(),
-      userId: "<%= userId %>",
-      totalAmount: "<%= cart.finalAmount %>"
+      totalAmount: document.querySelector('input[name="totalAmount"]').value
     }),
     success: function (response) {
       const options = {
         "key": "<%= process.env.RAZORPAY_KEY_ID %>", // Use actual Key ID here
         "amount": response.amount,
         "currency": response.currency,
-        "name": "Mazen funitures",
+        "name": "Mazen Furniture",
         "description": "Order Payment",
         "order_id": response.orderId,
         "handler": function (response) {
@@ -320,7 +265,7 @@
               signature: response.razorpay_signature
             }),
             success: function (callbackResponse) {
-              window.location.href = '/user/orders/<%= userId %>';
+              window.location.href = '/user/orders/' 
             },
             error: function (xhr, status, error) {
               alert('Payment verification failed. Please try again.');
@@ -340,5 +285,6 @@
     }
   });
 }
+
 
 </script>

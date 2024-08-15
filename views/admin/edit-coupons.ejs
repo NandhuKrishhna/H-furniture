@@ -141,6 +141,52 @@
       transform: rotate(45deg);
       transition: all .2s ease-out;
   }
+
+  .form-control:focus {
+      box-shadow: none;
+      border-color: none;
+      outline: none;
+  }
+
+  .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+      position: absolute;
+      top: -4px;
+      left: 20px;
+      padding: 0.75rem 0;
+      pointer-events: none;
+      transition: all 0.2s ease-out;
+      font-size: 1rem;
+      color: #aaa;
+  }
+
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+      top: -2rem;
+      left: 0;
+      color: #000;
+      font-size: 0.85rem;
+      padding-left: 5px;
+  }
+
+  .form-group input {
+      padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus+label,
+  .form-group input:not(:placeholder-shown)+label {
+      top: -2rem;
+  }
+
+  .text-danger {
+      color: red;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-weight: 500;
+  }
 </style>
 
 <body>
@@ -235,91 +281,126 @@
               </a>
           </div>
       </aside>
-    <div class="main p-3">
-        <div class="row px-5 pt-2">
+      <div class="main p-3">
+        <div class="container" id="addcoupon-container">
+          <h1 style="position: relative; left: 80px;" class="text-start">EDIT COUPONS</h1>
+          <div class="row px-5 pt-2">
             <div id="formErrors" class="text-danger" style="display: none;"></div>
-    
-            <form id="form" action="/admin/category/edit-category/<%=categoryInfo._id %>?_method=PUT" method="POST" class="row g-3">
-    
-                <div class="col-md-6">
-                    <input type="text" name="categoryName" placeholder="CATEGORY NAME"
-                        value="<%=categoryInfo.categoryName %>" class="form-control add-category" />
-                    <div id="categoryNameError" class="text-danger"></div>
-    
-                </div>
-                <div class="col-md-12">
-                    <button type="submit" id="edit-category" class="btn p-2 mt-3 mb-3 btn-success">EDIT CATEGORY</button>
-                </div>
-    
+            <form id="editCouponForm" class="row g-3" method="POST" action="/admin/coupons/edit-coupons/<%= coupon._id %>">
+              
+              <!-- Coupon Code -->
+              <div class="col-md-6 form-group">
+                <input type="text" name="code" id="code" class="form-control add-coupon" value="<%= coupon.code %>"/>
+                <label for="code">Code</label>
+                <div id="codeError" class="text-danger"></div>
+              </div>
+      
+              <!-- Discount Type -->
+              <div class="col-md-6">
+                <select name="discountType" class="form-control" >
+                  <option value="">Select Discount Type</option>
+                  <option value="percentage" <%= coupon.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                  <option value="fixed" <%= coupon.discountType === 'fixed' ? 'selected' : '' %>>Fixed Amount</option>
+                </select>
+                <div id="discountTypeError" class="text-danger"></div>
+              </div>
+      
+              <!-- Discount Value -->
+              <div class="col-md-6 form-group">
+                <input type="number" name="discountValue" class="form-control add-coupon" value="<%= coupon.discountValue %>"  />
+                <label for="discountValue">Discount Value</label>
+                <div id="discountValueError" class="text-danger"></div>
+              </div>
+      
+              <!-- Max Discount -->
+              <div class="col-md-6 form-group">
+                <input type="number" name="maxDiscount" class="form-control add-coupon" value="<%= coupon.maxDiscount || '' %>" />
+                <label for="maxDiscount">Max Discount</label>
+                <div id="maxDiscountError" class="text-danger"></div>
+              </div>
+      
+              <!-- Min Purchase Amount -->
+              <div class="col-md-6 form-group">
+                <input type="number" name="minPurchaseAmount" class="form-control add-coupon" value="<%= coupon.minPurchaseAmount || '' %>" />
+                <label for="minPurchaseAmount">Min Purchase Amount</label>
+                <div id="minPurchaseAmountError" class="text-danger"></div>
+              </div>
+      
+              <!-- Usage Limit -->
+              <div class="col-md-6 form-group">
+                <input type="number" name="usageLimit" class="form-control add-coupon" value="<%= coupon.usageLimit %>" />
+                <label for="usageLimit">Usage Limit</label>
+                <div id="usageLimitError" class="text-danger"></div>
+              </div>
+      
+              <!-- Valid From -->
+              <div class="col-md-6">
+                <input type="date" name="validFrom" class="form-control add-coupon" value="<%= coupon.validFrom.toISOString().split('T')[0] %>"  />
+                <div id="validFromError" class="text-danger"></div>
+              </div>
+      
+              <!-- Valid Until -->
+              <div class="col-md-6">
+                <input type="date" name="validUntil" class="form-control add-coupon" value="<%= coupon.validUntil.toISOString().split('T')[0] %>" />
+                <div id="validUntilError" class="text-danger"></div>
+              </div>
+      
+              <div class="col-md-12">
+                <button type="submit" id="edit-coupon" class="btn p-2 mt-3 mb-3 btn-dark">UPDATE COUPON</button>
+              </div>
             </form>
-    
+          </div>
         </div>
-    </div>
-    </div>
-    <script>
-document.querySelector('form').addEventListener('submit', async function (e) {
-  e.preventDefault(); 
-
-  const form = this; 
-  const formData = new FormData(form);
-  const formObject = Object.fromEntries(formData.entries());
-
-
-  const formActionUrl = form.action;
-
-  try {
-    
-    const response = await fetch(formActionUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formObject)
-    });
-
-
-    const contentType = response.headers.get('Content-Type');
-    let data = {};
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json(); 
-    } else {
-      throw new Error('Unexpected response format');
-    }
-
-    document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
-    document.getElementById('formErrors').style.display = 'none';
-
- 
-    if (response.ok && data.success) {
-     
-      window.location.href = '/admin/category';
-    } else {
-    
-      if (data.errors) {
-        for (const key in data.errors) {
-          document.getElementById(`${key}Error`).innerHTML = data.errors[key].msg;
-        }
-      }
+      </div>
       
-  
-      if (data.customError) {
-        document.getElementById('formErrors').style.display = 'block';
-        document.getElementById('formErrors').innerHTML = data.customError;
-      }
-      
+  </div>
+  <script>
+      const hamBurger = document.querySelector(".toggle-btn");
+const couponId = "<%= coupon._id %>";
 
-      setTimeout(() => {
-        document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
-        document.getElementById('formErrors').style.display = 'none';
-      }, 3000);
-    }
-  } catch (error) {
-    console.error('Error:', error); 
-  }
+hamBurger.addEventListener("click", function () {
+    document.querySelector("#sidebar").classList.toggle("expand");
 });
 
+document.getElementById('editCouponForm').addEventListener('submit', async function (e) {  
+    e.preventDefault();
 
-        const hamBurger = document.querySelector(".toggle-btn");
+    const formData = new FormData(this);
+    const formObject = Object.fromEntries(formData.entries());
 
-        hamBurger.addEventListener("click", function () {
-            document.querySelector("#sidebar").classList.toggle("expand");
+    try {
+        const response = await fetch("/admin/coupons/edit-coupons/" + couponId, { 
+            method: 'PATCH',  // Use PATCH as defined in your router
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formObject)
         });
-    </script>
+
+        const data = await response.json();
+
+        document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
+        document.getElementById('formErrors').style.display = 'none';
+
+        if (response.ok) {
+            window.location.href = "/admin/coupons";
+        } else {
+            if (data.errors) {
+                for (const key in data.errors) {
+                    document.getElementById(`${key}Error`).innerHTML = data.errors[key].msg;
+                }
+            }
+
+            if (data.customError) {
+                document.getElementById('formErrors').style.display = 'block';
+                document.getElementById('formErrors').innerHTML = data.customError;
+            }
+            setTimeout(() => {
+                document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
+                document.getElementById('formErrors').style.display = 'none';
+            }, 3000);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+  </script>

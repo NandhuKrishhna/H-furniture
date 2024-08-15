@@ -10,6 +10,7 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
     "country-list": "^2.3.0",
     "country-select": "^1.1.1",
@@ -33,7 +34,9 @@
     "nodemon": "^3.1.4",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
-    "razorpay": "^2.9.4",
+    "pdfkit": "^0.15.0",
+    "puppeteer": "^23.0.2",
+    "razorpay": "^2.9.3",
     "sharp": "^0.33.4",
     "sweetalert2": "^11.6.13",
     "uuid": "^10.0.0",

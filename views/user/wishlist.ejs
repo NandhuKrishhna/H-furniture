@@ -90,14 +90,14 @@
     button.addEventListener('click', async (event) => {
       const productId = event.target.getAttribute('data-product-id');
       const quantity = 1; 
-
+      console.log('Adding to cart:', { productId, quantity });
       try {
-        const response = await fetch(`/user/cart/${productId}`, {
-          method: 'PUT',
+        const response = await fetch("/user/add-to-cart", {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ quantity })
+          body: JSON.stringify({ quantity, productId }),
         });
 
         const result = await response.json();

@@ -1,31 +1,4 @@
 const { check, validationResult } = require('express-validator');
-const { isLength } = require('validator');
-// exports.productValidators = [
-//   check('productname').notEmpty().withMessage('Product name is required'),
-//   check('description').isArray({ min: 1 }).withMessage('Description must be an array with at least one item'),
-//   check('originalprice').isFloat({ gt: 0 }).withMessage('Original price must be a positive number'),
-//   check('discount').isFloat({ min: 0, max: 100 }).withMessage('Discount must be between 0 and 100'),
-//   check('category').notEmpty().withMessage('Category is required'),
-//   check('weight').isFloat({ gt: 0 }).withMessage('Weight must be a positive number'),
-//   check('quantity').isInt({ gt: 0 }).withMessage('Quantity must be a positive integer'),
-//   check('brand').notEmpty().withMessage('Brand is required'),
-//   check('primarymaterial').notEmpty().withMessage('Primary material is required'),
-//   check('floorstanding').isBoolean().withMessage('Floor standing must be true or false'),
-//   check('polishmaterial').notEmpty().withMessage('Polish material is required'),
-//   check('color').isArray({ min: 1 }).withMessage('Color must be an array with at least one item'),
-//   check('material').notEmpty().withMessage('Material is required'),
-//   check('countryofOrigin').notEmpty().withMessage('Country of origin is required'),
-//   check('warranty').notEmpty().withMessage('Warranty is required'),
-//   check('dimension').notEmpty().withMessage('Dimension is required'),
-//   check('fabric_options').optional().isArray().withMessage('Fabric options must be an array'),
-//   check('images').custom((value, { req }) => {
-//     if (!req.files || req.files.length === 0) {
-//       throw new Error('At least one image must be uploaded');
-//     }
-//     return true;
-//   }),
-// ];
-
 
 
 // otp validator
@@ -195,7 +168,7 @@ exports.validateProduct = [
   check('color')
     .isArray({ min: 1 }).withMessage('Include at least one color'),
 
-  check('images')
+  check("files")
     .isArray({ min: 3 }).withMessage('Include at least 3 images'),
 
   check('material')
@@ -221,6 +194,8 @@ exports.validateProduct = [
 
 
 
+
+
 exports.validateCategory = [
   check('categoryName')
     .trim()
@@ -231,6 +206,10 @@ exports.validateCategory = [
       }
       if (/[^a-zA-Z0-9 ]/.test(value)) {
         throw new Error('Category name should not contain symbols');
+      }
+      // Check if the category name consists of the same letter
+      if (/^(.)\1+$/.test(value.toLowerCase())) {
+        throw new Error('Category name must not consist of the same letter repeated');
       }
       return true;
     }),
@@ -271,5 +250,68 @@ exports.validateAddress = [
 ];
 
 exports.validateCoupon =[
-   check("")
-]
+   
+    check('code')
+        .notEmpty().withMessage('Coupon code is required')
+        .isLength({ min: 5, max: 20 }).withMessage('Coupon code must be between 5 and 20 characters')
+        .isAlphanumeric().withMessage('Coupon code can only contain letters and numbers'),
+
+   
+    check('discountType')
+        .notEmpty().withMessage('Discount type is required')
+        .isIn(['percentage', 'fixed']).withMessage('Discount type must be either "Percentage" or "Fixed Amount"'),
+
+    
+    check('discountValue')
+        .notEmpty().withMessage('Discount value is required')
+        .isFloat({ gt: 0 }).withMessage('Discount value must be a positive number')
+        .custom((value, { req }) => {
+            if (req.body.discountType === 'percentage' && (value <= 0 || value > 100)) {
+                throw new Error('Percentage discount must be between 1 and 100');
+            }
+            return true;
+        }),
+
+    
+    check('maxDiscount')
+        .optional()
+        .isFloat({ gt: 0 }).withMessage('Max discount must be a positive number')
+        .custom((value, { req }) => {
+            if (req.body.discountType === 'percentage' && !value) {
+                throw new Error('Max discount is required when discount type is percentage');
+            }
+            return true;
+        }),
+
+    
+    check('minPurchaseAmount')
+        .optional()
+        .isFloat({ gt: 0 }).withMessage('Minimum purchase amount must be a positive number'),
+
+    
+    check('usageLimit')
+        .notEmpty().withMessage('Usage limit is required')
+        .isInt({ gt: 0 }).withMessage('Usage limit must be a positive integer'),
+
+    
+    check('validFrom')
+        .notEmpty().withMessage('Valid from date is required')
+        .isISO8601().withMessage('Valid from must be a valid date')
+        .custom((value) => {
+            if (new Date(value) < new Date()) {
+                throw new Error('Valid from date cannot be in the past');
+            }
+            return true;
+        }),
+
+   
+    check('validUntil')
+        .notEmpty().withMessage('Valid until date is required')
+        .isISO8601().withMessage('Valid until must be a valid date')
+        .custom((value, { req }) => {
+            if (new Date(value) <= new Date(req.body.validFrom)) {
+                throw new Error('Valid until date must be after the valid from date');
+            }
+            return true;
+        }),
+];

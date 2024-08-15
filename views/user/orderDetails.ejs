@@ -1,0 +1,68 @@
+<style>
+    .row{
+        margin-top: 100px;
+    }
+</style>
+<div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h2>Details of your order</h2>
+        <hr>
+  
+
+        <ul class="list-group list-group-horizontal-sm mb-3" id="orderStatus">
+          <li class="list-group-item flex-fill <%= order.orderStatus === 'Pending' ? 'status-pending' : '' %>">Order Placed</li>
+          <li class="list-group-item flex-fill <%= order.orderStatus === 'Processing' ? 'status-processing' : '' %>">Processing</li>
+          <li class="list-group-item flex-fill <%= order.orderStatus === 'Shipped' ? 'status-shipped' : '' %>">Preparing to Ship</li>
+          <li class="list-group-item flex-fill <%= order.orderStatus === 'Delivered' ? 'status-delivered' : '' %>">Delivered</li>
+          <li class="list-group-item flex-fill <%= order.orderStatus === 'Cancelled' ? 'status-cancelled' : '' %>">Cancelled</li>
+        </ul>
+        <p><strong>Last updated:</strong> <%= new Date(updatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></p>
+  
+        <div class="d-flex justify-content-between align-items-center">
+            <% order.orderItems.forEach(item => { %>
+             
+          <div>
+            <img src="/<%=item.image %>" alt="Product Image" class="img-fluid" style="max-width: 100px;">
+            <p><%= item.name %></p>
+          </div>
+          <div>
+            <p><strong>Status:</strong> <%= order.orderStatus %></p>
+            <p><a href="/user/orders">Back to Order</a></p>
+          </div>
+          <% }) %>
+        </div>
+        <p><strong>Return Eligibility:</strong> <%= new Date(order.orderDate).toLocaleDateString('en-US') %></p>
+        <p><strong>Shared Shipping Updates:&nbsp;&nbsp;</strong><%= userInfo.email %></p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .status-pending {
+  background-color: yellow;
+  color: black; 
+}
+
+.status-processing {
+  background-color: orange;
+  color: white; 
+}
+
+.status-shipped {
+  background-color: green;
+  color: white; 
+}
+
+.status-delivered {
+  background-color: lightgreen;
+  color: black; 
+}
+
+.status-cancelled {
+  background-color: red;
+  color: white; 
+}
+
+  </style>
+  

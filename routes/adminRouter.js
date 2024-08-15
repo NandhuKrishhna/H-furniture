@@ -3,16 +3,18 @@ const router = express.Router();
 const adminController = require("./../controller/adminController");
 const auth = require("../middleware/adminAuth");
 const { upload } = require("../utils/helpers");
-const { 
+const {
   productValidators,
   validateLoginRules,
   validate,
   adminLoginRules,
   validateProduct,
   validateCategory,
-  validateAddress
+  validateAddress,
+  validateCoupon,
+ 
+
 } = require('../utils/errorhandling');
-const { userCollection } = require("../models/UserModels");
 
 
 
@@ -20,8 +22,9 @@ const { userCollection } = require("../models/UserModels");
 
 
 
-router.get("/admin/login", adminController.getAdminLogin);
-router.post("/admin/login", adminController.verifyAdminLogin);
+router.route("/admin/login")
+.get(adminController.getAdminLogin)
+.post(adminLoginRules, validate, adminController.verifyAdminLogin);
 
 router.get("/admin/user_panel", auth.isadminAuthenticated, adminController.userManagement);
 router.get("/admin/search", adminController.userSearch)
@@ -32,13 +35,17 @@ router.patch("/admin/user_panel/unblock_user/:id", adminController.unblockUser);
 
 router.get("/admin/category", auth.isadminAuthenticated, adminController.getCategory);
 
-router.get("/admin/category/add-category", auth.isadminAuthenticated, adminController.getAddCategory);
 
-router.post("/admin/category/add-category", auth.isadminAuthenticated,validateCategory,validate, adminController.addCategory);
+//------add category------
+router.route("/admin/category/add-category")
+.get( auth.isadminAuthenticated, adminController.getAddCategory)
+.post( auth.isadminAuthenticated, validateCategory, validate, adminController.addCategory);
 
+//-----edit
 router.get("/admin/category/edit-category/:id", auth.isadminAuthenticated, adminController.getEditcategory);
+router.put("/admin/category/edit-category/:id", auth.isadminAuthenticated, validateCategory, validate, adminController.editCategory);
 
-router.put("/admin/category/edit-category/:id", auth.isadminAuthenticated,validateCategory,validate, adminController.editCategory);
+
 
 router.delete("/admin/category/delete-category/:id", auth.isadminAuthenticated, adminController.deleteCategory);
 
@@ -47,7 +54,7 @@ router.get("/admin/products", auth.isadminAuthenticated, adminController.getAdmi
 router.get("/admin/products/add-product", auth.isadminAuthenticated, adminController.adminaddProduct);
 
 router.post(
-  "/admin/products/add-product",auth.isadminAuthenticated, upload.array("files", 4),
+  "/admin/products/add-product", auth.isadminAuthenticated, validateProduct,validate,  upload.array("files", 4),
   adminController.addProduct
 );
 
@@ -74,12 +81,19 @@ router.post('/admin/orders/update-status', adminController.updateOrderStatus);
 
 // coupon managemnt
 router.get("/admin/coupons", adminController.couponManagement)
-router.get("/admin/coupons/add-coupon",adminController.getAddCouponPage)
-router.post("/admin/coupons/add-coupon",adminController.addCoupon)
+
+router.get("/admin/coupons/add-coupon", adminController.getAddCouponPage)
+router.post("/admin/coupons/add-coupon", validateCoupon, validate, adminController.addCoupon)
+router.get("/admin/coupons/edit-coupons/:id", adminController.getEditCoupon)
+router.patch("/admin/coupons/edit-coupons/:id", validateCoupon, validate, adminController.editCoupon)
+
+router.delete("/admin/coupons/delete-coupons/:id", adminController.deleteCoupon)
 
 
+router.get("/admin/sales", adminController.getSaleReport)
+router.get("/admin/sales/download", adminController.downlordSalesReport)
 
-
+// router.get("/sample",adminController.test)
 
 
 module.exports = router

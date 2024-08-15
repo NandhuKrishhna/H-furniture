@@ -57,8 +57,8 @@
                   <strong><%= addr.firstName %> <%= addr.lastName %></strong><br>
                   <%= addr.homeAddress %>, <%= addr.street %>, <%= addr.city %>, <%= addr.state %>, <%= addr.country %>, <%= addr.pincode %><br>
                   Mob: <%= Array.isArray(addr.phone) ? addr.phone.join(", ") : addr.phone %><br><br><br>
-                  <i style="color: red;" class="fa-solid fa-trash-can delete-address" data-address-id="<%= addr._id %>"></i> Remove &nbsp;&nbsp;
-                  <i style="color: chocolate;" class="fa-solid fa-pen-to-square edit-address"  data-address-id="<%= addr._id %>"></i> Edit
+                  <i style="color: red; cursor: pointer;" class="fa-solid fa-trash-can delete-address" data-address-id="<%= addr._id %>"></i> Remove &nbsp;&nbsp;
+                  <i style="color: chocolate; cursor: pointer;" class="fa-solid fa-pen-to-square edit-address"  data-address-id="<%= addr._id %>"></i> Edit
                 </div>
               <% }) %>
             <% } %>

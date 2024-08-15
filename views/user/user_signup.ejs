@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row align-items-center min-vh-100">
     <div class="col-md-6 d-none d-md-block">
-      <img src="/images/login (1).png" class="img-fluid" alt="Responsive image">
+      <img src="/images/interior-design-with-photoframes-couch.jpg" class="img-fluid" alt="Responsive image">
     </div>
     <div class="col-md-6">
       <div class="login-form p-4">
@@ -39,10 +39,10 @@
           </div>
         </form>
         <div class="col-lg-12 d-flex justify-content-center my-3" style="color: gray;">
-          <span class="text-center">Already Have an Account? <a style="color: #aaa;" href="/user/login">Login</a></span>
+          <span class="text-center">Already have an account? <a style="color: #000000;" href="/user/login">Login</a></span>
         </div>
         <a href="/auth/google" class="btn btn-outline-secondary my-3" style="width: 100%">
-          <i class="fa-brands fa-google"></i> <span>Login with Google</span>
+          <i class="fa-brands fa-google">&nbsp;&nbsp;</i> <span>Login with Google</span>
         </a>
       </div>
     </div>
@@ -78,7 +78,7 @@
 
   .form-control:focus {
     box-shadow: none;
-    border-color: rgb(200, 180, 6);
+    border-color: rgb(205, 187, 22);
     outline: none;
   }
 
@@ -86,6 +86,7 @@
     position: relative;
     margin-bottom: 1.5rem;
     min-height: 50px; 
+    margin-bottom: 5px;
   }
 
   .form-group label {
@@ -118,26 +119,22 @@
   }
 
   .text-danger {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-    font-weight: 600;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-left: 5px;
-  }
-  .alert-danger {
-    background: none;
-    border: none;
-    color: rgb(255, 25, 25);
-    padding: 0;
-    font-weight: bold;
-    margin-bottom: 29px; /* Adjust margin-bottom */
-    margin-top: -5px; /* Adjust margin-top to move the error message up */
-  }
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 600;
+  font-family: monospace;
+  padding-left: 5px;
+  min-height: 1.25rem; 
+}
+
+ 
 
   .toggle-password {
   position: absolute;
   top: 20px;
   right: 10px;
   transform: translateY(-50%);
+  font-size: small;
+  color: slategray;
 }
 </style>

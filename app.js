@@ -13,6 +13,7 @@ const jwt = require("jsonwebtoken");
 const Userdb = require("./models/UserModels");
 const sweetalert = require('sweetalert2');
 const logger = require('morgan');
+const PDFdocument = require('pdfkit');
 
 // Connect to the database
 db();

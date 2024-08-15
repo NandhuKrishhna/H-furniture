@@ -5,7 +5,7 @@ const passport = require("passport");
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-const {noToken,isotpAuth,isuserAuthenticated} = require("../middleware/userAuth")
+const auth = require("../middleware/userAuth");
 const {  
     
     validateOtp,
@@ -29,7 +29,7 @@ router.get("/user/login", userController.getUserLogin);
 router.post("/user/login",validateLoginRules,validate,userController.userSignin);
 
 //user forgot password
-router.get("/user/forgot-password",noToken,userController.enterForgotEmail);
+router.get("/user/forgot-password",userController.enterForgotEmail);
 router.post("/user/forgot-password", userController.submitEmailForOtp);
 
 // otp and resend otp for forgot password
@@ -59,18 +59,17 @@ router.get("/user/product/:id", userController.getProductDetails);
 
 
 //---------cart routes-----------
-router.get("/user/cart/:id", userController.getCart )
-router.put("/user/cart/:id", userController.addToCart)
-router.put("/user/update-cart", userController.updateCart)
-router.delete("/user/cart/:id", userController.removeFromCart);
-
+router.get("/user/cart", userController.getCart )
+router.post("/user/add-to-cart", userController.addToCart)
+router.patch("/user/update-cart", userController.updateCart);
+router.delete("/user/delete-from-cart", userController.removeFromCart);
 //---------apply coupon-------
-router.post("/user/cart/:id/apply-coupon", userController.applyCoupon);
-router.post("/user/cart/:id/remove-coupon", userController.removeCoupon);
+router.post("/user/apply-coupon", userController.applyCoupon);
+router.post("/user/remove-coupon", userController.removeCoupon);
 
-router.route("/user/checkout_address_details/:id")
-.get(userController.checkout)
-.post(userController.checkout)
+router.route("/user/checkout_address_details")
+.get(auth.isUserAuthenticated,userController.checkout)
+.post(auth.isUserAuthenticated,userController.checkout)
 
 
 // my accound details--------
@@ -86,9 +85,12 @@ router.route("/user/add_address")
 .get(userController.getAddMyAddress)
 .post(validateAddress,validate,userController.addMyAddress)
 
-router.route("/user/edit_address/:id")
-.get(userController.getEditMyAddress)
-.post(userController.editMyAddress)
+
+//-------edit address
+router.get("/user/edit_address/:id",userController.getEditMyAddress)
+router.post("/user/edit_address/:id",userController.editMyAddress)
+
+
 
 router.delete("/user/delete_address/:id", userController.deleteAddress);
 
@@ -98,13 +100,17 @@ router.route("/user/set_new_password")
 .get(userController.getSetNewPassword)
 .post(validateChangePass,validate,  userController.setNewPassword)
 
-router.route("/user/payment_method/:id")
+router.route("/user/payment_method")
 .get(userController.getPaymentMethod)
 .post(userController.paymentMethod)
 router.post("/user/payment_callback", userController.paymentVerification)
-router.get("/user/orders/:id",userController.getMyOrders)
+router.get("/user/orders",userController.getMyOrders)
 
 router.post('/order/:orderId/item/:itemId/cancel', userController.cancelOrderItem);
+router.get("/order/details/:orderId/:itemId", userController.orderDetails)
+
+
+//-----coupon page
 router.get("/user/coupons", userController.getAddCouponPage)
 
 router.get("/user/wishlist", userController.getWishList)

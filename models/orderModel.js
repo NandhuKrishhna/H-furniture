@@ -15,7 +15,12 @@ const orderSchema = new mongoose.Schema({
       name: { type: String, required: true },
       image: { type: String, required: true },
       transactionId: { type: String, required: true },
-      status: { type: String, enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Pending' } 
+      status: { type: String, enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Pending' },
+      appliedCoupon: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'coupon_data', 
+        default: null,
+      }
     }
   ],
   shippingAddress: addressSchema,
@@ -37,9 +42,15 @@ const orderSchema = new mongoose.Schema({
     enum: ['COD', 'Razorpay', 'Credit Card', 'Debit Card', 'Net Banking'],
     required: true
   }
-});
+},
+  { timestamps: true });
 
-
+  orderSchema.pre('save', function (next) {
+    if (this.isModified('orderStatus')) {
+      this.updatedAt = Date.now();
+    }
+    next();
+  });
 
 
 const orderCollection = mongoose.model('order_data', orderSchema);

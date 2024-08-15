@@ -2,6 +2,7 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const Userdb = require("../models/UserModels");
 const dotenv = require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -12,9 +13,11 @@ passport.use(new GoogleStrategy({
         let user = await Userdb.userCollection.findOne({ googleID: profile.id });
 
         if (user) {
-            return done(null, user);
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+            });
+            return done(null, { user, token });
         } else {
-            // Create a new user if not found
+            //------Create a new user-----
             user = new Userdb.userCollection({
                 firstName: profile.name.givenName,
                 lastName: profile.name.familyName,
@@ -22,7 +25,13 @@ passport.use(new GoogleStrategy({
                 googleID: profile.id
             });
             await user.save();
-            return done(null, user);
+
+           
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+             
+            });
+
+            return done(null, { user, token });
         }
     } catch (error) {
         return done(error, null);
@@ -30,7 +39,7 @@ passport.use(new GoogleStrategy({
 }));
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
