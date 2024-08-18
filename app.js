@@ -13,7 +13,7 @@ const jwt = require("jsonwebtoken");
 const Userdb = require("./models/UserModels");
 const sweetalert = require('sweetalert2');
 const logger = require('morgan');
-const PDFdocument = require('pdfkit');
+const PDFDocument = require('pdfkit');
 
 // Connect to the database
 db();
@@ -43,6 +43,7 @@ app.set('layout', 'layout');
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("uploads"));
+app.use('/json', express.static(path.join(__dirname, 'json')));
 
 // Cache control middleware
 app.use((req, res, next) => {

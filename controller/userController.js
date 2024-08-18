@@ -2,6 +2,8 @@ const Userdb = require("../models/UserModels");
 const Otpdb = require("../models/otpModel")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs = require("fs");
 const { sendOtp, resendOtp } = require("../utils/helpers");
 const Productdb = require("../models/productModels")
 const Orderdb = require("../models/orderModel")
@@ -17,6 +19,7 @@ const uuidv4 = require("uuid").v4;
 const { ObjectId } = require("mongodb");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const PDFDocument = require('pdfkit');
 const { whitelist } = require("validator");
 const { default: mongoose } = require("mongoose");
 //  <<<<<<<Razorpay>>>>>>>>
@@ -1248,6 +1251,7 @@ applyCoupon: async (req, res, next) => {
     const userInfo = verifyToken(req);
     const userId = new ObjectId(userInfo._id);
     const { couponCode } = req.body;
+    console.log("couponCode", couponCode);
 
     const coupon = await Coupondb.couponCollection.findOne({
       code: couponCode,
@@ -1295,8 +1299,6 @@ applyCoupon: async (req, res, next) => {
       }
     );
     
-
-    console.log(req.session.appliedCoupon,"----->>>>>>>");
     res.status(200).json({
       success: true,
       message: 'Coupon applied successfully',
@@ -1416,7 +1418,7 @@ applyCoupon: async (req, res, next) => {
       const userId = user._id;
       
       const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId }).lean();
-      const appliedCoupon = req.session.appliedCoupon || null;
+      const appliedCoupon = cartDetails.appliedCoupon;
       console.log(appliedCoupon,"appliedCoupon");
       res.status(200).render("user/paymentMethod", {
         userId,
@@ -1438,7 +1440,8 @@ applyCoupon: async (req, res, next) => {
   paymentMethod: async (req, res, next) => {
     try {
       console.log(req.body);
-      const { paymentMethod } = req.body;
+      const { paymentMethod,couponCode } = req.body;
+      console.log("couponCode",couponCode);
 
       if (!paymentMethod) {
         console.error('Payment method is missing');
@@ -1450,7 +1453,7 @@ applyCoupon: async (req, res, next) => {
       const userInfo = await Userdb.userCollection.findById(userId);
       const cart = await Cartdb.cartCollection.findOne({ userId: userId });
       const address = await Addressdb.addressCollection.findOne({ userId: userId, isDeleted: false });
-
+      console.log("This is cart details from payment method",cart);
       if (paymentMethod === 'Razorpay') {
         const razorpayOrder = await instance.orders.create({
           amount: cart.finalAmount * 100,
@@ -1464,7 +1467,8 @@ applyCoupon: async (req, res, next) => {
           name: product.productName,
           image: product.image,
           transactionId: uuidv4(),
-          appliedCoupon: req.session.couponId,
+          appliedCoupon: cart.appliedCoupon,
+        
         }));
 
         const newOrder = new Orderdb.orderCollection({
@@ -1473,15 +1477,18 @@ applyCoupon: async (req, res, next) => {
           shippingAddress: req.session.selectedAddress || address,
           billingAddress: req.session.selectedAddress || address,
           totalAmount: cart.finalAmount,
+          discountValue: cart.discountValue,
           orderDate: new Date(),
-          orderStatus: 'Pending',
+          orderStatus: 'Order Placed',
           paymentStatus: 'Pending',
           paymentMethod,
+          razorpayOrderId: razorpayOrder.id
         });
 
         await newOrder.save();
-
-        // ------reducing the product quantity---------
+        console.log(razorpayOrder, 'razorpayOrder');
+        console.log(razorpayOrder.id, 'razorpayOrder.id');
+      //  ------reducing the product quantity---------
         for (const product of cart.products) {
           await Productdb.productCollection.updateOne(
             { _id: product.productId },
@@ -1509,7 +1516,8 @@ applyCoupon: async (req, res, next) => {
           name: product.productName,
           image: product.image,
           transactionId: uuidv4(),
-          appliedCoupon: req.session.couponId,
+          appliedCoupon: couponCode,
+         
         }));
 
         const newOrder = new Orderdb.orderCollection({
@@ -1518,10 +1526,12 @@ applyCoupon: async (req, res, next) => {
           shippingAddress: req.session.selectedAddress || address,
           billingAddress: req.session.selectedAddress || address,
           totalAmount: cart.finalAmount,
+          discountValue: cart.discountValue,
           orderDate: new Date(),
-          orderStatus: 'Pending',
-          paymentStatus: 'COD',
+          orderStatus: 'Order Placed',
+          paymentStatus: 'Pending',
           paymentMethod,
+          
         });
 
         await newOrder.save();
@@ -1552,9 +1562,26 @@ applyCoupon: async (req, res, next) => {
   },
 
 
+
+  handlePaymentFailure: async (order_id, payment_id) => {
+    console.error('Payment failed');
+    try {
+      const result = await Orderdb.orderCollection.updateOne(
+        { razorpayOrderId: order_id },
+        { $set: { paymentStatus: 'Pending', paymentId: payment_id } }
+      );
+      console.log('Update result:', result);
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+    }
+  },
+
   paymentVerification: async (req, res, next) => {
     try {
       const { payment_id, order_id, signature } = req.body;
+      console.log("paymentId : ", payment_id);
+      console.log("orderId : ", order_id);
+      console.log("signature : ", signature);
       const user = verifyToken(req);
       const userId = user._id;
 
@@ -1562,23 +1589,41 @@ applyCoupon: async (req, res, next) => {
         .update(order_id + '|' + payment_id)
         .digest('hex');
 
-
       if (generatedSignature !== signature) {
-        return res.status(400).send('Payment verification failed');
+        console.log('----Signature mismatch----');
+        await this.handlePaymentFailure(order_id, payment_id);
+        await Orderdb.orderCollection.updateOne(
+          { razorpayOrderId: order_id },
+          { $set: { paymentStatus: 'Failed', paymentId: payment_id } }
+        )
+        return res.status(400).json({
+          success: false,
+          message: 'Payment verification failed'
+        });
       }
 
-      await Orderdb.orderCollection.updateOne(
-        { 'orderItems.transactionId': payment_id },
-        { $set: { paymentStatus: 'Paid', paymentId: payment_id } }
-      );
+      const payment = await instance.payments.fetch(payment_id);
+      console.log(payment, 'payment');
 
-      res.redirect(`/user/orders/${userId}`);
+      if (payment.status === 'failed') {
+        await handlePaymentFailure(order_id, payment_id);
+        return res.redirect(`/user/orders`);
+      }
+
+      console.log('Payment successful');
+      const result = await Orderdb.orderCollection.updateOne(
+        { razorpayOrderId: order_id },
+        { $set: { paymentStatus: 'Success', paymentId: payment_id } }
+      );
+      console.log('Update result:', result);
+      res.redirect(`/user/orders`);
 
     } catch (error) {
       console.error('Error verifying payment:', error);
       next(error);
     }
   },
+
 
   getMyOrders: async (req, res, next) => {
     try {
@@ -1601,7 +1646,7 @@ applyCoupon: async (req, res, next) => {
     }
   },
 
-orderDetails : async (req, res, next) => {
+ orderDetails : async (req, res, next) => {
     try {
         
       const user = verifyToken(req);
@@ -1625,7 +1670,7 @@ orderDetails : async (req, res, next) => {
       console.log(error);
       next(error)
     }
-},
+ },
 
   cancelOrderItem: async (req, res, next) => {
     try {
@@ -1688,6 +1733,7 @@ orderDetails : async (req, res, next) => {
       next(error);
     }
   },
+
 
   getAddCouponPage: async (req, res, next) => {
     try {
@@ -1936,6 +1982,233 @@ orderDetails : async (req, res, next) => {
   },
 
 
+  getInvoice: async (req, res, next) => {
+      const { orderId } = req.params;
+  
+      try {
+          const order = await Orderdb.orderCollection.findById(orderId).exec();
+  
+          if (!order) {
+              return res.status(404).send('Order not found');
+          }
+  
+          const doc = new PDFDocument({ margin: 50 });
+          let buffers = [];
+          doc.on('data', buffers.push.bind(buffers));
+          doc.on('end', () => {
+              const pdfData = Buffer.concat(buffers);
+  
+              res.writeHead(200, {
+                  'Content-Length': Buffer.byteLength(pdfData),
+                  'Content-Type': 'application/pdf',
+                  'Content-Disposition': `attachment;filename=Invoice_${order._id}.pdf`,
+              }).end(pdfData);
+          });
+  
+          // Header
+          doc.fontSize(20).font('Helvetica-Bold').text('Mazen furniture', 50, 50);
+          doc.fontSize(20).text('INVOICE', 50, 50, { align: 'right' });
+  
+          doc.moveDown();
+          doc.fontSize(10).text(`Invoice No. ${order._id}`, { align: 'right' });
+          doc.text(`16 June 2025`, { align: 'right' });
+  
+          // Billed To
+          doc.moveDown();
+          doc.fontSize(10).font('Helvetica-Bold').text('BILLED TO:', 50, 150);
+          doc.font('Helvetica').text(`${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`);
+          doc.text(`${order.shippingAddress.phone}`);
+          doc.text(`${order.shippingAddress.homeAddress}`);
+          doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
+          doc.text(`${order.shippingAddress.country}`);
+  
+          // Table Header
+          doc.moveDown();
+          doc.moveDown().lineWidth(1).moveTo(50, 250).lineTo(550, 250).stroke();
+          doc.font('Helvetica-Bold').text('Item', 50, 260);
+          doc.text('Quantity', 200, 260);
+          doc.text('Unit Price', 350, 260);
+          doc.text('Total', 500, 260);
+          doc.moveDown().lineWidth(1).moveTo(50, 275).lineTo(550, 275).stroke();
+  
+          // Table Content
+          order.orderItems.forEach((item, index) => {
+              const y = 280 + (index * 20);
+              doc.font('Helvetica').text(`${item.name}`, 50, y);
+              doc.text(`${item.quantity}`, 200, y);
+              doc.text(`₹${item.price.toFixed(2)}`, 350, y);
+              doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 500, y);
+          });
+  
+          // Total
+          doc.moveDown().lineWidth(1).moveTo(50, 350).lineTo(550, 350).stroke();
+          doc.font('Helvetica-Bold').text('Subtotal', 400, 360);
+          doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 360);
+          doc.text('Tax (0%)', 400, 380);
+          doc.text(`₹0.00`, 500, 380);
+          doc.text('Total', 400, 400);
+          doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 400);
+  
+          // Payment Information
+          doc.moveDown();
+          doc.text('Thank you!', 50, 450);
+          doc.moveDown();
+          doc.font('Helvetica-Bold').text('PAYMENT INFORMATION', 50, 470);
+          doc.font('Helvetica').text('Briard Bank');
+          doc.text('Account Name: Samira Hadid');
+          doc.text('Account No.: 123-456-7890');
+          doc.text('Pay by: 5 July 2025');
+          doc.moveDown();
+          doc.text('Samira Hadid', 400, 530);
+          doc.text('123 Anywhere St., Any City, ST 12345');
+  
+          doc.end();
+  
+      } catch (error) {
+          console.error('Error fetching order:', error);
+          res.status(500).send('Server error');
+      }
+  },
+  
+  repayAmount: async function(req, res, next) {
+    try {
+      const user = verifyToken(req);
+      const userId = user._id;
+      const orderId = req.params.orderId;
+      const orderDetails = await Orderdb.orderCollection.findById(orderId);
+      const totalAmount = orderDetails.orderItems.reduce((sum, item) => {
+        return sum + item.price;
+      }, 0);
+      res.status(200).render("user/re-payNow", {
+        success: true,
+        order: orderDetails,
+        totalAmount,
+        userId,
+        user: true
+      });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  },
+
+  repaymentMethod: async function(req, res, next) {
+    try {
+      const { paymentMethod, totalAmount } = req.body;
+      const user = verifyToken(req);
+      const userId = user._id;
+
+      const order = await Orderdb.orderCollection.findOne({ userId: userId, paymentStatus: 'Pending' });
+
+      if (!order) {
+        return res.status(404).json({ success: false, message: 'Order not found' });
+      }
+
+      if (paymentMethod === 'Razorpay') {
+        const razorpayOrder = await instance.orders.create({
+          amount: totalAmount * 100,
+          currency: 'INR',
+          receipt: uuidv4()
+        });
+
+        await Orderdb.orderCollection.updateOne(
+          { _id: order._id },
+          { $set: { razorpayOrderId: razorpayOrder.id, paymentStatus: 'Pending', paymentMethod: 'Razorpay' } }
+        );
+
+        return res.json({
+          success: true,
+          orderId: razorpayOrder.id,
+          currency: razorpayOrder.currency,
+          amount: razorpayOrder.amount
+        });
+
+      } else if (paymentMethod === 'COD') {
+        // Update the order with COD payment method
+        await Orderdb.orderCollection.updateOne(
+          { _id: order._id },
+          { $set: { paymentStatus: 'Pending', paymentMethod: 'COD' } }
+        );
+
+        return res.json({ success: true });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid payment method',
+        });
+      }
+    } catch (error) {
+      console.error('Error processing repayment:', error);
+      next(error);
+    }
+  },
+
+  repaymentVerification: async function(req, res, next) {
+    try {
+      const { payment_id, order_id, signature } = req.body;
+      console.log("paymentId : ", payment_id);
+      console.log("orderId : ", order_id);
+      console.log("signature : ", signature);
+      const user = verifyToken(req);
+      const userId = user._id;
+
+      const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(order_id + '|' + payment_id)
+        .digest('hex');
+
+      if (generatedSignature !== signature) {
+        console.log('----Signature mismatch----');
+        await this.handlePaymentFailure(order_id, payment_id);
+        await Orderdb.orderCollection.updateOne(
+          { razorpayOrderId: order_id },
+          { $set: { paymentStatus: 'Failed', paymentId: payment_id } }
+        );
+        return res.status(400).json({
+          success: false,
+          message: 'Payment verification failed'
+        });
+      }
+
+      const payment = await instance.payments.fetch(payment_id);
+      console.log(payment, 'payment');
+
+      if (payment.status === 'failed') {
+        await this.handlePaymentFailure(order_id, payment_id);
+        return res.redirect(`/user/orders`);
+      }
+
+      console.log('Payment successful');
+      const result = await Orderdb.orderCollection.updateOne(
+        { razorpayOrderId: order_id },
+        { $set: { paymentStatus: 'Success', paymentId: payment_id } }
+      );
+      console.log('Update result:', result);
+      res.redirect(`/user/orders`);
+
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      next(error);
+    }
+  },
+
+  handlePaymentFailure: async function(order_id, payment_id) {
+    console.error('Payment failed');
+    try {
+      const result = await Orderdb.orderCollection.updateOne(
+        { razorpayOrderId: order_id },
+        { $set: { paymentStatus: 'Pending', paymentId: payment_id } }
+      );
+      console.log('Update result:', result);
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+    }
+  }
 
 
-}
+
+
+  }
+  
+
+  
+

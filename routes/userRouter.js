@@ -95,7 +95,7 @@ router.post("/user/edit_address/:id",userController.editMyAddress)
 router.delete("/user/delete_address/:id", userController.deleteAddress);
 
 
-// set new password
+//-----set new password-------
 router.route("/user/set_new_password")
 .get(userController.getSetNewPassword)
 .post(validateChangePass,validate,  userController.setNewPassword)
@@ -104,11 +104,20 @@ router.route("/user/payment_method")
 .get(userController.getPaymentMethod)
 .post(userController.paymentMethod)
 router.post("/user/payment_callback", userController.paymentVerification)
+
+//-----get order page---------
 router.get("/user/orders",userController.getMyOrders)
 
 router.post('/order/:orderId/item/:itemId/cancel', userController.cancelOrderItem);
 router.get("/order/details/:orderId/:itemId", userController.orderDetails)
 
+
+router.get("/user/re-order/:orderId", userController.repayAmount); 
+router.post("/user/repayment_method", userController.repaymentMethod);
+router.post("/user/repayment_callback", userController.repaymentVerification);
+
+//-----invoice------
+router.get("/download-invoice/:orderId", userController.getInvoice);
 
 //-----coupon page
 router.get("/user/coupons", userController.getAddCouponPage)

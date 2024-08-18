@@ -91,7 +91,7 @@
           <div class="card-body">
             <h5 class="card-title">Apply Coupon Code</h5>
             <div class="input-group mb-3">
-              <input type="text" class="form-control" id="couponCode" placeholder="Enter Coupon Code">
+              <input type="text" class="form-control" name="couponCode" id="couponCode" placeholder="Enter Coupon Code">
               <button class="btn btn-dark" type="button" id="applyCoupon">Apply</button>
             </div>
             <div id="couponAppliedContainer" class="d-none">
@@ -142,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const appliedCouponCodeSpan = document.querySelector('#appliedCouponCode');
   const removeCouponButton = document.querySelector('#removeCoupon');
   const couponCodeInput = document.querySelector('#couponCode');
+  const couponForm = document.querySelector('#couponForm');
+  const totalAmountElement = document.querySelector('#totalAmount');
+  const discountAmountElement = document.querySelector('#discountAmount');
 
   applyCouponButton.addEventListener('click', () => {
     const couponCode = couponCodeInput.value.trim();
@@ -161,8 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        document.querySelector('#totalAmount').innerText = `₹${data.finalAmount.toFixed(2)}`;
-        document.querySelector("#discountAmount").innerText = `₹${data.discountValue.toFixed(2)}`;
+        totalAmountElement.innerText = `₹${data.finalAmount.toFixed(2)}`;
+        discountAmountElement.innerText = `₹${data.discountValue.toFixed(2)}`;
         appliedCouponCodeSpan.innerText = couponCode;
         appliedCouponSection.classList.remove('d-none');
         couponCodeInput.value = '';
@@ -177,35 +180,33 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   removeCouponButton.addEventListener('click', () => {
-  fetch('/user/remove-coupon', {
-    method: 'POST', 
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-  console.log("Response Data:", data); 
-  if (data.success) {
-    appliedCouponSection.classList.add('d-none');
-    document.querySelector('#totalAmount').innerText = `₹${data.finalAmount.toFixed(2)}`;
-    document.querySelector("#discountAmount").innerText = `₹${(data.discountValue || 0).toFixed(2)}`;
-  } else {
-    alert(data.message);
-  }
-})
-
-  .catch(error => {
-    console.error('Error removing coupon:', error);
-    alert('An error occurred while removing the coupon.');
+    fetch('/user/remove-coupon', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Response Data:", data); 
+      if (data.success) {
+        appliedCouponSection.classList.add('d-none');
+        totalAmountElement.innerText = `₹${data.finalAmount.toFixed(2)}`;
+        discountAmountElement.innerText = `₹${(data.discountValue || 0).toFixed(2)}`;
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error removing coupon:', error);
+      alert('An error occurred while removing the coupon.');
+    });
   });
 });
 
 
-});
-
 document.getElementById('paymentForm').addEventListener('submit', function (event) {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault(); 
 
   const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
   if (!paymentMethod) {
@@ -216,7 +217,6 @@ document.getElementById('paymentForm').addEventListener('submit', function (even
   const userId = document.querySelector('input[name="userId"]').value;
   const totalAmount = document.querySelector('input[name="totalAmount"]').value;
 
-  // Show SweetAlert confirmation dialog
   Swal.fire({
     title: 'Confirm Your Order',
     text: `You have selected ${paymentMethod.nextElementSibling.textContent}. Do you want to proceed with the payment of ₹${totalAmount}?`,
@@ -229,9 +229,9 @@ document.getElementById('paymentForm').addEventListener('submit', function (even
   }).then((result) => {
     if (result.isConfirmed) {
       if (paymentMethod.value === 'Razorpay') {
-        initiateRazorpayPayment(); // Call function to handle Razorpay payment
+        initiateRazorpayPayment(); 
       } else {
-        document.getElementById('paymentForm').submit(); // Submit the form if not Razorpay
+        document.getElementById('paymentForm').submit();
       }
     }
   });
@@ -248,29 +248,37 @@ function initiateRazorpayPayment() {
     }),
     success: function (response) {
       const options = {
-        "key": "<%= process.env.RAZORPAY_KEY_ID %>", // Use actual Key ID here
+        "key": response.keyId, 
         "amount": response.amount,
         "currency": response.currency,
         "name": "Mazen Furniture",
         "description": "Order Payment",
         "order_id": response.orderId,
-        "handler": function (response) {
+        "handler": function (paymentResponse) {
           $.ajax({
             url: '/user/payment_callback',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-              payment_id: response.razorpay_payment_id,
-              order_id: response.razorpay_order_id,
-              signature: response.razorpay_signature
+              payment_id: paymentResponse.razorpay_payment_id,
+              order_id: paymentResponse.razorpay_order_id,
+              signature: paymentResponse.razorpay_signature
             }),
             success: function (callbackResponse) {
-              window.location.href = '/user/orders/' 
+           
+                window.location.href = '/user/orders'; 
+            
             },
             error: function (xhr, status, error) {
-              alert('Payment verification failed. Please try again.');
+              console.error('Error verifying payment:', error);
+              alert('An error occurred while verifying the payment. Please try again.');
             }
           });
+        },
+        "modal": {
+          "ondismiss": function () {
+            window.location.href = '/user/orders';
+          }
         },
         "theme": {
           "color": "#3399cc"
@@ -285,6 +293,7 @@ function initiateRazorpayPayment() {
     }
   });
 }
+
 
 
 </script>

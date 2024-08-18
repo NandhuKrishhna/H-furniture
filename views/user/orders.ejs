@@ -1,4 +1,20 @@
 <style>
+.status-pending {
+  color: orange;
+  font-size: 19px;
+  font-weight: bolder;
+}
+
+.status-success {
+    color: green;
+    font-size: 19px;
+    font-weight: bolder;
+}
+.status-failure {
+  color: red;
+  font-size: 19px;
+  font-weight: bolder;
+}
 
 
 .order-card {
@@ -82,47 +98,78 @@
 .details-order-btn{
   width: 72px;
 }
+.invoice-section{
+  display: flex;
+   flex-direction:column;
+}
+.download-invoice-btn{
+  width: 155px;
+    height: 35px;
+    border-radius: 0;
+}
 </style>
 
 <div class="container-fluid">
   <div class="row">
+    
       <!-- Sidebar -->
       <%- include("../partials/userSidenav.ejs") %>
       <!-- Form Section -->
       <div class="col-md-9 order-body">
         <h3 style="padding-left: 40px;">Your Orders</h3>
         <% orders.forEach(order => { %>
-         <div class="order-card">
-           <div class="card-header">
-             <h6 style="font-size: 12px;">Order No: <%= order?.orderItems[0]?.transactionId %></h6>
-             <span class="order-date">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
-           </div>
-           <ul class="order-items-list">
-             <% order.orderItems.forEach(item => { %>
-               <li class="order-item">
-                 <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
-                 <div class="product-details">
-                   <div><strong><%= item.name || 'Unknown Product' %></strong></div>
-                   <div>Qty: <%= item.quantity || 0 %></div>
-                   <div>Price: ₹<%= item.price.toFixed(2) %></div>
-                   <button class="details-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Details</button>
-                   <% if (item.status !== 'Cancelled') { %>
-                     <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
-                     <% } %>
-                 </div>
-               </li>
-             <% }) %>
-           </ul>
-           <div class="order-total">
-            <div class="<%= order.orderStatus === 'Cancelled' ? 'cancelled-status' : '' %>">
-                Status: <%= order.orderStatus %>
+          <div class="order-card">
+            <div class="card-header">
+              <h6 style="font-size: 12px;">Order No: <%= order?.orderItems[0]?.transactionId %></h6>
+              <span class="order-date invoice-section">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
+              <% if (order.orderStatus === 'Delivered') { %>
+                <button data-order-id="<%= order._id %>" class="btn btn-secondary download-invoice-btn invoice-section">
+                  Download Invoice
+                </button>
+              <% } %>
+              <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Pending") { %>
+                <button style="border-radius: 0; " class="btn btn-warning"
+                  onclick="window.location.href='/user/re-order/<%= order._id %>'">
+                  Pay Now
+                </button>
+              <% } %>
             </div>
-            <div>Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
-            <div>Payment: <%= order.paymentMethod %></div>
-        </div>
+            <ul class="order-items-list">
+              <% order.orderItems.forEach(item => { %>
+                <li class="order-item">
+                  <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
+                  <div class="product-details">
+                    <div><strong><%= item.name || 'Unknown Product' %></strong></div>
+                    <div>Qty: <%= item.quantity || 0 %></div>
+                    <div>Price: ₹<%= item.price.toFixed(2) %></div>
+                    <button class="details-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Details</button>
+                    <% if (item.status !== 'Cancelled') { %>
+                      <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
+                    <% } %>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+            <div class="order-total">
+              <div style="font-size: 20px;">Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
+              <div class="<%= order.orderStatus === 'Cancelled' ? 'cancelled-status' : '' %>">
+                Status: <%= order.orderStatus %>
+              </div>
+              <div>Payment: <%= order.paymentMethod %></div>
+              <div>
+                Payment Status: 
+                <span class="status-<%= 
+                  order.paymentStatus === 'Pending' ? 'pending' : 
+                  order.paymentStatus === 'Success' ? 'success' : 
+                  order.paymentStatus === 'Failure' ? 'failure' : '' 
+                %>">
+                  <%= order.paymentStatus %>
+                </span>
+              </div>
+            </div>
+          </div>
+        <% }) %>
         
-         </div>
-       <% }) %>
        
        </div>
     
@@ -131,6 +178,24 @@
 
 
 <script>
+
+  
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.download-invoice-btn').forEach(button => {
+      button.addEventListener('click', function() {
+          const orderId = this.getAttribute('data-order-id');
+          if (orderId) {
+              window.location.href = `/download-invoice/${orderId}`;
+          } else {
+              console.error('Order ID not found.');
+              alert('Failed to download the invoice: Order ID not found.');
+          }
+      });
+  });
+});
+
+
+
 $(document).ready(function() {
   $('.cancel-order-btn').click(function() {
     const orderId = $(this).data('order-id');

@@ -1,103 +1,145 @@
 
-  
-        document.querySelectorAll('.remove-item').forEach(button => {
-          button.addEventListener('click', () => {
-            const productId = button.dataset.productId;
-      
-            console.log(`Remove item with ID: ${productId}`);
-      
-            $.ajax({
-              url: `/user/cart/${productId}`,
-              type: 'DELETE',
-              success: function (response) {
-                if (response.success) {
-                  location.reload();
-                  document.getElementById(`cart-item-${productId}`).remove();
-                  document.querySelector('#subtotalAmount').innerText = `₹${response.updatedTotalAmount.toFixed(2)}`;
-                  document.querySelector('#totalAmount').innerText = `₹${response.finalAmount.toFixed(2)}`;
-      
-                  console.log('Product removed successfully.');
-                } else {
-                  console.error('Failed to remove product from cart:', response.message || 'No message provided');
-                }
-              },
-              error: function (xhr, status, error) {
-                console.error('An error occurred:', status, error);
-                console.error('Response:', xhr.responseText);
-              }
-            });
-          });
-        });
-      
-        $(document).ready(function () {
-          $('#applyCoupon').on('click', function () {
-            var couponCode = $('#couponCode').val().trim();
-            var userId = "<%= userId %>";
-      
-            if (!couponCode) {
-              alert('Please enter a coupon code.');
-              return;
-            }
-      
-            $.ajax({
-              url: '/user/cart/' + userId + '/apply-coupon',
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({ couponCode: couponCode }),
-              success: function (response) {
-                if (response.success) {
-                  $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
-                  $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
-                  $('#appliedCouponMessage').show();
-                  $('#appliedCouponCode').text(couponCode);
-                } else {
-                  alert(response.message);
-                }
-              },
-              error: function (xhr, status, error) {
-                console.error('Error applying coupon:', error);
-                alert('An error occurred while applying the coupon. Please try again.');
-              }
-            });
-          });
-      
-          $('#removeCoupon').on('click', function () {
-            var userId = "<%= userId %>";
-            $.ajax({
-              url: '/user/cart/' + userId + '/remove-coupon',
-              method: 'POST',
-              contentType: 'application/json',
-              success: function (response) {
-                if (response.success) {
-                  $('#appliedCouponMessage').hide();
-                  $('#couponCode').val('');
-                  $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
-                  $('#negotiatedDiscount').text('₹0');
-                } else {
-                  alert(response.message);
-                }
-              },
-              error: function (xhr, status, error) {
-                console.error('Error removing coupon:', error);
-                alert('An error occurred while removing the coupon. Please try again.');
-              }
-            });
-          });
-        });
-  
-      
-  
-  
-    function proceedToCheckout(hadAddress, userId) {
-      if (hadAddress === 'true') {
-        window.location.href = `/user/checkout_address_details/${userId}`;
-      } else {
-        window.location.href = `/user/add_checkout_address/${userId}`;
-      }
+handlePaymentFailure : async (order_id, payment_id) => {
+  console.error('Payment failed');
+  try {
+    const result = await Orderdb.orderCollection.updateOne(
+      { razorpayOrderId: order_id },
+      { $set: { paymentStatus: 'Failed', paymentId: payment_id } } // Set paymentStatus to 'Pending'
+    );
+    console.log('Update result:', result);
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+  }
+},
+
+// Handle payment verification
+ paymentVerification : async (req, res, next) => {
+  try {
+    const { payment_id, order_id, signature } = req.body;
+
+    // Generate the signature on the server side
+    const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(order_id + '|' + payment_id)
+      .digest('hex');
+
+    // Validate the signature
+    if (generatedSignature !== signature) {
+      console.error('Signature mismatch');
+      await handlePaymentFailure(order_id, payment_id);
+      return res.redirect('/user/orders'); // Redirect to orders page
     }
-  
-  
-  
-  
-  </script>
-  
+
+    // Fetch payment details from Razorpay
+    const payment = await instance.payments.fetch(payment_id);
+
+    // Check payment status
+    if (payment.status === 'failed') {
+      await handlePaymentFailure(order_id, payment_id);
+      return res.redirect('/user/orders'); // Redirect to orders page
+    }
+
+    console.log('Payment successful');
+    const result = await Orderdb.orderCollection.updateOne(
+      { razorpayOrderId: order_id },
+      { $set: { paymentStatus: 'Success', paymentId: payment_id } }
+    );
+    console.log('Update result:', result);
+
+    res.redirect('/user/orders'); // Redirect to orders page
+
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    next(error);
+  }
+},
+
+// Webhook handler for Razorpay payment failures
+ handleRazorpayWebhook : async (req, res) => {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+  const shasum = crypto.createHmac('sha256', secret);
+  shasum.update(JSON.stringify(req.body));
+  const digest = shasum.digest('hex');
+
+  if (digest !== req.headers['x-razorpay-signature']) {
+    console.error('Webhook signature mismatch');
+    return res.status(400).send('Invalid signature');
+  }
+
+  const event = req.body.event;
+  const payload = req.body.payload.payment.entity;
+
+  if (event === 'payment.failed') {
+    const order_id = payload.order_id;
+    const payment_id = payload.id;
+
+    // Handle payment failure
+    await handlePaymentFailure(order_id, payment_id);
+  }
+
+  res.status(200).send('Webhook received');
+},
+
+
+////////////////
+
+
+
+function initiateRazorpayPayment() {
+  $.ajax({
+    url: '/user/payment_method',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      paymentMethod: $('input[name="paymentMethod"]:checked').val(),
+      totalAmount: document.querySelector('input[name="totalAmount"]').value
+    }),
+    success: function (response) {
+      const options = {
+        "key": response.keyId, // Razorpay Key ID from the server response
+        "amount": response.amount,
+        "currency": response.currency,
+        "name": "Mazen Furniture",
+        "description": "Order Payment",
+        "order_id": response.orderId,
+        "handler": function (paymentResponse) {
+          $.ajax({
+            url: '/user/payment_callback',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+              payment_id: paymentResponse.razorpay_payment_id,
+              order_id: paymentResponse.razorpay_order_id,
+              signature: paymentResponse.razorpay_signature
+            }),
+            success: function (callbackResponse) {
+              if (callbackResponse.success) {
+                window.location.href = '/user/orders'; 
+              } else {
+                alert('Payment verification failed. Please try again.');
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('Error verifying payment:', error);
+              alert('An error occurred while verifying the payment. Please try again.');
+            }
+          });
+        },
+        "modal": {
+          "ondismiss": function () {
+            window.location.href = '/user/orders';
+          }
+        },
+        "theme": {
+          "color": "#3399cc"
+        }
+      };
+      const rzp1 = new Razorpay(options);
+      rzp1.open();
+    },
+    error: function (xhr, status, error) {
+      console.error('Error initiating Razorpay payment:', error);
+      alert('An error occurred while initiating the payment. Please try again.');
+    }
+  });
+}

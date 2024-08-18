@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { addressSchema } = require('./addressModel.js'); // Adjust the path accordingly
+const { addressSchema } = require('../models/addressModel'); 
 
 const orderSchema = new mongoose.Schema({
   userId: {
@@ -15,43 +15,59 @@ const orderSchema = new mongoose.Schema({
       name: { type: String, required: true },
       image: { type: String, required: true },
       transactionId: { type: String, required: true },
-      status: { type: String, enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Pending' },
+      status: { type: String, enum: ['Order Placed', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Return requested'], default: 'Order Placed' },
       appliedCoupon: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'coupon_data', 
+        ref: 'coupon_data',
         default: null,
-      }
+      },
+      discountValue: { type: Number, default: 0 } 
     }
   ],
   shippingAddress: addressSchema,
   billingAddress: addressSchema,
   totalAmount: { type: Number, required: true },
+  discountValue: { type: Number, default: 0 }, 
   orderDate: { type: Date, default: Date.now },
   orderStatus: {
     type: String,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-    default: 'Pending'
+    enum: ['Order Placed', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Return requested'],
+    default: 'Order Placed'
   },
   paymentStatus: {
     type: String,
-    enum: ["Paid", "Pending", "COD", "Failed", "Refunded", "Cancelled"],
-    default: "Pending"
+    enum: ['Pending', 'Success', 'Failed'],
+    default: 'Pending'
   },
   paymentMethod: {
     type: String,
-    enum: ['COD', 'Razorpay', 'Credit Card', 'Debit Card', 'Net Banking'],
     required: true
+  },
+  razorpayOrderId: {
+    type: String,
+    default: null
   }
 },
-  { timestamps: true });
+{ timestamps: true });
 
-  orderSchema.pre('save', function (next) {
-    if (this.isModified('orderStatus')) {
-      this.updatedAt = Date.now();
-    }
-    next();
-  });
+orderSchema.pre('save', function (next) {
+  
+  if (this.isModified('orderStatus')) {
+    this.updatedAt = Date.now();
+  }
 
+  const numberOfItems = this.orderItems.length;
+
+  if (numberOfItems > 0 && this.discountValue > 0) {
+    const discountPerItem = this.discountValue / numberOfItems;
+
+    this.orderItems.forEach(item => {
+      item.discountValue = discountPerItem;
+    });
+  }
+
+  next();
+});
 
 const orderCollection = mongoose.model('order_data', orderSchema);
 
