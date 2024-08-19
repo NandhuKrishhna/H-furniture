@@ -93,7 +93,8 @@ images: {
   dimension: {
     type: String, 
     required: true  
-  }  
+  },
+  purchaseCount: { type: Number, default: 0 },  
 });
 
 const productCollection = new mongoose.model("product_data", productSchema);

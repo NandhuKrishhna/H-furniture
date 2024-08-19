@@ -4,8 +4,11 @@ const multer = require("multer")
 const Cartdb = require("../models/cartModel" );
 const Productdb = require("../models/productModels");
 const Addressdb = require("../models/addressModel")
-const Orderdb = require("../models/orderModel");
+const Orderdb = require("../models/orderModel")
+const Wallectdb = require("../models/walletModel")
 const { getProductDetails } = require("../controller/userController");
+const Categorydb = require("../models/categoryModel");
+const { createStructParentTreeNextKey } = require("pdfkit");
 
 
 
@@ -96,58 +99,165 @@ function generateOtp() {
 
 
 
-//////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-//funciton of fetching product, cart and order details 
 
 
 
-const cartDetails = async (userId) => {
+async function fetchOrderData() {
   try {
-    const cart = await Cartdb.cartCollection.findOne({ userId: userId }).populate('products.productId').exec();
-    if (!cart) {
-        throw new Error('Cart not found');
-    }
-    return cart;
-} catch (error) {
-    console.error('Error fetching cart details:', error);
-    throw error;
-}
-}
+  
+    const totalProducts = await Orderdb.orderCollection.aggregate([
+      { $unwind: '$orderItems' },
+      { $group: { _id: null, totalProducts: { $sum: '$orderItems.quantity' } } }
+    ]);
 
-const orderDetails = async (userId) => {
-  try {
-    const order = await Orderdb.orderCollection.findOne({ userId: userId });
-    if (!order) {
-      throw new Error('Order not found');
-    }
-    return order;
+    const totalSalesAmount = await Orderdb.orderCollection.aggregate([
+      { $group: { _id: null, totalAmount: { $sum: '$totalAmount' } } }
+    ]);
+
+    const totalSalesCount = await Orderdb.orderCollection.countDocuments();
+
+    const totalProductPrice = await Orderdb.orderCollection.aggregate([
+      { $unwind: '$orderItems' },
+      { $group: { _id: null, totalPrice: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } } } }
+    ]);
+
+    const topFiveProducts = await Orderdb.orderCollection.aggregate([
+      { $unwind: '$orderItems' },
+      { $group: { _id: '$orderItems.productId', totalQuantity: { $sum: '$orderItems.quantity' } } },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const onlinePayments = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'Razorpay' });
+    const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'COD' });
+    const cancelledOrders = await Orderdb.orderCollection.countDocuments({ orderStatus: 'Cancelled' });
+    const uniqueUserIds = await Orderdb.orderCollection.distinct('userId');
+    const totalCustomers = uniqueUserIds.length;
+    const topFiveProductIds = topFiveProducts.map(product => product._id);
+    const topFiveProductDetails = await Productdb.productCollection.find({ _id: { $in: topFiveProductIds } });
+    const totalRefundedAmount = await Wallectdb.walletCollection.aggregate([
+      { $unwind: "$history" },
+      {
+        $match: {
+          "history.transactionType": "Refunded"
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRefunded: { $sum: "$history.amount" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalRefunded: 1
+        }
+      }
+    ]);
+
+    const refundSum = totalRefundedAmount[0]?.totalRefunded || 0;
+    const brandNames = await Orderdb.orderCollection.aggregate([
+      { $unwind: "$orderItems" },
+      { $lookup: {
+        from: "product_datas",
+        localField: "orderItems.productId",
+        foreignField: "_id",
+        as: "productDetails"
+      }},
+      { $unwind: "$productDetails" },
+      { $group: {
+        _id: "$productDetails.brand",
+        count: { $sum: 1 }
+      }},
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ]);
+
+    const topCategoryName = await Orderdb.orderCollection.aggregate([
+      { $unwind: "$orderItems" },
+      { $lookup: {
+        from: "product_datas",
+        localField: "orderItems.productId",
+        foreignField: "_id",
+        as: "productDetails"
+      }},
+      { $unwind: "$productDetails" },
+      { $lookup: {
+        from: "category_datas",
+        localField: "productDetails.category",
+        foreignField: "_id",
+        as: "categoryDetails"
+      }},
+      { $unwind: "$categoryDetails" },
+      { $group: {
+        _id: "$categoryDetails.categoryName",
+        count: { $sum: 1 }
+      }},
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+       
+    ]);
+
+    const monthlySales = await Orderdb.orderCollection.aggregate([
+      { $unwind: '$orderItems' },
+      { $group: {
+        _id: {
+          year: { $year: '$orderDate' },
+          month: { $month: '$orderDate' }
+        },
+        totalSales: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } }
+      }},
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    const formattedMonthlySales = monthlySales.map(sale => ({
+      month: `${sale._id.year}-${sale._id.month.toString().padStart(2, '0')}`,
+      totalSales: sale.totalSales
+    }));
+
+    return {
+      totalProducts: totalProducts[0]?.totalProducts || 0,
+      totalSalesAmount: totalSalesAmount[0]?.totalAmount || 0,
+      totalSalesCount,
+      totalProductPrice: totalProductPrice[0]?.totalPrice || 0,
+      topFiveProducts: topFiveProductDetails.map(product => ({
+        _id: product._id,
+        productName: product.productName,
+        brand: product.brand,
+        category: product.category,
+        quantitySold: topFiveProducts.find(p => p._id.equals(product._id)).totalQuantity
+      })),
+      topCategories: topCategoryName,
+      topBrands: brandNames,
+      monthlySales: formattedMonthlySales,
+      totalCustomers,
+      onlinePayments,
+      cashOnDelivery,
+      cancelledOrders,
+      totalRefundedAmount: refundSum
+    };
   } catch (error) {
-    console.error('Error fetching order details:', error);
+    console.log('Error fetching order data:', error);
     throw error;
   }
 }
 
-const productDetails = async (productId) => {
-  try {
-    const product = await Productdb.productCollection.findById(productId).exec();
-    if (!product) {
-        throw new Error('Product not found');
-    }
-    return product;
-} catch (error) {
-    console.error('Error fetching product details:', error);
-    throw error;
-}
-}
+
+
+
+
+
+
+
+
 
 
 module.exports = { 
   sendOtp,
   resendOtp,
   upload,
-  cartDetails,
-  orderDetails,
-  productDetails
+  fetchOrderData
 
 
   };

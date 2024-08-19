@@ -367,9 +367,9 @@ const originalPrice = '<%= calculateDiscountedPrice(product.originalprice, produ
 const numberInput = document.getElementById('numberInput');
 const totalPriceElement = document.getElementById('totalPrice');
 const addToCartButton = document.querySelector('.btn-dark'); 
-const productId = "<%= product._id %>";
+const productId = '<%= product._id %>';
 console.log("The product id is " + productId);
-const productPrice = '<%= product.price %>'; 
+const productPrice = productId; 
 
 function addToCart() {
   console.log('Add to Cart button clicked');
@@ -505,7 +505,7 @@ function setExpectedDispatchDate() {
 }
 
 document.addEventListener('DOMContentLoaded', setExpectedDispatchDate);
-
+ console.log(productId,"from product-details.ejs");
 async function addToWishlist(productId) {
   try {
     const response = await fetch("/user/addwishlist", {
@@ -517,7 +517,7 @@ async function addToWishlist(productId) {
     });
 
     const data = await response.json();
-
+    console.log(data);
     if (response.ok) {
       Swal.fire({
         icon: 'success',

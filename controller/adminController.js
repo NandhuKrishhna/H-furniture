@@ -14,6 +14,7 @@ const path = require("path");
 const sharp = require("sharp");
 const { isError } = require("util");
 const puppeteer = require("puppeteer");
+const {fetchOrderData} = require("../utils/helpers")
 
 function convertDate(users){
   users.forEach(element => {
@@ -963,6 +964,21 @@ downlordSalesReport: async (req, res, next) => {
     res.sendFile(pdfPath);
   } catch (error) {
     console.error('Error generating PDF:', error);
+    next(error);
+  }
+},
+
+
+
+dashboard: async (req, res, next) => {
+  try {
+      
+    const data = await fetchOrderData();
+    res.status(200).render("admin/dashboard",{
+      data
+    })
+  } catch (error) {
+    console.log('Error fetching dashboard data:', error);
     next(error);
   }
 }

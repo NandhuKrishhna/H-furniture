@@ -1492,7 +1492,7 @@ applyCoupon: async (req, res, next) => {
         for (const product of cart.products) {
           await Productdb.productCollection.updateOne(
             { _id: product.productId },
-            { $inc: { quantity: -product.quantity } }
+            { $inc: { quantity: -product.quantity, purchaseCount: product.quantity } }
           );
         }
         // >>>>>>clearing the cart<<<<<<<<
@@ -1539,7 +1539,7 @@ applyCoupon: async (req, res, next) => {
         for (const product of cart.products) {
           await Productdb.productCollection.updateOne(
             { _id: product.productId },
-            { $inc: { quantity: -product.quantity } }
+            { $inc: { quantity: -product.quantity ,purchaseCount: product.quantity} }
           );
         }
 

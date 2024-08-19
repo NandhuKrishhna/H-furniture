@@ -75,6 +75,11 @@ app.use((req, res) => {
   res.status(404).render("404");
 });
 
+app.use((req, res, next) => {
+  console.log('Incoming Request Data:', req.body);
+  next();
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

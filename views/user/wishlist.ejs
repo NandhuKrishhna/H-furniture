@@ -89,6 +89,7 @@
   document.querySelectorAll('.add-to-cart-from-wishlist').forEach(button => {
     button.addEventListener('click', async (event) => {
       const productId = event.target.getAttribute('data-product-id');
+      console.log(productId,"This is from add to cart from wishlist");
       const quantity = 1; 
       console.log('Adding to cart:', { productId, quantity });
       try {

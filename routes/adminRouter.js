@@ -93,7 +93,7 @@ router.delete("/admin/coupons/delete-coupons/:id", adminController.deleteCoupon)
 router.get("/admin/sales", adminController.getSaleReport)
 router.get("/admin/sales/download", adminController.downlordSalesReport)
 
-// router.get("/sample",adminController.test)
+router.get("/admin/dashboard",adminController.dashboard)
 
 
 module.exports = router
