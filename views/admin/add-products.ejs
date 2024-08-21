@@ -3,772 +3,757 @@
 
   ::after,
   ::before {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
   a {
-      text-decoration: none;
+    text-decoration: none;
   }
 
   li {
-      list-style: none;
+    list-style: none;
   }
 
   h1 {
-      font-weight: 600;
-      font-size: 1.5rem;
+    font-weight: 600;
+    font-size: 1.5rem;
   }
 
   body {
-      font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif;
   }
 
   .wrapper {
-      display: flex;
+    display: flex;
   }
 
   .main {
-      min-height: 100vh;
-      width: 100%;
-      overflow: hidden;
-      transition: all 0.35s ease-in-out;
-      background-color: #fafbfe;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+    background-color: #fafbfe;
   }
 
   #sidebar {
-      width: 70px;
-      min-width: 70px;
-      z-index: 1000;
-      transition: all .25s ease-in-out;
-      background-color: #0e2238;
-      display: flex;
-      flex-direction: column;
+    width: 70px;
+    min-width: 70px;
+    z-index: 1000;
+    transition: all .25s ease-in-out;
+    background-color: #0e2238;
+    display: flex;
+    flex-direction: column;
   }
 
   #sidebar.expand {
-      width: 260px;
-      min-width: 260px;
+    width: 260px;
+    min-width: 260px;
   }
 
   .toggle-btn {
-      background-color: transparent;
-      cursor: pointer;
-      border: 0;
-      padding: 1rem 1.5rem;
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    padding: 1rem 1.5rem;
   }
 
   .toggle-btn i {
-      font-size: 1.5rem;
-      color: #FFF;
+    font-size: 1.5rem;
+    color: #FFF;
   }
 
   .sidebar-logo {
-      margin: auto 0;
+    margin: auto 0;
   }
 
   .sidebar-logo a {
-      color: #FFF;
-      font-size: 1.15rem;
-      font-weight: 600;
+    color: #FFF;
+    font-size: 1.15rem;
+    font-weight: 600;
   }
 
   #sidebar:not(.expand) .sidebar-logo,
   #sidebar:not(.expand) a.sidebar-link span {
-      display: none;
+    display: none;
   }
 
   .sidebar-nav {
-      padding: 2rem 0;
-      flex: 1 1 auto;
+    padding: 2rem 0;
+    flex: 1 1 auto;
   }
 
   a.sidebar-link {
-      padding: .625rem 1.625rem;
-      color: #FFF;
-      display: block;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      border-left: 3px solid transparent;
+    padding: .625rem 1.625rem;
+    color: #FFF;
+    display: block;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
   }
 
   .sidebar-link i {
-      font-size: 1.1rem;
-      margin-right: .75rem;
+    font-size: 1.1rem;
+    margin-right: .75rem;
   }
 
   a.sidebar-link:hover {
-      background-color: rgba(255, 255, 255, .075);
-      border-left: 3px solid #3b7ddd;
+    background-color: rgba(255, 255, 255, .075);
+    border-left: 3px solid #3b7ddd;
   }
 
   .sidebar-item {
-      position: relative;
+    position: relative;
   }
 
   #sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
-      position: absolute;
-      top: 0;
-      left: 70px;
-      background-color: #0e2238;
-      padding: 0;
-      min-width: 15rem;
-      display: none;
+    position: absolute;
+    top: 0;
+    left: 70px;
+    background-color: #0e2238;
+    padding: 0;
+    min-width: 15rem;
+    display: none;
   }
 
   #sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
-      display: block;
-      max-height: 15em;
-      width: 100%;
-      opacity: 1;
+    display: block;
+    max-height: 15em;
+    width: 100%;
+    opacity: 1;
   }
 
   #sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
-      border: solid;
-      border-width: 0 .075rem .075rem 0;
-      content: "";
-      display: inline-block;
-      padding: 2px;
-      position: absolute;
-      right: 1.5rem;
-      top: 1.4rem;
-      transform: rotate(-135deg);
-      transition: all .2s ease-out;
+    border: solid;
+    border-width: 0 .075rem .075rem 0;
+    content: "";
+    display: inline-block;
+    padding: 2px;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.4rem;
+    transform: rotate(-135deg);
+    transition: all .2s ease-out;
   }
 
   #sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
-      transform: rotate(45deg);
-      transition: all .2s ease-out;
+    transform: rotate(45deg);
+    transition: all .2s ease-out;
   }
 
   .form-control:focus {
-      box-shadow: none;
-      border-color: none;
-      outline: none;
+    box-shadow: none;
+    border-color: none;
+    outline: none;
   }
 
   .form-group {
-      position: relative;
-      margin-bottom: 1.5rem;
+    position: relative;
+    margin-bottom: 1.5rem;
   }
 
   .form-group label {
-      position: absolute;
-      top: -4px;
-      left: 20px;
-      padding: 0.75rem 0;
-      pointer-events: none;
-      transition: all 0.2s ease-out;
-      font-size: 1rem;
-      color: #aaa;
+    position: absolute;
+    top: -4px;
+    left: 20px;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
   }
 
   .form-group input:focus+label,
   .form-group input:not(:placeholder-shown)+label {
-      top: -2rem;
-      left: 0;
-      color: #000;
-      font-size: 0.85rem;
-      padding-left: 5px;
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
   }
 
   .form-group input {
-      padding: 0.75rem 0.75rem 0.25rem;
+    padding: 0.75rem 0.75rem 0.25rem;
   }
 
   .form-group input:focus+label,
   .form-group input:not(:placeholder-shown)+label {
-      top: -2rem;
+    top: -2rem;
   }
 
   .text-danger {
-      color: red;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      font-weight: 500;
+    color: red;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+  }
+
+  .error {
+    color: rgb(205, 32, 32);
+    font-weight: 600;
+
   }
 </style>
 
 <body>
   <div class="wrapper">
-      <aside id="sidebar">
-          <div class="d-flex">
-              <button class="toggle-btn" type="button">
-                  <i class="lni lni-grid-alt"></i>
-              </button>
-              <div class="sidebar-logo">
-                  <a href="#">Admin</a>
-              </div>
-          </div>
-          <ul class="sidebar-nav">
-              <li class="sidebar-item">
-                  <a href="/admin/dashboard" class="sidebar-link">
-                      <i class="lni lni-user"></i>
-                      <span>DASHBOARD</span>
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="/admin/user_panel" class="sidebar-link">
-                      <i class="lni lni-agenda"></i>
-                      <span>USERS</span>
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                      data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                      <i class="lni lni-protection"></i>
-                      <span>INVENTORY</span>
-                  </a>
-                  <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                      <li class="sidebar-item">
-                          <a href="/admin/products" class="sidebar-link">Products</a>
-                      </li>
-                      <li class="sidebar-item">
-                          <a href="/admin/category" class="sidebar-link">Category</a>
-                      </li>
-                  </ul>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                      data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                      <i class="lni lni-protection"></i>
-                      <span>COUPONS&OFFERS</span>
-                  </a>
-                  <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                      <li class="sidebar-item">
-                          <a href="/admin/coupons" class="sidebar-link">Coupons</a>
-                      </li>
-                      <li class="sidebar-item">
-                          <a href="/admin/offers" class="sidebar-link">Offers</a>
-                      </li>
-                  </ul>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#" class="sidebar-link">
-                      <i class="lni lni-popup"></i>
-                      <span>STOCK</span>
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="/admin/orders" class="sidebar-link">
-                      <i class="lni lni-cog"></i>
-                      <span>ORDERS</span>
-                  </a>
-              </li>
-              <li class="sidebar-item">
-                  <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                      data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                      <i class="lni lni-protection"></i>
-                      <span>SALES</span>
-                  </a>
-                  <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                      <li class="sidebar-item">
-                          <a href="/admin/sales" class="sidebar-link">Sales-Report</a>
-                      </li>
-                      <li class="sidebar-item">
-                          <a href="#" class="sidebar-link">Inventory-Report</a>
-                      </li>
-                      <li class="sidebar-item">
-                          <a href="#" class="sidebar-link">Purchase-Report</a>
-                      </li>
-                  </ul>
-              </li>
-          </ul>
-          <div class="sidebar-footer">
-              <a href="/admin/logout" class="sidebar-link" id="logout-btn">
-                  <i class="lni lni-exit"></i>
-                  <span>Logout</span>
-              </a>
-          </div>
-      </aside>
-      <div class="main p-3">
-        <div class="container" id="addproduct-container">
-          <div class="row px-5 pt-2">
-            <div id="formErrors" class="text-danger" style="display: none;"></div>
-            <form id="addProductForm"
-              method="post"
-              class="row g-3"
-              enctype="multipart/form-data"
-            >
-        
-              <label class="fs-4 mb-3 h2">Product Details</label>
-         
-              <div class="col-md-6">
-                <input
-                  type="text"
-                  name="productname"
-                  placeholder="PRODUCT NAME"
-                  class="form-control product-name"
-                />
-                <div id="productnameError" class="text-danger"></div>
-              </div>
-              <div class="col-md-6">
-                <input
-                  type="number"
-                  name="originalprice"
-                  placeholder="ORIGINAL PRICE"
-                  class="form-control price"
-                />
-                <div id="originalpriceError" class="text-danger"></div>
-              </div>
-              <div class="col-md-6">
-                <input
-                  type="number"
-                  name="discount"
-                  placeholder="Discount (%)"
-                  class="form-control price"
-  
-                />
-                <div id="discountError" class="text-danger"></div>
-              </div>
-              <div class="col-md-6">
-                <div class="row">
-                  <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01">Category</label>
-                    <select class="form-select" name="category" id="inputGroupSelect01">
-                      <% category.forEach(item => { %>
-                        <option selected value="<%= item.categoryName %>"><%= item.categoryName %></option>
-                      <% }) %>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <input
-                  type="number"
-                  name="quantity"
-                  placeholder="QTY"
-                  class="form-control quantity"
-                />
-                <div id="quantityError" class="text-danger"></div>
-              </div>
-              <label class="fs-4 mb-3 mt-5 h2">Product Features</label>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="primarymaterial"
-                  placeholder="PRIMARY MATERIAL"
-                  class="form-control"
-                  list="primary-material"
-                />
-                <div id="primarymaterialError" class="text-danger"></div>
-              </div>
-              <datalist id="primary-material">
-                <option value="European Ash Wood"></option>
-                <option value="Oak Wood "></option>
-                <option value="Teak Wood"></option>
-                <option value="Walnut Wood"></option>
-                <option value="Mahogany"></option>
-                <option value="Maple Wood"></option>
-                <option value="Birch Wood"></option>
-              </datalist>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="floorstanding"
-                  placeholder="Floor Standing"
-                  class="form-control"
-                  list="floor-standing"
-                />
-                <div id="floorstandingError" class="text-danger"></div>
-              </div>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="polishmaterial"
-                  placeholder="Polish Material"
-                  class="form-control"
-                  list="polish-materials"
-                />
-                <div id="polishmaterialError" class="text-danger"></div>
-              </div>
-              <datalist id="polish-materials">
-                <option value="Sayerlack "></option>
-                <option value="Dulux "></option>
-                <option value="Sadolin"></option>
-                <option value="Bondex"></option>
-                <option value="Caparol"></option>
-                <option value="Jotun"></option>
-                <option value="Benjamin Moore"></option>
-                <option value="Sherwin-Williams"></option>
-                <option value="Valspar"></option>
-                <option value="AkzoNobel"></option>
-                <option value="Boero"></option>
-                <option value="Farrow & Ball"></option>
-                <option value="Teknos "></option>
-                <option value="Tikkurila"></option>
-                <option value="Farrow & Ball "></option>
-              </datalist>
-              <datalist id="floor-standing">
-                <option value="Yes"></option>
-                <option value="No"></option>
-              </datalist>
-              <label class="fs-5">Select colors</label>
-              <div class="col-md-3">
-                <input
-                  type="text"
-                  name="color"
-                  placeholder="COLOR 1"
-                  class="form-control"
-                  list="color-options"
-                />
-                <div id="colorError" class="text-danger"></div>
-              </div>
-              <div class="col-md-3">
-                <input
-                  type="text"
-                  name="color"
-                  placeholder="COLOR 2"
-                  class="form-control"
-                  list="color-options"
-                />
-                <div id="colorError" class="text-danger"></div>
-              </div>
-              <div class="col-md-3">
-                <input
-                  type="text"
-                  name="color"
-                  placeholder="COLOR 3"
-                  class="form-control"
-                  list="color-options"
-                />
-                <div id="colorError" class="text-danger"></div>
-              </div>
-              <datalist id="color-options">
-                <option value="Red"></option>
-                <option value="Blue"></option>
-                <option value="Green"></option>
-                <option value="Yellow"></option>
-                <option value="Black"></option>
-                <option value="White"></option>
-                <option value="Gray"></option>
-                <option value="Brown"></option>
-                <option value="Pink"></option>
-                <option value="Purple"></option>
-                <option value="Orange"></option>
-                <option value="Beige"></option>
-              </datalist>
-              <label class="fs-4 mb-3 mt-5 h2">Specifications</label>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="material"
-                  placeholder="MATERIAL"
-                  class="form-control material"
-                />
-                <div id="materialError" class="text-danger"></div>
-              </div>
-  
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="warranty"
-                  placeholder="WARRANTY"
-                  class="form-control warranty"
-                  list="warranty-options"
-                />
-                <div id="warrantyError" class="text-danger"></div>
-              </div>
-              <datalist id="warranty-options">
-                <option value="Yes"></option>
-                <option value="No"></option>
-              </datalist>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  placeholder="Country of Origin"
-                  class="form-control CountryofOrigin"
-                  name="countryofOrigin"
-                  list="country-options"
-                />
-                <div id="countryofOriginError" class="text-danger"></div>
-              </div>
-              <datalist id="country-options">
-                <option value="United States"></option>
-                <option value="Canada"></option>
-                <option value="United Kingdom"></option>
-                <option value="Australia"></option>
-                <option value="Germany"></option>
-                <option value="France"></option>
-                <option value="India"></option>
-                <option value="China"></option>
-                <option value="Japan"></option>
-                <option value="South Korea"></option>
-                <option value="Brazil"></option>
-                <option value="Mexico"></option>
-                <option value="Italy"></option>
-                <option value="Spain"></option>
-                <option value="Russia"></option>
-                <option value="South Africa"></option>
-                <option value="Saudi Arabia"></option>
-                <option value="Argentina"></option>
-                <option value="Indonesia"></option>
-                <option value="Turkey"></option>
-              </datalist>
-              <div class="col-md-4">
-                <input
-                  type="number"
-                  name="weight"
-                  placeholder="WEIGHT"
-                  class="form-control weight"
-                />
-                <div id="weightError" class="text-danger"></div>
-              </div>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="fabric_options"
-                  placeholder="FABRIC OPTIONS"
-                  class="form-control fabric_options"
-                  list="fabric-options"
-                />
-                <div id="fabric_optionsError" class="text-danger"></div>
-              </div>
-              <datalist id="fabric-options">
-                <option value="Cotton"></option>
-                <option value="Linen"></option>
-                <option value="Wool"></option>
-                <option value="Silk"></option>
-                <option value="Velvet"></option>
-                <option value="Polyester"></option>
-                <option value="Acrylic"></option>
-                <option value="Nylon"></option>
-                <option value="Chenille"></option>
-                <option value="Leather"></option>
-                <option value="Microfiber"></option>
-                <option value="Suede"></option>
-                <option value="Viscose"></option>
-                <option value="Rayon"></option>
-                <option value="Bamboo"></option>
-                <option value="Jute"></option>
-                <option value="Hemp"></option>
-                <option value="Acetate"></option>
-                <option value="Modal"></option>
-                <option value="Spandex"></option>
-                <option value="Cashmere"></option>
-                <option value="Faux Fur"></option>
-                <option value="Faux Leather"></option>
-              </datalist>
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  name="brand"
-                  placeholder="BRAND"
-                  class="form-control brand"
-                  list="brand-options"
-                />
-                <div id="brandError" class="text-danger"></div>
-              </div>
-              <datalist id="brand-options">
-                <option value="Herman Miller"></option>
-                <option value="Knoll"></option>
-                <option value="Vitra"></option>
-                <option value="Minotti"></option>
-                <option value="B&B Italia"></option>
-                <option value="Fritz Hansen"></option>
-                <option value="Poltrona Frau"></option>
-                <option value="Cassina"></option>
-                <option value="Roche Bobois"></option>
-                <option value="Muuto"></option>
-                <option value="Hay"></option>
-                <option value="Gubi"></option>
-                <option value="Molteni & C"></option>
-                <option value="Boffi"></option>
-                <option value="Arper"></option>
-                <option value="Magis"></option>
-                <option value="Kartell"></option>
-                <option value="Alessi"></option>
-                <option value="Pedrali"></option>
-                <option value="Flexform"></option>
-                <option value="Ligne Roset"></option>
-                <option value="Porro"></option>
-                <option value="Cappellini"></option>
-                <option value="Driade"></option>
-                <option value="Zanotta"></option>
-                <option value="Gloster"></option>
-                <option value="Dedon"></option>
-                <option value="Emeco"></option>
-                <option value="HAY"></option>
-                <option value="Ferm Living"></option>
-                <option value="Normann Copenhagen"></option>
-                <option value="Gandia Blasco"></option>
-                <option value="Saba Italia"></option>
-                <option value="Desalto"></option>
-                <option value="Moroso"></option>
-                <option value="Cattelan Italia"></option>
-                <option value="Tonon"></option>
-                <option value="Baxter"></option>
-                <option value="Bonaldo"></option>
-                <option value="Ceccotti Collezioni"></option>
-                <option value="Glas Italia"></option>
-                <option value="Kettal"></option>
-                <option value="Foscarini"></option>
-                <option value="Louis Poulsen"></option>
-                <option value="Tom Dixon"></option>
-                <option value="Anglepoise"></option>
-                <option value="DCW Éditions"></option>
-                <option value="Santa & Cole"></option>
-                <option value="Artemide"></option>
-                <option value="Flos"></option>
-                <option value="Ingo Maurer"></option>
-                <option value="Nemo Lighting"></option>
-                <option value="Vibia"></option>
-              </datalist>
-              <div class="col-md-6">
-                <input
-                  type="text"
-                  name="dimension"
-                  placeholder="Dimensions"
-                  class="form-control dimensions"
-                  list="dimension-options"
-                />
-                <div id="dimensionError" class="text-danger"></div>
-              </div>
-              <datalist id="dimension-options">
-                  <option value="134L x 75W x 77H"></option>
-                  <option value="120L x 60W x 80H"></option>
-                  <option value="150L x 90W x 75H"></option>
-                  <option value="180L x 90W x 75H"></option>
-                  <option value="200L x 100W x 76H"></option>
-                  <option value="210L x 100W x 80H"></option>
-                  <option value="220L x 110W x 75H"></option>
-                  <option value="240L x 120W x 78H"></option>
-                  <option value="250L x 120W x 80H"></option>
-                  <option value="260L x 130W x 82H"></option>
-                  <option value="280L x 140W x 85H"></option>
-                  <option value="300L x 150W x 90H"></option>
-                  <option value="320L x 160W x 95H"></option>
-                  <option value="340L x 170W x 100H"></option>
-                </datalist>
-              
-                <label class="fs-4 mb-3 mt-5 h2">Product Images</label>
-                <div class="col-md-6">
-                  <input
-                    class="form-control formFileMultiple"
-                    type="file"
-                    name="files"
-                    multiple
-                  />
-                  <div  id="filesError" class="text-danger"></div>
-                </div>
-                <div class="col-md-6">
-                  <input
-                    class="form-control formFileMultiple"
-                    type="file"
-                    name="files"
-                    multiple
-                  />
-                  <div  id="filesError" class="text-danger"></div>
-                </div>
-                <div class="col-md-6">
-                  <input
-                    class="form-control formFileMultiple"
-                    type="file"
-                    name="files"
-                    multiple
-                  />
-                  <div  id="filesError" class="text-danger"></div>
-                </div>
-  
-            
-  
-              <label class="fs-4 mb-3 mt-5 h2">Product Description</label>
-              <div class="form-floating">
-                <textarea
-                  class="form-control"
-                  placeholder="Leave a comment here"
-                  id="floatingTextarea2"
-                  style="height: 100px"
-                  name="description"
-                ></textarea>
-                
-                <label for="floatingTextarea2">Description</label>
-                <div id="descriptionError" class="text-danger"></div>
-              </div>
-             
-              
-              <div class="form-floating">
-                  <textarea
-                    class="form-control"
-                    placeholder="Leave a comment here"
-                    id="floatingTextarea2"
-                    style="height: 100px"
-                    name="description"
-                  ></textarea>
-                  <label for="floatingTextarea2">Description</label>
-                  <div id="descriptionError" class="text-danger"></div>
-  
-  
-                </div>
-                
-                 <div class="form-floating">
-                <textarea
-                  class="form-control"
-                  placeholder="Leave a comment here"
-                  id="floatingTextarea2"
-                  style="height: 100px"
-                  name="description"
-                ></textarea>
-                <label for="floatingTextarea2">Description</label>
-                <div id="descriptionError" class="text-danger"></div>
-  
-              </div>
-              <div class="col-md-4 mt-5">
-                <input
-                  type="submit"
-                  value="Add Product"
-                  class="btn btn-primary form-control"
-                />
-              </div>
-            </form>
-          </div>
+    <aside id="sidebar">
+      <div class="d-flex">
+        <button class="toggle-btn" type="button">
+          <i class="lni lni-grid-alt"></i>
+        </button>
+        <div class="sidebar-logo">
+          <a href="#">Admin</a>
         </div>
-  </div>
-  <script>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-item">
+          <a href="/admin/dashboard" class="sidebar-link">
+            <i class="lni lni-user"></i>
+            <span>DASHBOARD</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="/admin/user_panel" class="sidebar-link">
+            <i class="lni lni-agenda"></i>
+            <span>USERS</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>INVENTORY</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/products" class="sidebar-link">Products</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/category" class="sidebar-link">Category</a>
+            </li>
+          </ul>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>COUPONS&OFFERS</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/coupons" class="sidebar-link">Coupons</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/admin/offers" class="sidebar-link">Offers</a>
+            </li>
+          </ul>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link">
+            <i class="lni lni-popup"></i>
+            <span>STOCK</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="/admin/orders" class="sidebar-link">
+            <i class="lni lni-cog"></i>
+            <span>ORDERS</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse" data-bs-target="#auth"
+            aria-expanded="false" aria-controls="auth">
+            <i class="lni lni-protection"></i>
+            <span>SALES</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+            <li class="sidebar-item">
+              <a href="/admin/sales" class="sidebar-link">Sales-Report</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">Inventory-Report</a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link">Purchase-Report</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="/admin/logout" class="sidebar-link" id="logout-btn">
+          <i class="lni lni-exit"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+    <div class="main p-3">
+      <div class="container" id="addproduct-container">
+        <div class="row px-5 pt-2">
+          <form id="addProductForm" action="/admin/products/add-product" method="POST" class="row g-3"
+            enctype="multipart/form-data">
 
-document.getElementById("addProductForm").addEventListener('submit', async function (e) {
-            e.preventDefault();
 
-            const formData = new FormData(this);
-            const formObject = Object.fromEntries(formData.entries());
+            <label class="fs-4 mb-3 h2">Product Details</label>
 
-            try {
-                const response = await fetch('/admin/products/add-product', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formObject)
-                });
+            <div class="col-md-6">
+              <input type="text" id="productname" name="productname" placeholder="PRODUCT NAME"
+                class="form-control product-name" />
+              <span id="productnameError" class="error"></span>
+            </div>
+            <div class="col-md-6">
+              <input type="number" id="originalprice" name="originalprice" placeholder="ORIGINAL PRICE"
+                class="form-control price" />
+              <span id="originalpriceError" class="error"></span>
+            </div>
+            <div class="col-md-6">
+              <input type="number" id="discount" name="discount" placeholder="Discount (%)"
+                class="form-control price" />
+              <span id="discountError" class="error"></span>
+            </div>
+            <div class="col-md-6">
+              <div class="row">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">Category</label>
+                  <select class="form-select" name="category" id="inputGroupSelect01">
+                    <% category.forEach(item=> { %>
+                      <option selected value="<%= item.categoryName %>">
+                        <%= item.categoryName %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <input type="number" id="quantity" name="quantity" placeholder="QTY" class="form-control quantity" />
+              <span id="quantityError" class="error"></span>
+            </div>
+            <label class="fs-4 mb-3 mt-5 h2">Product Features</label>
+            <div class="col-md-4">
+              <input type="text" id="primarymaterial" name="primarymaterial" placeholder="PRIMARY MATERIAL"
+                class="form-control" list="primary-material" />
+              <span id="primarymaterialError" class="error"></span>
+            </div>
+            <datalist id="primary-material">
+              <option value="European Ash Wood"></option>
+              <option value="Oak Wood "></option>
+              <option value="Teak Wood"></option>
+              <option value="Walnut Wood"></option>
+              <option value="Mahogany"></option>
+              <option value="Maple Wood"></option>
+              <option value="Birch Wood"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input type="text" id="floorstanding" name="floorstanding" placeholder="Floor Standing"
+                class="form-control" list="floor-standing" />
+              <span id="floorstandingError" class="error"></span>
+            </div>
+            <div class="col-md-4">
+              <input type="text" id="polishmaterial" name="polishmaterial" placeholder="Polish Material"
+                class="form-control" list="polish-materials" />
+              <span id="polishmaterialError" class="error"></span>
+            </div>
+            <datalist id="polish-materials">
+              <option value="Sayerlack "></option>
+              <option value="Dulux "></option>
+              <option value="Sadolin"></option>
+              <option value="Bondex"></option>
+              <option value="Caparol"></option>
+              <option value="Jotun"></option>
+              <option value="Benjamin Moore"></option>
+              <option value="Sherwin-Williams"></option>
+              <option value="Valspar"></option>
+              <option value="AkzoNobel"></option>
+              <option value="Boero"></option>
+              <option value="Farrow & Ball"></option>
+              <option value="Teknos "></option>
+              <option value="Tikkurila"></option>
+              <option value="Farrow & Ball "></option>
+            </datalist>
+            <datalist id="floor-standing">
+              <option value="Yes"></option>
+              <option value="No"></option>
+            </datalist>
+            
+            <label class="fs-4 mb-3 mt-5 h2">Specifications</label>
+            <div class="col-md-4">
+              <input type="text" id="material" name="material" placeholder="MATERIAL" class="form-control material" />
+              <span id="materialError" class="error"></span>
+            </div>
 
-                if (response.ok) {
-                   window.location.href = '/admin/products';
-                } else {
-                    const data = await response.json();
-                    document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
-                    document.getElementById('formErrors').style.display = 'none';
+            <div class="col-md-4">
+              <input type="text" id="warranty" name="warranty" placeholder="WARRANTY" class="form-control warranty"
+                list="warranty-options" />
+              <span id="warrantyError" class="error"></span>
+            </div>
+            <datalist id="warranty-options">
+              <option value="Yes"></option>
+              <option value="No"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input type="text" id="countryofOrigin" placeholder="Country of Origin"
+                class="form-control CountryofOrigin" name="countryofOrigin" list="country-options" />
+              <span id="countryofOriginError" class="error"></span>
+            </div>
+            <datalist id="country-options">
+              <option value="United States"></option>
+              <option value="Canada"></option>
+              <option value="United Kingdom"></option>
+              <option value="Australia"></option>
+              <option value="Germany"></option>
+              <option value="France"></option>
+              <option value="India"></option>
+              <option value="China"></option>
+              <option value="Japan"></option>
+              <option value="South Korea"></option>
+              <option value="Brazil"></option>
+              <option value="Mexico"></option>
+              <option value="Italy"></option>
+              <option value="Spain"></option>
+              <option value="Russia"></option>
+              <option value="South Africa"></option>
+              <option value="Saudi Arabia"></option>
+              <option value="Argentina"></option>
+              <option value="Indonesia"></option>
+              <option value="Turkey"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input type="number" id="weight" name="weight" placeholder="WEIGHT" class="form-control weight" />
+              <span id="weightError" class="error"></span>
+            </div>
+            <div class="col-md-4">
+              <input type="text" id="fabric_options" name="fabric_options" placeholder="FABRIC OPTIONS"
+                class="form-control fabric_options" list="fabric-options" />
+                <span id="fabric_optionsError" class="error"></span>
+            </div>
+            <datalist id="fabric-options">
+              <option value="Cotton"></option>
+              <option value="Linen"></option>
+              <option value="Wool"></option>
+              <option value="Silk"></option>
+              <option value="Velvet"></option>
+              <option value="Polyester"></option>
+              <option value="Acrylic"></option>
+              <option value="Nylon"></option>
+              <option value="Chenille"></option>
+              <option value="Leather"></option>
+              <option value="Microfiber"></option>
+              <option value="Suede"></option>
+              <option value="Viscose"></option>
+              <option value="Rayon"></option>
+              <option value="Bamboo"></option>
+              <option value="Jute"></option>
+              <option value="Hemp"></option>
+              <option value="Acetate"></option>
+              <option value="Modal"></option>
+              <option value="Spandex"></option>
+              <option value="Cashmere"></option>
+              <option value="Faux Fur"></option>
+              <option value="Faux Leather"></option>
+            </datalist>
+            <div class="col-md-4">
+              <input type="text" id="brand" name="brand" placeholder="BRAND" class="form-control brand"
+                list="brand-options" />
+              <span id="brandError" class="error"></span>
+            </div>
+            <datalist id="brand-options">
+              <option value="Herman Miller"></option>
+              <option value="Knoll"></option>
+              <option value="Vitra"></option>
+              <option value="Minotti"></option>
+              <option value="B&B Italia"></option>
+              <option value="Fritz Hansen"></option>
+              <option value="Poltrona Frau"></option>
+              <option value="Cassina"></option>
+              <option value="Roche Bobois"></option>
+              <option value="Muuto"></option>
+              <option value="Hay"></option>
+              <option value="Gubi"></option>
+              <option value="Molteni & C"></option>
+              <option value="Boffi"></option>
+              <option value="Arper"></option>
+              <option value="Magis"></option>
+              <option value="Kartell"></option>
+              <option value="Alessi"></option>
+              <option value="Pedrali"></option>
+              <option value="Flexform"></option>
+              <option value="Ligne Roset"></option>
+              <option value="Porro"></option>
+              <option value="Cappellini"></option>
+              <option value="Driade"></option>
+              <option value="Zanotta"></option>
+              <option value="Gloster"></option>
+              <option value="Dedon"></option>
+              <option value="Emeco"></option>
+              <option value="HAY"></option>
+              <option value="Ferm Living"></option>
+              <option value="Normann Copenhagen"></option>
+              <option value="Gandia Blasco"></option>
+              <option value="Saba Italia"></option>
+              <option value="Desalto"></option>
+              <option value="Moroso"></option>
+              <option value="Cattelan Italia"></option>
+              <option value="Tonon"></option>
+              <option value="Baxter"></option>
+              <option value="Bonaldo"></option>
+              <option value="Ceccotti Collezioni"></option>
+              <option value="Glas Italia"></option>
+              <option value="Kettal"></option>
+              <option value="Foscarini"></option>
+              <option value="Louis Poulsen"></option>
+              <option value="Tom Dixon"></option>
+              <option value="Anglepoise"></option>
+              <option value="DCW Éditions"></option>
+              <option value="Santa & Cole"></option>
+              <option value="Artemide"></option>
+              <option value="Flos"></option>
+              <option value="Ingo Maurer"></option>
+              <option value="Nemo Lighting"></option>
+              <option value="Vibia"></option>
+            </datalist>
+            <div class="col-md-6">
+              <input type="text" id="dimension" name="dimension" placeholder="Dimensions"
+                class="form-control dimensions" list="dimension-options" />
+              <span id="dimensionError" class="error"></span>
+            </div>
+            <datalist id="dimension-options">
+              <option value="134L x 75W x 77H"></option>
+              <option value="120L x 60W x 80H"></option>
+              <option value="150L x 90W x 75H"></option>
+              <option value="180L x 90W x 75H"></option>
+              <option value="200L x 100W x 76H"></option>
+              <option value="210L x 100W x 80H"></option>
+              <option value="220L x 110W x 75H"></option>
+              <option value="240L x 120W x 78H"></option>
+              <option value="250L x 120W x 80H"></option>
+              <option value="260L x 130W x 82H"></option>
+              <option value="280L x 140W x 85H"></option>
+              <option value="300L x 150W x 90H"></option>
+              <option value="320L x 160W x 95H"></option>
+              <option value="340L x 170W x 100H"></option>
+            </datalist>
 
-                    if (data.errors) {
-                        for (const key in data.errors) {
-                            document.getElementById(`${key}Error`).innerHTML = data.errors[key].msg;
-                        }
-                    }
+            <label class="fs-4 mb-3 mt-5 h2">Product Images</label>
+            <div class="col-md-6">
+              <input class="form-control formFileMultiple" type="file" name="files" multiple />
+              <div class="text-danger" id="filesError"></div>
+            </div>
+            <div class="col-md-6">
+              <input class="form-control formFileMultiple" type="file" name="files" multiple />
 
-                    if (data.customError) {
-                        document.getElementById('formErrors').style.display = 'block';
-                        document.getElementById('formErrors').innerHTML = data.customError;
-                    }
+            </div>
+            <div class="col-md-6">
+              <input class="form-control formFileMultiple" type="file" name="files" multiple />
 
-                    setTimeout(() => {
-                        document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
-                        document.getElementById('formErrors').style.display = 'none';
-                    }, 3000);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
-      const hamBurger = document.querySelector(".toggle-btn");
+            </div>
 
-      hamBurger.addEventListener("click", function () {
-          document.querySelector("#sidebar").classList.toggle("expand");
+
+
+            <label class="fs-4 mb-3 mt-5 h2">Product Description</label>
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Leave a comment here" id="description1" style="height: 100px"
+                name="description"></textarea>
+              <label for="description1">Description</label>
+              <span id="description1Error" class="error"></span>
+            </div>
+
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Leave a comment here" id="description2" style="height: 100px"
+                name="description"></textarea>
+              <label for="description2">Description</label>
+              <span id="description2Error" class="error"></span>
+            </div>
+
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Leave a comment here" id="description3" style="height: 100px"
+                name="description"></textarea>
+              <label for="description3">Description</label>
+              <span id="description3Error" class="error"></span>
+            </div>
+            <div class="col-md-4 mt-5">
+              <span><button type="submit" class="btn btn-dark">Add Product</button></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+
+      document.getElementById('addProductForm').addEventListener('submit', function (event) {
+        event.preventDefault(); 
+   
+        const errorElements = document.querySelectorAll('.error');
+        errorElements.forEach(el => el.textContent = '');
+
+        const description1 = document.getElementById('description1').value.trim();
+        const description2 = document.getElementById('description2').value.trim();
+        const description3 = document.getElementById('description3').value.trim();
+        const productName = document.getElementById('productname').value.trim();
+        const originalPrice = document.getElementById('originalprice').value.trim();
+        const discount = document.getElementById('discount').value.trim();
+        const quantity = document.getElementById('quantity').value.trim();
+        const primaryMaterial = document.getElementById('primarymaterial').value.trim();
+        const floorStanding = document.getElementById('floorstanding').value.trim();
+        const polishMaterial = document.getElementById('polishmaterial').value.trim();
+        const material = document.getElementById('material').value.trim();
+        const warranty = document.getElementById('warranty').value.trim();
+        const countryOfOrigin = document.getElementById('countryofOrigin').value.trim();
+        const weight = document.getElementById('weight').value.trim();
+        const fabricOptions = document.getElementById('fabric_options').value.trim();
+        const brand = document.getElementById('brand').value.trim();
+        const dimension = document.getElementById('dimension').value.trim();
+
+
+        let isValid = true;
+
+       
+
+        if (!productName || productName.length < 4 || !/^[a-zA-Z\s]+$/.test(productName)) {
+          document.getElementById('productnameError').textContent = 'Product name is required and must be at least 4 characters long and contain only letters.';
+          clearErrorAfterTimeout('productnameError');
+          isValid = false;
+        }
+
+        if (!originalPrice && originalPrice !== 0) { 
+        document.getElementById('originalpriceError').textContent = 'Original price is required and must be a number.';
+        clearErrorAfterTimeout('originalpriceError');
+        isValid = false;
+    } else if (isNaN(originalPrice)) { 
+        document.getElementById('originalpriceError').textContent = 'Original price must be a number.';
+        clearErrorAfterTimeout('originalpriceError');
+        isValid = false;
+    } else if (originalPrice < 0) { 
+        document.getElementById('originalpriceError').textContent = 'Original price must be a non-negative number.';
+        clearErrorAfterTimeout('originalpriceError');
+        isValid = false;
+    }
+
+        if (!discount && discount !== 0) {
+        document.getElementById('discountError').textContent = 'Discount is required and must be a number.';
+        clearErrorAfterTimeout('discountError');
+        isValid = false;
+    } else if (isNaN(discount)) { 
+        document.getElementById('discountError').textContent = 'Discount must be a number.';
+        clearErrorAfterTimeout('discountError');
+        isValid = false;
+    } else if (discount < 0 || discount > 60) { 
+        document.getElementById('discountError').textContent = 'Discount must be between 0 and 60.';
+        clearErrorAfterTimeout('discountError');
+        isValid = false;
+    }
+
+    if (!quantity && quantity !== 0) { 
+        document.getElementById('quantityError').textContent = 'Quantity is required and must be a number.';
+        clearErrorAfterTimeout('quantityError');
+        isValid = false;
+    } else if (isNaN(quantity)) { 
+        document.getElementById('quantityError').textContent = 'Quantity must be a number.';
+        clearErrorAfterTimeout('quantityError');
+        isValid = false;
+    } else if (quantity <= 0) { 
+        document.getElementById('quantityError').textContent = 'Quantity must be a positive number.';
+        clearErrorAfterTimeout('quantityError');
+        isValid = false;
+    }
+
+
+        if (!primaryMaterial) {
+          document.getElementById('primarymaterialError').textContent = 'Primary material is required.';
+          clearErrorAfterTimeout('primarymaterialError');
+          isValid = false;
+        }
+
+        if (!floorStanding) {
+          document.getElementById('floorstandingError').textContent = 'Floor standing field is required.';
+          clearErrorAfterTimeout("floorstandingError");
+          isValid = false;
+        }
+
+        if (!polishMaterial) {
+          document.getElementById('polishmaterialError').textContent = 'Polish material is required.';
+          clearErrorAfterTimeout("polishmaterialError");
+          isValid = false;
+        }
+
+        if (!material) {
+          document.getElementById('materialError').textContent = 'Material is required.';
+          clearErrorAfterTimeout("materialError");
+          isValid = false;
+        }
+
+        if (!warranty) {
+          document.getElementById('warrantyError').textContent = 'Warranty is required.';
+          clearErrorAfterTimeout("warrantyError");
+          isValid = false;
+        }
+
+        if (!countryOfOrigin) {
+          document.getElementById('countryofOriginError').textContent = 'Country of origin is required.';
+          clearErrorAfterTimeout("countryofOriginError");
+          isValid = false;
+        }
+
+        if (!weight && weight !== 0) { 
+        document.getElementById('weightError').textContent = 'Weight is required and must be a number.';
+        clearErrorAfterTimeout('weightError');
+        isValid = false;
+    } else if (isNaN(weight)) { 
+        document.getElementById('weightError').textContent = 'Weight must be a number.';
+        clearErrorAfterTimeout('weightError');
+        isValid = false;
+    } else if (weight < 0) { 
+        document.getElementById('weightError').textContent = 'Weight must be a non-negative number.';
+        clearErrorAfterTimeout('weightError');
+        isValid = false;
+    }
+
+        if (fabricOptions && typeof fabricOptions !== 'string') {
+          document.getElementById('fabric_optionsError').textContent = 'Fabric options must be a string if provided.';
+          clearErrorAfterTimeout("fabric_optionsError");
+          isValid = false;
+        }
+
+        if (!brand) {
+        document.getElementById('brandError').textContent = 'Brand is required.';
+        clearErrorAfterTimeout('brandError');
+        isValid = false;
+    } else if (!isNaN(brand)) {
+        document.getElementById('brandError').textContent = 'Brand must not be a number.';
+        clearErrorAfterTimeout('brandError');
+        isValid = false;
+    } else if (/[^a-zA-Z\s]/.test(brand)) {
+        document.getElementById('brandError').textContent = 'Brand must not contain symbols.';
+        clearErrorAfterTimeout('brandError');
+        isValid = false;
+    } else if (/^\s|\s$/.test(brand)) {
+        document.getElementById('brandError').textContent = 'Brand must not have leading or trailing spaces.';
+        clearErrorAfterTimeout('brandError');
+        isValid = false;
+    }
+
+        if (!dimension) {
+          document.getElementById('dimensionError').textContent = 'Dimension is required.';
+          clearErrorAfterTimeout("dimensionError");
+          isValid = false;
+        }
+        
+
+        if (isValid) {
+          this.submit();
+        }
       });
-  
+      
+       function clearErrorAfterTimeout(elementId, timeout = 5000) {
+         setTimeout(() => {
+         document.getElementById(elementId).textContent = '';
+        }, timeout);
+      }
+
+      const hamBurger = document.querySelector(".toggle-btn");
+      hamBurger.addEventListener("click", function () {
+        document.querySelector("#sidebar").classList.toggle("expand");
+      });
+
+
+    </script>

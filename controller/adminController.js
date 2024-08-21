@@ -316,6 +316,7 @@ getAdminProduct : async (req, res, next) => {
         },
       },
       { $unwind: "$category" },
+      { $sort: { createdAt: -1 } },
     ]);
 
     const productsData = convertDate(products);
@@ -402,7 +403,7 @@ addProduct : async (req, res, next) => {
       countryofOrigin: req.body.countryofOrigin,
       warranty: req.body.warranty,
       dimension: req.body.dimension,
-      fabric_options: req.body.fabric_options,
+      fabric_options: req.body.fabric_options, 
       inStock: req.body.quantity > 0 ? true : false
     };
 
@@ -569,7 +570,7 @@ adminLogout : async (req, res, next) => {
 
 getOrdersPage : async (req, res, next) => {
   try {
-    const orders = await Orderdb.orderCollection.find().lean();
+    const orders = await Orderdb.orderCollection.find().sort({createdAt:-1}).lean();
     console.log('Orders:', orders); 
     res.status(200).render("admin/order_management",{orders})
   } catch (error) {

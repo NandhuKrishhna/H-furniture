@@ -36,17 +36,23 @@ exports.signupAuth = (req, res, next) => {
   
   exports.isUserBlocked = async (req, res, next) => {
     try {
-      const user = await Userdb.userCollection.findById(req.user.id); 
+      const user = await Userdb.userCollection.findById(req.user.id);
+  
       if (user && user.blocked) {
-        res.status(403).send('Your account is blocked. Please contact support.');
+      
+        res.clearCookie('token'); 
+  
+      
+        res.redirect('/user/login?blocked=true');
       } else {
         next();
       }
     } catch (err) {
       console.log(err);
-      res.status(500).send('Internal Server Error');
+     
     }
   };
+  
 
 exports.noToken = (req,res,next)=>{
   

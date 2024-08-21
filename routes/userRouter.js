@@ -5,7 +5,7 @@ const passport = require("passport");
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-const auth = require("../middleware/userAuth");
+const {isUserAuthenticated} = require("../middleware/userAuth");
 const {  
     
     validateOtp,
@@ -59,75 +59,75 @@ router.get("/user/product/:id", userController.getProductDetails);
 
 
 //---------cart routes-----------
-router.get("/user/cart", userController.getCart )
-router.post("/user/add-to-cart", userController.addToCart)
-router.patch("/user/update-cart", userController.updateCart);
-router.delete("/user/delete-from-cart", userController.removeFromCart);
+router.get("/user/cart", isUserAuthenticated, userController.getCart )
+router.post("/user/add-to-cart", isUserAuthenticated, userController.addToCart)
+router.patch("/user/update-cart",isUserAuthenticated, userController.updateCart);
+router.delete("/user/delete-from-cart", isUserAuthenticated, userController.removeFromCart);
 //---------apply coupon-------
-router.post("/user/apply-coupon", userController.applyCoupon);
-router.post("/user/remove-coupon", userController.removeCoupon);
+router.post("/user/apply-coupon",isUserAuthenticated, userController.applyCoupon);
+router.post("/user/remove-coupon",isUserAuthenticated, userController.removeCoupon);
 
 router.route("/user/checkout_address_details")
-.get(auth.isUserAuthenticated,userController.checkout)
-.post(auth.isUserAuthenticated,userController.checkout)
+.get(isUserAuthenticated,userController.checkout)
+.post(isUserAuthenticated,userController.checkout)
 
 
 // my accound details--------
 router.route("/user/my-account")
-.get(userController.getMyAccount)
-.post(userController.postMyAccount)
+.get(isUserAuthenticated,userController.getMyAccount)
+.post(isUserAuthenticated,userController.postMyAccount)
 
 // getting my address details page
-router.get("/user/my-address",  userController.getMyAddress)
+router.get("/user/my-address",isUserAuthenticated,  userController.getMyAddress)
 // getting add address , edit , delete----------
 
 router.route("/user/add_address")
-.get(userController.getAddMyAddress)
-.post(validateAddress,validate,userController.addMyAddress)
+.get(isUserAuthenticated,userController.getAddMyAddress)
+.post(isUserAuthenticated,validateAddress,validate,userController.addMyAddress)
 
 
 //-------edit address
-router.get("/user/edit_address/:id",userController.getEditMyAddress)
-router.post("/user/edit_address/:id",userController.editMyAddress)
+router.get("/user/edit_address/:id",isUserAuthenticated,userController.getEditMyAddress)
+router.put("/user/edit_address/:id",isUserAuthenticated,validateAddress,validate,userController.editMyAddress)
 
 
 
-router.delete("/user/delete_address/:id", userController.deleteAddress);
+router.delete("/user/delete_address/:id",isUserAuthenticated, userController.deleteAddress);
 
 
 //-----set new password-------
 router.route("/user/set_new_password")
-.get(userController.getSetNewPassword)
-.post(validateChangePass,validate,  userController.setNewPassword)
+.get(isUserAuthenticated,userController.getSetNewPassword)
+.post(isUserAuthenticated,validateChangePass,validate,  userController.setNewPassword)
 
 router.route("/user/payment_method")
-.get(userController.getPaymentMethod)
-.post(userController.paymentMethod)
-router.post("/user/payment_callback", userController.paymentVerification)
+.get(isUserAuthenticated,userController.getPaymentMethod)
+.post(isUserAuthenticated,userController.paymentMethod)
+router.post("/user/payment_callback",isUserAuthenticated, userController.paymentVerification)
 
 //-----get order page---------
-router.get("/user/orders",userController.getMyOrders)
+router.get("/user/orders",isUserAuthenticated,userController.getMyOrders)
 
-router.post('/order/:orderId/item/:itemId/cancel', userController.cancelOrderItem);
-router.get("/order/details/:orderId/:itemId", userController.orderDetails)
+router.post('/order/:orderId/item/:itemId/cancel',isUserAuthenticated, userController.cancelOrderItem);
+router.get("/order/details/:orderId/:itemId",isUserAuthenticated, userController.orderDetails)
 
 
-router.get("/user/re-order/:orderId", userController.repayAmount); 
-router.post("/user/repayment_method", userController.repaymentMethod);
-router.post("/user/repayment_callback", userController.repaymentVerification);
+router.get("/user/re-order/:orderId",isUserAuthenticated, userController.repayAmount); 
+router.post("/user/repayment_method", isUserAuthenticated,userController.repaymentMethod);
+router.post("/user/repayment_callback",isUserAuthenticated, userController.repaymentVerification);
 
 //-----invoice------
-router.get("/download-invoice/:orderId", userController.getInvoice);
+router.get("/download-invoice/:orderId",isUserAuthenticated, userController.getInvoice);
 
 //-----coupon page
-router.get("/user/coupons", userController.getAddCouponPage)
+router.get("/user/coupons",isUserAuthenticated, userController.getAddCouponPage)
 
-router.get("/user/wishlist", userController.getWishList)
-router.post("/user/addwishlist",userController.addToWishList)
-router.post("/user/remove-wishlist",userController.removeFromWishList)
+router.get("/user/wishlist",isUserAuthenticated, userController.getWishList)
+router.post("/user/addwishlist",isUserAuthenticated,userController.addToWishList)
+router.post("/user/remove-wishlist",isUserAuthenticated,userController.removeFromWishList)
 //-----get wallet-------->
-router.get("/user/wallet", userController.getWallet)
-router.post("/user/wallet", userController.addMoneyToWallet)
+router.get("/user/wallet",isUserAuthenticated, userController.getWallet)
+router.post("/user/wallet",isUserAuthenticated, userController.addMoneyToWallet)
 
 
 router.post("/user/logout", userController.userLogout)

@@ -4,14 +4,15 @@ const adminController = require("./../controller/adminController");
 const auth = require("../middleware/adminAuth");
 const { upload } = require("../utils/helpers");
 const {
-  productValidators,
+
   validateLoginRules,
   validate,
   adminLoginRules,
-  validateProduct,
   validateCategory,
   validateAddress,
   validateCoupon,
+  productValidationRules,
+  proValidate
  
 
 } = require('../utils/errorhandling');
@@ -29,9 +30,9 @@ router.route("/admin/login")
 router.get("/admin/user_panel", auth.isadminAuthenticated, adminController.userManagement);
 router.get("/admin/search", adminController.userSearch)
 
-router.patch("/admin/user_panel/block_user/:id", adminController.blockUser);
+router.patch("/admin/user_panel/block_user/:id",  auth.isadminAuthenticated, adminController.blockUser);
 
-router.patch("/admin/user_panel/unblock_user/:id", adminController.unblockUser);
+router.patch("/admin/user_panel/unblock_user/:id",  auth.isadminAuthenticated, adminController.unblockUser);
 
 router.get("/admin/category", auth.isadminAuthenticated, adminController.getCategory);
 
@@ -54,11 +55,11 @@ router.get("/admin/products", auth.isadminAuthenticated, adminController.getAdmi
 router.get("/admin/products/add-product", auth.isadminAuthenticated, adminController.adminaddProduct);
 
 router.post(
-  "/admin/products/add-product", auth.isadminAuthenticated, validateProduct,validate,  upload.array("files", 4),
+  "/admin/products/add-product", auth.isadminAuthenticated,  upload.array("files", 4),
   adminController.addProduct
 );
 
-router.delete("/admin/products/delete-product/:id", adminController.deleteProduct);
+router.delete("/admin/products/delete-product/:id",  auth.isadminAuthenticated, adminController.deleteProduct);
 
 router.get("/admin/products/edit-product/:id", auth.isadminAuthenticated, adminController.getEditProduct);
 
@@ -75,25 +76,25 @@ router.put(
 
 router.get("/admin/logout", adminController.adminLogout);
 
-router.get("/admin/orders", adminController.getOrdersPage)
+router.get("/admin/orders", auth.isadminAuthenticated, adminController.getOrdersPage)
 
-router.post('/admin/orders/update-status', adminController.updateOrderStatus);
+router.post('/admin/orders/update-status',  auth.isadminAuthenticated, adminController.updateOrderStatus);
 
 // coupon managemnt
-router.get("/admin/coupons", adminController.couponManagement)
+router.get("/admin/coupons",  auth.isadminAuthenticated, adminController.couponManagement)
 
-router.get("/admin/coupons/add-coupon", adminController.getAddCouponPage)
-router.post("/admin/coupons/add-coupon", validateCoupon, validate, adminController.addCoupon)
-router.get("/admin/coupons/edit-coupons/:id", adminController.getEditCoupon)
-router.patch("/admin/coupons/edit-coupons/:id", validateCoupon, validate, adminController.editCoupon)
+router.get("/admin/coupons/add-coupon",  auth.isadminAuthenticated, adminController.getAddCouponPage)
+router.post("/admin/coupons/add-coupon",  auth.isadminAuthenticated, validateCoupon, validate, adminController.addCoupon)
+router.get("/admin/coupons/edit-coupons/:id",  auth.isadminAuthenticated, adminController.getEditCoupon)
+router.patch("/admin/coupons/edit-coupons/:id",  auth.isadminAuthenticated, validateCoupon, validate, adminController.editCoupon)
 
-router.delete("/admin/coupons/delete-coupons/:id", adminController.deleteCoupon)
+router.delete("/admin/coupons/delete-coupons/:id",  auth.isadminAuthenticated, adminController.deleteCoupon)
 
 
-router.get("/admin/sales", adminController.getSaleReport)
-router.get("/admin/sales/download", adminController.downlordSalesReport)
+router.get("/admin/sales",  auth.isadminAuthenticated, adminController.getSaleReport)
+router.get("/admin/sales/download",  auth.isadminAuthenticated, adminController.downlordSalesReport)
 
-router.get("/admin/dashboard",adminController.dashboard)
+router.get("/admin/dashboard",  auth.isadminAuthenticated,adminController.dashboard)
 
 
 module.exports = router

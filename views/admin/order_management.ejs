@@ -231,7 +231,7 @@
               </li>
           </ul>
           <div class="sidebar-footer">
-              <a href="#" class="sidebar-link" id="logout-btn">
+              <a href="/admin/logout" class="sidebar-link" id="logout-btn">
                   <i class="lni lni-exit"></i>
                   <span>Logout</span>
               </a>
@@ -252,6 +252,7 @@
                     <th>TIME</th>
                     <th>QUANTITY</th>
                     <th>PRICE</th>
+                    <th>DETAILS</th>
                     <th>ACTIONS</th>
                   </tr>
                 </thead>
@@ -266,6 +267,7 @@
                           <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
                           <td><%= item.quantity %></td>
                           <td>₹<%= item.price.toFixed(2) %></td>
+                          <td><button class="btn btn-dark details-button" data-order-id="<%= order._id %>">Details</button></td>
                           <td>
                             <button class="btn btn-dark edit-status-button" data-order-id="<%= order._id %>">Edit</button>
                           </td>
@@ -280,59 +282,7 @@
       </div>
   </div>
 
-  <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark">
-          <div class="modal-header">
-            <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-    
-          <div style="height:fit-content; width:100%;">
-            <div class="row p-2">
-              <span class="d-flex justify-content-center font-weight-bold text-white fs-6 p-2 modal-body-alert">
-              </span>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" id="cancel_crop_button" class="btn btn-light" style="width:fit-content;"
-              data-bs-dismiss="modal">Cancel</button>
-            <button style="width: 110px;" id="confirmAction" type="button" class="btn btn-danger">Confirm</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button id="alert-button" class="btn" hidden data-bs-toggle="modal" data-bs-target="#imageCropModal"></button>
-    
-    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content bg-dark">
-          <div class="modal-header">
-            <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-    
-          <div style="height:fit-content; width:100%;">
-            <div class="row p-2">
-              <div class="d-flex justify-content-center align-items-center">
-                <div>
-                  <span class="font-weight-bold text-white fs-6 px-3 me-2 modal-body-msg">
-                  </span>
-                </div>
-                <div class="loader">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" id="cancel_button" class="btn btn-danger text-white" style="width:fit-content;"
-              data-bs-dismiss="modal">Cancel</button>
-    
-          </div>
-        </div>
-      </div>
-    </div>
-    <button id="msg-button" hidden class="btn" data-bs-toggle="modal" data-bs-target="#alertModal"></button>
+
   <script>
       $(document).ready(function() {
        $('.edit-status-button').click(function() {

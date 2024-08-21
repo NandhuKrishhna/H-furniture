@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function updateQuantity(productId, quantity) {
-    
+
     fetch('/user/update-cart', {
       method: 'PATCH',
       headers: {
@@ -142,18 +142,43 @@ document.addEventListener('DOMContentLoaded', () => {
     })
       .then(response => response.json())
       .then(response => {
-        const inputField = document.querySelector(`input[data-product-id="${productId}"]`);
-        inputField.value = quantity;
+        if (response.message === 'Cart updated successfully') {
 
-        document.querySelector('#subtotalAmount').innerText = `₹${response.totalAmount.toFixed(2)}`;
-        document.querySelector('#totalAmount').innerText = `₹${response.finalAmount.toFixed(2)}`;
-        document.querySelector(`#price-${productId}`).innerText = `₹${response.updatedPrice.toFixed(2)}`;
+          const inputField = document.querySelector(`input[data-product-id="${productId}"]`);
+          inputField.value = quantity;
+
+          document.querySelector('#subtotalAmount').innerText = `₹${response.totalAmount.toFixed(2)}`;
+          document.querySelector('#totalAmount').innerText = `₹${response.finalAmount.toFixed(2)}`;
+          document.querySelector(`#price-${productId}`).innerText = `₹${response.updatedPrice.toFixed(2)}`;
+
+
+          // Swal.fire({
+          //   title: 'Updated!',
+          //   text: 'Your cart has been updated successfully.',
+          //   icon: 'success',
+          //   confirmButtonText: 'OK'
+          // });
+        } else {
+
+          Swal.fire({
+            title: 'Oops!',
+            text: response.message || 'An error occurred while updating the quantity.',
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+          });
+        }
       })
       .catch(error => {
         console.error('Error updating quantity:', error);
-        alert('An error occurred while updating the quantity.');
+        Swal.fire({
+          title: 'Error!',
+          text: 'An error occurred while updating the quantity.',
+          icon: 'error',
+          confirmButtonText: 'Try Again'
+        });
       });
   }
+
   
   const proceedButton = document.getElementById('proceed-btn');
 

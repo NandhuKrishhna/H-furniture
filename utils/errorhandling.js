@@ -1,5 +1,5 @@
 const { check, validationResult } = require('express-validator');
-
+const { body } = require('express-validator');
 
 // otp validator
 exports.validateOtp = [
@@ -114,84 +114,73 @@ exports.adminLoginRules = [
 ];
 
 
-//add product validator
 
 
-exports.validateProduct = [
-  check('productName')
+
+
+
+
+exports.productValidationRules = [
+  check('productname')
     .trim()
-    .notEmpty().withMessage('Product name is required')
-    .isAlphanumeric('en-US', { ignore: ' ' }).withMessage('Product name should not contain symbols'),
+    .notEmpty().withMessage('Product name is required.')
+    .isLength({ min: 4 }).withMessage('Product name must be at least 4 characters long.')
+    .matches(/^[a-zA-Z]+$/).withMessage('Product name must contain only letters.'),
 
   check('originalprice')
-    .notEmpty().withMessage('Original price is required')
-    .isFloat({ min: 0 }).withMessage('Original price should not be negative'),
+    .notEmpty().withMessage('Original price is required.')
+    .isNumeric().withMessage('Original price must be a number.'),
 
-  check('discount')
-    .notEmpty().withMessage('Discount is required')
-    .isFloat({ min: 0 }).withMessage('Discount should not be negative'),
+   check('discount')
+    .notEmpty().withMessage('Discount is required.')
+    .isNumeric().withMessage('Discount must be a number.'),
 
-  check('inStock')
-    .notEmpty().withMessage('In stock is required'),
+   check('quantity')
+    .notEmpty().withMessage('Quantity is required.')
+    .isNumeric().withMessage('Quantity must be a number.'),
 
-  check('weight')
-    .notEmpty().withMessage('Weight is required')
-    .isFloat({ min: 0 }).withMessage('Weight should not be negative'),
+   check('primarymaterial')
+    .notEmpty().withMessage('Primary material is required.')
+    .isString().withMessage('Primary material must be a string.'),
 
-  check('category')
-    .notEmpty().withMessage('Category is required')
-    .isMongoId().withMessage('Category should be a valid ID'),
+   check('floorstanding')
+    .notEmpty().withMessage('Floor standing field is required.')
+    .isString().withMessage('Floor standing must be a string.'),
 
-  check('description')
-    .isArray({ min: 1 }).withMessage('Include at least one description'),
+   check('polishmaterial')
+    .notEmpty().withMessage('Polish material is required.')
+    .isString().withMessage('Polish material must be a string.'),
 
-  check('quantity')
-    .notEmpty().withMessage('Quantity is required')
-    .isInt({ min: 0 }).withMessage('Quantity should not be negative'),
+   check('material')
+    .notEmpty().withMessage('Material is required.')
+    .isString().withMessage('Material must be a string.'),
 
-  check('brand')
-    .trim()
-    .notEmpty().withMessage('Brand is required'),
+   check('warranty')
+    .notEmpty().withMessage('Warranty is required.')
+    .isString().withMessage('Warranty must be a string.'),
 
-  check('primarymaterial')
-    .trim()
-    .notEmpty().withMessage('Primary material is required'),
+   check('countryofOrigin')
+    .notEmpty().withMessage('Country of origin is required.')
+    .isString().withMessage('Country of origin must be a string.'),
 
-  check('floorstanding')
-    .trim()
-    .notEmpty().withMessage('Floor standing is required'),
+   check('weight')
+    .notEmpty().withMessage('Weight is required.')
+    .isNumeric().withMessage('Weight must be a number.'),
 
-  check('polishmaterial')
-    .trim()
-    .notEmpty().withMessage('Polish material is required'),
+   check('fabric_options')
+    .optional()
+    .isString().withMessage('Fabric options must be a string if provided.'),
 
-  check('color')
-    .isArray({ min: 1 }).withMessage('Include at least one color'),
+   check('brand')
+    .notEmpty().withMessage('Brand is required.')
+    .isString().withMessage('Brand must be a string.'),
 
-  check("files")
-    .isArray({ min: 3 }).withMessage('Include at least 3 images'),
+   check('dimension')
+    .notEmpty().withMessage('Dimension is required.')
+    .isString().withMessage('Dimension must be a string.'),
 
-  check('material')
-    .trim()
-    .notEmpty().withMessage('Material is required'),
-
-  check('warranty')
-    .trim()
-    .notEmpty().withMessage('Warranty is required'),
-
-  check('countryofOrigin')
-    .trim()
-    .notEmpty().withMessage('Country of origin is required'),
-
-  check('fabric_options')
-    .trim()
-    .notEmpty().withMessage('Fabric options are required'),
-
-  check('dimension')
-    .trim()
-    .notEmpty().withMessage('Dimension is required'),
-];
-
+  
+]
 
 
 

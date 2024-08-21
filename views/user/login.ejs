@@ -42,7 +42,16 @@
     </div>
   </div>
 </div>
-
+<% if (blocked) { %>
+  <script>
+    Swal.fire({
+      icon: 'error',
+      title: 'Account Blocked',
+      text: 'Your account has been blocked. Please contact support.',
+      confirmButtonText: 'OK'
+    });
+  </script>
+<% } %>
 <style>
   
   body {

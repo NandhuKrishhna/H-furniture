@@ -186,6 +186,8 @@ module.exports = {
   //get user Login
   getUserLogin: (req, res, next) => {
     try {
+      const isBlocked = req.query.blocked === "true";
+
       if (req.cookies.token) {
         const user = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
         if (user) {
@@ -195,7 +197,8 @@ module.exports = {
         req.session.destroy();
         return res.status(200).render("user/login", {
           errors: null,
-          userLogin: true
+          userLogin: true,
+          blocked:isBlocked
         });
       }
     } catch (err) {
@@ -534,9 +537,6 @@ module.exports = {
           }
         );
       }
-
-
-      // Handle Brand Filter
       if (req.query.brand) {
         const brands = Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand];
         pipeline.push({
@@ -545,8 +545,6 @@ module.exports = {
           }
         });
       }
-
-      // Handle Discount Filter
       if (req.query.discount) {
         const discount = parseInt(req.query.discount);
         pipeline.push({
@@ -556,7 +554,6 @@ module.exports = {
         });
       }
 
-      // Add field for case-insensitive sorting
       if (sort === 'name_asc' || sort === 'name_desc') {
         pipeline.push({
           $addFields: {
@@ -565,7 +562,6 @@ module.exports = {
         });
       }
 
-      // Sorting
       switch (sort) {
         case 'price_asc':
           pipeline.push({ $sort: { originalprice: 1 } });
@@ -586,8 +582,6 @@ module.exports = {
           pipeline.push({ $sort: { _id: 1 } });
           break;
       }
-
-      // Total products count
       const totalProductsResult = await Productdb.productCollection.aggregate([
         ...pipeline,
         { $count: "total" }
@@ -597,7 +591,6 @@ module.exports = {
       const totalPages = Math.ceil(totalProducts / limit);
       const nextPage = page < totalPages ? page + 1 : null;
 
-      // Pagination
       pipeline.push(
         { $skip: (page - 1) * limit },
         { $limit: limit }
@@ -1110,15 +1103,26 @@ module.exports = {
         const userId = user._id;
         const { productId, quantity } = req.body;
 
-        // Fetch the product and calculate its price
+  
         const product = await Productdb.productCollection.findOne({ _id: productId });
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
-
+        if(quantity > 10 ){
+           return res.status(400).json({
+            success:false,
+            message : "You can only add 10 units at a time"
+          })
+        }
+        if(quantity > product.quantity){
+          return res.status(400).json({
+            success:false,
+            message : "There are only "+product.quantity+" units in stock"
+          })
+        }
         const price = calculateDiscountedPrice(product.originalprice, product.discount || 0);
 
-        // Update product in the cart
+
         const updateResult = await Cartdb.cartCollection.updateOne(
             { userId: userId, 'products.productId': productId },
             {
@@ -1132,18 +1136,15 @@ module.exports = {
         if (updateResult.modifiedCount === 0) {
             return res.status(404).json({ message: 'Cart item not found' });
         }
-
-        // Fetch the updated cart
         const cart = await Cartdb.cartCollection.findOne({ userId: userId });
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
 
-        // Recalculate total amount
         const totalAmount = cart.products.reduce((total, product) => total + product.price, 0);
 
-        // Update cart with recalculated values
-        const finalAmount = totalAmount; // Assuming finalAmount is the same as totalAmount for now
+
+        const finalAmount = totalAmount; 
         await Cartdb.cartCollection.updateOne(
             { userId: userId },
             {
@@ -1205,7 +1206,7 @@ removeFromCart: async (req, res, next) => {
           finalAmount = totalAmount;
         }
       } else {
-        // If the cart is empty, reset the totalAmount, discount, and finalAmount
+        
         await Cartdb.cartCollection.updateOne(
           { userId: new ObjectId(userInfo._id) },
           {
@@ -1221,7 +1222,7 @@ removeFromCart: async (req, res, next) => {
         });
       }
 
-      // Update the cart with the recalculated totalAmount and finalAmount
+      // Update the cart 
       await Cartdb.cartCollection.updateOne(
         { userId: new ObjectId(userInfo._id) },
         { $set: { totalAmount: totalAmount, finalAmount: finalAmount, discountValue: discount } }
@@ -1454,6 +1455,14 @@ applyCoupon: async (req, res, next) => {
       const cart = await Cartdb.cartCollection.findOne({ userId: userId });
       const address = await Addressdb.addressCollection.findOne({ userId: userId, isDeleted: false });
       console.log("This is cart details from payment method",cart);
+
+      if (paymentMethod === 'COD' && cart.finalAmount > 5000) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cash on Delivery is not available for orders above ₹5000. Please choose another payment method.',
+        });
+      }
+
       if (paymentMethod === 'Razorpay') {
         const razorpayOrder = await instance.orders.create({
           amount: cart.finalAmount * 100,
@@ -1696,7 +1705,7 @@ applyCoupon: async (req, res, next) => {
         await order.save();
       }
 
-      // Only refund to wallet if the order was paid through "Razorpay"
+      
       if (order.paymentMethod === "Razorpay") {
         const userId = order.userId;
         const refundAmount = item.price;
@@ -1984,7 +1993,7 @@ applyCoupon: async (req, res, next) => {
 
   getInvoice: async (req, res, next) => {
       const { orderId } = req.params;
-  
+      // console.log(req.params);
       try {
           const order = await Orderdb.orderCollection.findById(orderId).exec();
   
@@ -2005,7 +2014,6 @@ applyCoupon: async (req, res, next) => {
               }).end(pdfData);
           });
   
-          // Header
           doc.fontSize(20).font('Helvetica-Bold').text('Mazen furniture', 50, 50);
           doc.fontSize(20).text('INVOICE', 50, 50, { align: 'right' });
   
@@ -2013,7 +2021,6 @@ applyCoupon: async (req, res, next) => {
           doc.fontSize(10).text(`Invoice No. ${order._id}`, { align: 'right' });
           doc.text(`16 June 2025`, { align: 'right' });
   
-          // Billed To
           doc.moveDown();
           doc.fontSize(10).font('Helvetica-Bold').text('BILLED TO:', 50, 150);
           doc.font('Helvetica').text(`${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`);
@@ -2022,7 +2029,6 @@ applyCoupon: async (req, res, next) => {
           doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
           doc.text(`${order.shippingAddress.country}`);
   
-          // Table Header
           doc.moveDown();
           doc.moveDown().lineWidth(1).moveTo(50, 250).lineTo(550, 250).stroke();
           doc.font('Helvetica-Bold').text('Item', 50, 260);
@@ -2031,7 +2037,7 @@ applyCoupon: async (req, res, next) => {
           doc.text('Total', 500, 260);
           doc.moveDown().lineWidth(1).moveTo(50, 275).lineTo(550, 275).stroke();
   
-          // Table Content
+  
           order.orderItems.forEach((item, index) => {
               const y = 280 + (index * 20);
               doc.font('Helvetica').text(`${item.name}`, 50, y);
@@ -2040,7 +2046,6 @@ applyCoupon: async (req, res, next) => {
               doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 500, y);
           });
   
-          // Total
           doc.moveDown().lineWidth(1).moveTo(50, 350).lineTo(550, 350).stroke();
           doc.font('Helvetica-Bold').text('Subtotal', 400, 360);
           doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 360);
@@ -2053,14 +2058,14 @@ applyCoupon: async (req, res, next) => {
           doc.moveDown();
           doc.text('Thank you!', 50, 450);
           doc.moveDown();
-          doc.font('Helvetica-Bold').text('PAYMENT INFORMATION', 50, 470);
-          doc.font('Helvetica').text('Briard Bank');
-          doc.text('Account Name: Samira Hadid');
-          doc.text('Account No.: 123-456-7890');
-          doc.text('Pay by: 5 July 2025');
+          // doc.font('Helvetica-Bold').text('PAYMENT INFORMATION', 50, 470);
+          doc.font('Helvetica').text('');
+          // doc.text('Account Name: Samira Hadid');
+          // doc.text('Account No.: 123-456-7890');
+          doc.text('');
           doc.moveDown();
-          doc.text('Samira Hadid', 400, 530);
-          doc.text('123 Anywhere St., Any City, ST 12345');
+          // doc.text('Mazen furniture', 400, 530);
+          // doc.text('Kollam, Kerala', 400, 550);
   
           doc.end();
   
@@ -2124,7 +2129,6 @@ applyCoupon: async (req, res, next) => {
         });
 
       } else if (paymentMethod === 'COD') {
-        // Update the order with COD payment method
         await Orderdb.orderCollection.updateOne(
           { _id: order._id },
           { $set: { paymentStatus: 'Pending', paymentMethod: 'COD' } }

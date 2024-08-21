@@ -1,510 +1,253 @@
+<div class="main p-3">
+    <div class="container" id="addproduct-container">
+      <div class="row px-5 pt-2">
+        <div id="formErrors" class="text-danger" style="display: none;"></div>
+        <form id="addProductForm"
+        action="/admin/products/add-product"
+          method="post"
+          class="row g-3"
+          enctype="multipart/form-data"
+        >
+    
+          <label class="fs-4 mb-3 h2">Product Details</label>
+     
+          <div class="col-md-6">
+            <input
+              type="text"
+              name="productname"
+              placeholder="PRODUCT NAME"
+              class="form-control product-name"
+            />
 
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-  ::after,
-  ::before {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-  }
-
-  a {
-      text-decoration: none;
-  }
-
-  li {
-      list-style: none;
-  }
-
-  h1 {
-      font-weight: 600;
-      font-size: 1.5rem;
-  }
-
-  body {
-      font-family: 'Poppins', sans-serif;
-  }
-
-  .wrapper {
-      display: flex;
-  }
-
-  .main {
-      min-height: 100vh;
-      width: 100%;
-      overflow: hidden;
-      transition: all 0.35s ease-in-out;
-      background-color: #fafbfe;
-  }
-
-  #sidebar {
-      width: 70px;
-      min-width: 70px;
-      z-index: 1000;
-      transition: all .25s ease-in-out;
-      background-color: #0e2238;
-      display: flex;
-      flex-direction: column;
-  }
-
-  #sidebar.expand {
-      width: 260px;
-      min-width: 260px;
-  }
-
-  .toggle-btn {
-      background-color: transparent;
-      cursor: pointer;
-      border: 0;
-      padding: 1rem 1.5rem;
-  }
-
-  .toggle-btn i {
-      font-size: 1.5rem;
-      color: #FFF;
-  }
-
-  .sidebar-logo {
-      margin: auto 0;
-  }
-
-  .sidebar-logo a {
-      color: #FFF;
-      font-size: 1.15rem;
-      font-weight: 600;
-  }
-
-  #sidebar:not(.expand) .sidebar-logo,
-  #sidebar:not(.expand) a.sidebar-link span {
-      display: none;
-  }
-
-  .sidebar-nav {
-      padding: 2rem 0;
-      flex: 1 1 auto;
-  }
-
-  a.sidebar-link {
-      padding: .625rem 1.625rem;
-      color: #FFF;
-      display: block;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      border-left: 3px solid transparent;
-  }
-
-  .sidebar-link i {
-      font-size: 1.1rem;
-      margin-right: .75rem;
-  }
-
-  a.sidebar-link:hover {
-      background-color: rgba(255, 255, 255, .075);
-      border-left: 3px solid #3b7ddd;
-  }
-
-  .sidebar-item {
-      position: relative;
-  }
-
-  #sidebar:not(.expand) .sidebar-item .sidebar-dropdown {
-      position: absolute;
-      top: 0;
-      left: 70px;
-      background-color: #0e2238;
-      padding: 0;
-      min-width: 15rem;
-      display: none;
-  }
-
-  #sidebar:not(.expand) .sidebar-item:hover .has-dropdown+.sidebar-dropdown {
-      display: block;
-      max-height: 15em;
-      width: 100%;
-      opacity: 1;
-  }
-
-  #sidebar.expand .sidebar-link[data-bs-toggle="collapse"]::after {
-      border: solid;
-      border-width: 0 .075rem .075rem 0;
-      content: "";
-      display: inline-block;
-      padding: 2px;
-      position: absolute;
-      right: 1.5rem;
-      top: 1.4rem;
-      transform: rotate(-135deg);
-      transition: all .2s ease-out;
-  }
-
-  #sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
-      transform: rotate(45deg);
-      transition: all .2s ease-out;
-  }
-
-     .card-icon {
-            font-size: 2rem;
-            padding: 10px;
-        }
-
-        .card {
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .revenue-chart {
-            height: 300px;
-        }
-
-        .revenue-segments {
-            height: 300px;
-        }
-
-</style>
-
-<body>
-  <div class="wrapper">
-    <aside id="sidebar">
-      <div class="d-flex">
-          <button class="toggle-btn" type="button">
-              <i class="lni lni-grid-alt"></i>
-          </button>
-          <div class="sidebar-logo">
-              <a href="#">Admin</a>
           </div>
-      </div>
-      <ul class="sidebar-nav">
-          <li class="sidebar-item">
-              <a href="/admin/dashboard" class="sidebar-link">
-                  <i class="lni lni-user"></i>
-                  <span>DASHBOARD</span>
-              </a>
-          </li>
-          <li class="sidebar-item">
-              <a href="/admin/user_panel" class="sidebar-link">
-                  <i class="lni lni-agenda"></i>
-                  <span>USERS</span>
-              </a>
-          </li>
-          <li class="sidebar-item">
-              <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                  data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                  <i class="lni lni-protection"></i>
-                  <span>INVENTORY</span>
-              </a>
-              <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                  <li class="sidebar-item">
-                      <a href="/admin/products" class="sidebar-link">Products</a>
-                  </li>
-                  <li class="sidebar-item">
-                      <a href="/admin/category" class="sidebar-link">Category</a>
-                  </li>
-              </ul>
-          </li>
-          <li class="sidebar-item">
-              <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                  data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                  <i class="lni lni-protection"></i>
-                  <span>COUPONS&OFFERS</span>
-              </a>
-              <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                  <li class="sidebar-item">
-                      <a href="/admin/coupons" class="sidebar-link">Coupons</a>
-                  </li>
-                  <li class="sidebar-item">
-                      <a href="/admin/offers" class="sidebar-link">Offers</a>
-                  </li>
-              </ul>
-          </li>
-          <li class="sidebar-item">
-              <a href="#" class="sidebar-link">
-                  <i class="lni lni-popup"></i>
-                  <span>STOCK</span>
-              </a>
-          </li>
-          <li class="sidebar-item">
-              <a href="/admin/orders" class="sidebar-link">
-                  <i class="lni lni-cog"></i>
-                  <span>ORDERS</span>
-              </a>
-          </li>
-          <li class="sidebar-item">
-              <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                  data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
-                  <i class="lni lni-protection"></i>
-                  <span>SALES</span>
-              </a>
-              <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                  <li class="sidebar-item">
-                      <a href="/admin/sales" class="sidebar-link">Sales-Report</a>
-                  </li>
-                  <li class="sidebar-item">
-                      <a href="/admin/inventory-report" class="sidebar-link">Inventory-Report</a>
-                  </li>
-                  <li class="sidebar-item">
-                      <a href="/admin/purchase-report" class="sidebar-link">Purchase-Report</a>
-                  </li>
-              </ul>
-          </li>
-      </ul>
-      <div class="sidebar-footer">
-          <a href="/admin/logout" class="sidebar-link" id="logout-btn">
-              <i class="lni lni-exit"></i>
-              <span>Logout</span>
-          </a>
-      </div>
-  </aside>
-       <div class="main p-3">
-        <!-- Main content here -->
-        <div class="container-fluid p-4">
-          <!-- Dashboard Header -->
-          <div class="row mb-4">
-              <div class="col-12">
-                  <h2>Dashboard</h2>
-                  <p>Sales overview & summary</p>
-              </div>
+          <div class="col-md-6">
+            <input
+              type="number"
+              name="originalprice"
+              placeholder="ORIGINAL PRICE"
+              class="form-control price"
+            />
+
           </div>
-  
-          <!-- Cards Section -->
-          <div class="row text-center">
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-primary">
-                              <i class="bi bi-download"></i>
-                          </div>
-                          <h3><%= data.totalSalesAmount %></h3>
-                          <p>Total Sales</p>
-                          <!-- <small class="text-success">+3% from last month</small> -->
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-warning">
-                              <i class="bi bi-cart"></i>
-                          </div>
-                          <h3><%= data.totalProducts %></h3>
-                          <p>Total Products Saled</p>
-                        
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-success">
-                              <i class="bi bi-people"></i>
-                          </div>
-                          <h3><%= data.totalCustomers %></h3>
-                          <p>Customers</p>
-                        
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-info">
-                              <i class="bi bi-tv"></i>
-                          </div>
-                          <h3><%= data.onlinePayments %></h3>
-                          <p>Online Payments</p>
-                        
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-info">
-                              <i class="bi bi-tv"></i>
-                          </div>
-                          <h3><%= data.totalRefundedAmount %></h3>
-                          <p>Total Refunded</p>
-                        
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-2 col-md-4 col-6">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <div class="card-icon text-info">
-                              <i class="bi bi-tv"></i>
-                          </div>
-                          <h3><%= data.cashOnDelivery %></h3>
-                          <p>Cash On Delivery</p>
-                        
-                      </div>
-                  </div>
-              </div>
+          <div class="col-md-6">
+            <input
+              type="number"
+              name="discount"
+              placeholder="Discount (%)"
+              class="form-control price"
+
+            />
+
           </div>
-  
-          <!-- Revenue Section -->
-          <div class="row">
-              <div class="col-lg-8 col-md-12">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <h5>Revenue Breakdown</h5>
-                          <p>Compared to previous year</p>
-                          <canvas id="revenueChart" class="revenue-chart"></canvas>
-                          <div class="mt-3">
-                              <p><strong>Actual Revenue:</strong>₹<%= data.totalSalesAmount %></p>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-4 col-md-12">
-                  <div class="card shadow-sm">
-                      <div class="card-body">
-                          <h5>BRANDS</h5>
-                          <p>Top selling brands</p>
-                          <canvas id="segmentChart" class="revenue-segments"></canvas>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-        </div>
-      </div>
-  </div>
-  
-  <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content bg-dark">
-        <div class="modal-header">
-          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div style="height:fit-content; width:100%;">
-          <div class="row p-2">
-            <span class="d-flex justify-content-center font-weight-bold text-white fs-6 p-2 modal-body-alert">
-
-            </span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="cancel_crop_button" class="btn btn-light" style="width:fit-content;"
-            data-bs-dismiss="modal">Cancel</button>
-          <button style="width: 110px;" id="confirmAction" type="button" class="btn btn-danger">Confirm</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button id="alert-button" class="btn" hidden data-bs-toggle="modal" data-bs-target="#imageCropModal"></button>
-  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content bg-dark">
-        <div class="modal-header">
-          <h5 class="modal-title text-white" id="imageCropModalLabel">ALERT</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div style="height:fit-content; width:100%;">
-          <div class="row p-2">
-
-            <div class="d-flex justify-content-center align-items-center">
-              <div>
-                <span class="font-weight-bold text-white fs-6 px-3 me-2 modal-body-msg">
-
-                </span>
-              </div>
-              <div class="loader">
-
+          <div class="col-md-6">
+            <div class="row">
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupSelect01">Category</label>
+                <select class="form-select" name="category" id="inputGroupSelect01">
+                  <% category.forEach(item => { %>
+                    <option selected value="<%= item.categoryName %>"><%= item.categoryName %></option>
+                  <% }) %>
+                </select>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="cancel_button" class="btn btn-danger text-white" style="width:fit-content;"
-            data-bs-dismiss="modal">Cancel</button>
+          <div class="col-md-6">
+            <input
+              type="number"
+              name="quantity"
+              placeholder="QTY"
+              class="form-control quantity"
+            />
 
-        </div>
+          </div>
+          <label class="fs-4 mb-3 mt-5 h2">Product Features</label>
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="primarymaterial"
+              placeholder="PRIMARY MATERIAL"
+              class="form-control"
+              list="primary-material"
+            />
+
+          </div>
+
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="floorstanding"
+              placeholder="Floor Standing"
+              class="form-control"
+              list="floor-standing"
+            />
+
+          </div>
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="polishmaterial"
+              placeholder="Polish Material"
+              class="form-control"
+              list="polish-materials"
+            />
+          </div>
+
+
+          <label class="fs-4 mb-3 mt-5 h2">Specifications</label>
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="material"
+              placeholder="MATERIAL"
+              class="form-control material"
+            />
+
+          </div>
+
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="warranty"
+              placeholder="WARRANTY"
+              class="form-control warranty"
+              list="warranty-options"
+            />
+
+          </div>
+          <datalist id="warranty-options">
+            <option value="Yes"></option>
+            <option value="No"></option>
+          </datalist>
+          <div class="col-md-4">
+            <input
+              type="text"
+              placeholder="Country of Origin"
+              class="form-control CountryofOrigin"
+              name="countryofOrigin"
+              list="country-options"
+            />
+
+          </div>
+
+
+          <div class="col-md-4">
+            <input
+              type="number"
+              name="weight"
+              placeholder="WEIGHT"
+              class="form-control weight"
+            />
+            <div id="weightError" class="text-danger"></div>
+          </div>
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="fabric_options"
+              placeholder="FABRIC OPTIONS"
+              class="form-control fabric_options"
+              list="fabric-options"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <input
+              type="text"
+              name="brand"
+              placeholder="BRAND"
+              class="form-control brand"
+              list="brand-options"
+            />
+
+          </div>
+        
+          <div class="col-md-6">
+            <input
+              type="text"
+              name="dimension"
+              placeholder="Dimensions"
+              class="form-control dimensions"
+              list="dimension-options"
+            />
+
+          </div>
+
+            <label class="fs-4 mb-3 mt-5 h2">Product Images</label>
+            <div class="col-md-6">
+              <input
+                class="form-control formFileMultiple"
+                type="file"
+                name="files"
+                multiple
+              />
+              <div  id="filesError" class="text-danger"></div>
+            </div>
+            <div class="col-md-6">
+              <input
+                class="form-control formFileMultiple"
+                type="file"
+                name="files"
+                multiple
+              />
+              <div  id="filesError" class="text-danger"></div>
+            </div>
+            <div class="col-md-6">
+              <input
+                class="form-control formFileMultiple"
+                type="file"
+                name="files"
+                multiple
+              />
+              <div  id="filesError" class="text-danger"></div>
+            </div>
+
+        
+
+          <label class="fs-4 mb-3 mt-5 h2">Product Description</label>
+          <div class="form-floating">
+            <textarea
+              class="form-control"
+              placeholder="Leave a comment here"
+              id="floatingTextarea2"
+              style="height: 100px"
+              name="description"
+            ></textarea>
+            
+            <label for="floatingTextarea2">Description</label>
+
+          </div>
+         
+          
+          <div class="form-floating">
+              <textarea
+                class="form-control"
+                placeholder="Leave a comment here"
+                id="floatingTextarea2"
+                style="height: 100px"
+                name="description"
+              ></textarea>
+              <label for="floatingTextarea2">Description</label>
+
+            </div>
+            
+             <div class="form-floating">
+            <textarea
+              class="form-control"
+              placeholder="Leave a comment here"
+              id="floatingTextarea2"
+              style="height: 100px"
+              name="description"
+            ></textarea>
+            <label for="floatingTextarea2">Description</label>
+
+          </div>
+          <div class="col-md-4 mt-5">
+            <input
+              type="submit"
+              value="Add Product"
+              class="btn btn-primary form-control"
+            />
+          </div>
+        </form>
       </div>
     </div>
-  </div>
-  <button id="msg-button" hidden class="btn" data-bs-toggle="modal" data-bs-target="#alertModal"></button>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-       const topBrandsData = JSON.parse('<%- JSON.stringify(data.topBrands) %>');
-        console.log(topBrandsData);
-        const brandNames = topBrandsData.map(brandObj => brandObj._id);
-         const brandCounts = topBrandsData.map(brandObj => brandObj.count);
-         console.log(brandCounts);
-         console.log(brandNames);
-        //  const monthlySales = dashboardData.data.monthlySales;
-        //  console.log(monthlySales);
-        const hamBurger = document.querySelector(".toggle-btn");
-        document.addEventListener('DOMContentLoaded', function() {
-        // Parse the monthly sales data from the server
-        const monthlySalesData = JSON.parse('<%- JSON.stringify(data.monthlySales) %>');
-        console.log(monthlySalesData);
-
-        // Extract months and sales amounts
-        const months = monthlySalesData.map(sale => sale.month);
-        const salesAmounts = monthlySalesData.map(sale => sale.totalSales);
-        console.log(salesAmounts);
-        console.log(months);
-
-        // Get the canvas context for the chart
-        var ctx = document.getElementById('revenueChart').getContext('2d');
-        
-        // Create a bar chart
-        var revenueChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Total Sales',
-                    data: salesAmounts,
-                    backgroundColor: 'rgba(88, 24, 163, 0.8)',
-                    borderColor: 'rgba(88, 24, 163, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    });
-
-   
-        var ctx2 = document.getElementById('segmentChart').getContext('2d');
-        var segmentChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: brandNames,
-                datasets: [{
-                    label: 'Brand Segments',
-                    data: brandCounts,
-                    backgroundColor: [
-                        'rgba(88, 24, 163, 0.8)',
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(255, 193, 7, 0.8)',
-                        'rgba(220, 53, 69, 0.8)'
-                    ],
-                    borderColor: 'rgba(255, 255, 255, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-
-        hamBurger.addEventListener("click", function () {
-    document.querySelector("#sidebar").classList.toggle("expand");
-});
-    </script>
+</div>

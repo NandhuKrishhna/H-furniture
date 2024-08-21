@@ -216,6 +216,15 @@ document.getElementById('paymentForm').addEventListener('submit', function (even
 
   const userId = document.querySelector('input[name="userId"]').value;
   const totalAmount = document.querySelector('input[name="totalAmount"]').value;
+  if (paymentMethod.value === 'COD' && totalAmount > 5000) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Payment Method Unavailable',
+      text: 'Cash on Delivery is not available for orders above ₹5000. Please choose another payment method.',
+      confirmButtonText: 'OK'
+    });
+    return; 
+  }
 
   Swal.fire({
     title: 'Confirm Your Order',
@@ -248,7 +257,7 @@ function initiateRazorpayPayment() {
     }),
     success: function (response) {
       const options = {
-        "key": response.keyId, 
+        "key": response.keyId,
         "amount": response.amount,
         "currency": response.currency,
         "name": "Mazen Furniture",
@@ -265,13 +274,23 @@ function initiateRazorpayPayment() {
               signature: paymentResponse.razorpay_signature
             }),
             success: function (callbackResponse) {
-           
-                window.location.href = '/user/orders'; 
-            
+              Swal.fire({
+                icon: 'success',
+                title: 'Payment Successful',
+                text: 'Your order has been placed successfully!',
+                confirmButtonText: 'OK'
+              }).then(() => {
+                window.location.href = '/user/orders';
+              });
             },
             error: function (xhr, status, error) {
               console.error('Error verifying payment:', error);
-              alert('An error occurred while verifying the payment. Please try again.');
+              Swal.fire({
+                icon: 'error',
+                title: 'Payment Verification Failed',
+                text: 'An error occurred while verifying the payment. Please try again.',
+                confirmButtonText: 'Retry'
+              });
             }
           });
         },
@@ -289,7 +308,12 @@ function initiateRazorpayPayment() {
     },
     error: function (xhr, status, error) {
       console.error('Error initiating Razorpay payment:', error);
-      alert('An error occurred while initiating the payment. Please try again.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Payment Initialization Failed',
+        text: 'An error occurred while initiating the payment. Please try again.',
+        confirmButtonText: 'Retry'
+      });
     }
   });
 }

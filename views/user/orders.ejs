@@ -143,7 +143,7 @@
                     <div>Qty: <%= item.quantity || 0 %></div>
                     <div>Price: ₹<%= item.price.toFixed(2) %></div>
                     <button class="details-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Details</button>
-                    <% if (item.status !== 'Cancelled') { %>
+                    <% if (item.status !== 'Cancelled' && order.orderStatus !== 'Delivered') { %>
                       <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
                     <% } %>
                   </div>

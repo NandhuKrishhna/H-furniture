@@ -187,7 +187,14 @@ function initiateRazorpayRepayment() {
               signature: paymentResponse.razorpay_signature
             }),
             success: function (callbackResponse) {
-              window.location.href = '/user/orders'; 
+              Swal.fire({
+                icon: 'success',
+                title: 'Payment Successful',
+                text: 'Your order has been placed successfully!',
+                confirmButtonText: 'OK'
+              }).then(() => {
+                window.location.href = '/user/orders';
+              });
             },
             error: function (xhr, status, error) {
               console.error('Error verifying payment:', error);
