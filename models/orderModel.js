@@ -15,13 +15,20 @@ const orderSchema = new mongoose.Schema({
       name: { type: String, required: true },
       image: { type: String, required: true },
       transactionId: { type: String, required: true },
-      status: { type: String, enum: ['Order Placed', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Return requested'], default: 'Order Placed' },
+      status: { type: String, enum: ['Order Placed', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Return Requested'], default: 'Order Placed' },
       appliedCoupon: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'coupon_data',
         default: null,
       },
-      discountValue: { type: Number, default: 0 } 
+      discountValue: { type: Number, default: 0 },
+      returnRequest: {
+        reason: { type: String, default: '' },
+        status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: null }, 
+        requestDate: { type: Date, default: null },
+        approvalDate: { type: Date, default: null },
+      }
+      ,
     }
   ],
   shippingAddress: addressSchema,
@@ -46,7 +53,12 @@ const orderSchema = new mongoose.Schema({
   razorpayOrderId: {
     type: String,
     default: null
+  },
+  orderId : {
+    type: String,
+    default: null
   }
+
 },
 { timestamps: true });
 

@@ -1,0 +1,106 @@
+
+
+
+  <style>
+    .cart-item img {
+      max-width: 100px;
+      margin-right: 10px;
+    }
+    .cart-summary {
+      background: #f9f9f9;
+      border-radius: 2px;
+      padding: 20px;
+      border: 0.3px solid #dcdcdc;
+    }
+    .total-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+    }
+    .total-savings {
+      color: green;
+      font-weight: bold;
+    }
+    .cart{
+        margin-top: 20px;
+    position: relative;
+    /* right: -95px; */
+    left: 70px;
+
+    }
+    .form-control{
+      border-radius: 0;
+
+    }
+    .form-control:focus{
+      box-shadow: none;
+      border-color: #757575;
+    }
+    .apply{
+      border-radius: 0;
+      
+    }
+  </style>
+
+  <script>
+  // coupon 
+$(document).ready(function() {
+  $('#applyCoupon').on('click', function() {
+    var couponCode = $('#couponCode').val().trim();
+    var userId = "<%= userId %>";
+
+    if (!couponCode) {
+      alert('Please enter a coupon code.');
+      return;
+    }
+
+    $.ajax({
+      url: '/user/cart/' + userId + '/apply-coupon', 
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ couponCode: couponCode }),
+      success: function(response) {
+        if (response.success) {
+          $('#totalAmount').text('₹' + response.finalAmount.toFixed(2));
+          $('#negotiatedDiscount').text('₹' + response.discountValue.toFixed(2));
+          $('#appliedCouponMessage').show();
+          $('#appliedCouponCode').text(couponCode);
+        } else {
+          alert(response.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Error applying coupon:', error);
+        alert('An error occurred while applying the coupon. Please try again.');
+      }
+    });
+  });
+
+  $('#removeCoupon').on('click', function() {
+    var userId = "<%= userId %>";
+    $.ajax({
+      url: '/user/cart/' + userId + '/remove-coupon', 
+      method: 'POST',
+      contentType: 'application/json',
+      success: function(response) {
+        if (response.success) {
+          $('#appliedCouponMessage').hide();
+          $('#couponCode').val('');
+          $('#totalAmount').text('₹' + response.totalAmount.toFixed(2));
+          $('#negotiatedDiscount').text('₹0');
+        } else {
+          alert(response.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Error removing coupon:', error);
+        alert('An error occurred while removing the coupon. Please try again.');
+      }
+    });
+  });
+});
+
+
+
+  </script>
+  

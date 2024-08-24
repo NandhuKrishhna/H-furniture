@@ -290,8 +290,10 @@ function initiateRazorpayPayment() {
                 title: 'Payment Verification Failed',
                 text: 'An error occurred while verifying the payment. Please try again.',
                 confirmButtonText: 'Retry'
+              }).then(() => {
+                window.location.href = '/user/orders';
               });
-            }
+            },
           });
         },
         "modal": {
@@ -313,8 +315,10 @@ function initiateRazorpayPayment() {
         title: 'Payment Initialization Failed',
         text: 'An error occurred while initiating the payment. Please try again.',
         confirmButtonText: 'Retry'
-      });
-    }
+      }).then(() => {
+                window.location.href = '/user/orders';
+              });
+            },
   });
 }
 

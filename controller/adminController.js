@@ -570,27 +570,182 @@ adminLogout : async (req, res, next) => {
 
 getOrdersPage : async (req, res, next) => {
   try {
-    const orders = await Orderdb.orderCollection.find().sort({createdAt:-1}).lean();
+    const orders = await Orderdb.orderCollection.find().sort({ orderDate: -1 }).lean();
     console.log('Orders:', orders); 
+    
     res.status(200).render("admin/order_management",{orders})
   } catch (error) {
     console.log(error);
     next(error)
   }
 },
-  
 
-updateOrderStatus : async (req, res, next) => {
+ orderDetails : async (req, res, next) => {
   try {
-      const { orderId, status } = req.body;
-      console.log(req.body);
-      await Orderdb.orderCollection.findByIdAndUpdate(orderId, { orderStatus: status });
-      res.status(200).json({ message: 'Order status updated successfully.' });
+    const { orderId, itemId } = req.params;
+    console.log(orderId, itemId);
+
+
+    const order = await Orderdb.orderCollection.findById(orderId)
+      .populate({
+        path: 'orderItems.productId',
+        model: 'product_data', 
+      })
+      .populate({
+        path: 'userId',
+        model: 'user_data',
+      });
+
+    if (!order) {
+      return res.status(404).json({ 
+        message: 'Order not found' 
+      });
+    }
+
+    const item = order.orderItems.find(item => item._id.toString() === itemId);
+    if (!item) {
+      return res.status(404).json({ 
+        message: 'Item not found in the order' 
+      });
+    }
+    console.log("Item:",item);
+
+    
+    const user = await Userdb.userCollection.findById(order.userId).select('email');
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found'
+       });
+    }
+    res.status(200).render('admin/orderDetails', {
+      order,
+      item,
+      updatedAt: order.updatedAt,
+      userEmail: user.email, 
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error updating order status.' });
+    console.log(error);
+    next(error);
   }
 },
+
+  
+
+updateOrderStatus: async (req, res, next) => {
+ 
+    try {
+      const { orderId, itemId, status } = req.body;
+      
+      await Orderdb.orderCollection.updateOne(
+        { _id: orderId, 'orderItems._id': itemId },
+        { $set: { 'orderItems.$.status': status } }
+      );
+  
+      res.status(200).json({ message: 'Product status updated successfully.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error updating product status.' });
+    }
+  },
+
+
+  approveReturn: async (req, res, next) => {
+    try {
+      const { orderId, itemId } = req.body;
+      console.log(req.body);
+  
+
+      const updatedOrder = await Orderdb.orderCollection.findOneAndUpdate(
+        { _id: orderId, 'orderItems._id': itemId },
+        { 
+          $set: { 
+            'orderItems.$.status': 'Returned',
+            'orderItems.$.returnRequest.status': 'Approved',
+            'orderItems.$.returnRequest.approvalDate': new Date(),
+          }
+        },
+        { new: true }
+      );
+      
+
+      const updatedItem = updatedOrder.orderItems.find(item => item._id.toString() === itemId);
+      console.log('Updated Item:', updatedItem);
+  
+
+      const refundAmount = updatedItem.price - updatedItem.discountValue;
+      console.log('Refund Amount:', refundAmount);
+      res.status(200).json({ 
+        success: true,
+        message: "Return request approved successfully" 
+      });
+  
+      // ----- Amount refund to wallet -----
+      const user = await Userdb.userCollection.findById(updatedOrder.userId);
+      console.log('User:', user);
+  
+      if (updatedItem) {
+        let wallet = await Wallectdb.walletCollection.findOne({ userId: user._id });
+        console.log('Existing Wallet:', wallet);
+  
+        if (wallet) {
+          wallet.balance += refundAmount;
+          wallet.history.push({
+            transactionType: "Refunded",
+            amount: refundAmount,
+            date: new Date()
+          });
+          await wallet.save();
+        } else {
+          const newWallet = new Wallectdb.walletCollection({
+            userId: user._id,
+            balance: refundAmount,
+            history: [{
+              transactionType: 'Refunded',
+              amount: refundAmount,
+              date: new Date()
+            }]
+          });
+          console.log('New Wallet Created:', newWallet);
+          await newWallet.save();
+        }
+      }
+  
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  },
+  
+
+  rejectReturn: async (req, res, next) => {
+    try {
+      const { orderId, itemId } = req.body;
+      console.log(req.body);
+      const updatedOrder = await Orderdb.orderCollection.findOneAndUpdate(
+        { _id: orderId, 'orderItems._id': itemId },
+        { 
+          $set: { 
+            'orderItems.$.returnRequest.status': 'Rejected',
+            'orderItems.$.returnRequest.approvalDate': new Date(),
+          }
+        },
+        { new: true }
+      );
+
+      const updatedItem = updatedOrder.orderItems.find(item => item._id.toString() === itemId);
+      console.log('Updated Item:', updatedItem);
+      res.status(200).json({ 
+        success: true,
+        message: "Return request rejected successfully" 
+      });
+  
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  },
+  
+
 
 couponManagement : async (req, res, next ) => {
     try{
@@ -833,82 +988,6 @@ getSaleReport: async (req, res, next) => {
     res.status(500).send('Internal Server Error');
   }
 },
-
-
-
-// test: async (req, res, next) => {
-//   try {
-//     const totalOrders = await Orderdb.orderCollection.countDocuments();
-
-//     const uniqueUserIds = await Orderdb.orderCollection.distinct('userId');
-//     const totalCustomers = uniqueUserIds.length;
-
-//     const onlinePayments = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'Razorpay' });
-
-//     const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'COD' });
-
-//     const cancelledOrders = await Orderdb.orderCollection.countDocuments({ orderStatus: 'Cancelled' });
-
-//     const totalSales = await Orderdb.orderCollection.aggregate([
-//       { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } }
-//     ]);
-
-//     const totalCouponsUsed = await Coupondb.couponCollection.aggregate([
-//       { $group: { _id: null, couponsUsed: { $sum: "$couponsUsed" } } }
-//     ]);
-
-//     const totalRefundedAmount = await Wallectdb.walletCollection.aggregate([
-//       { $unwind: "$history" },
-//       {
-//         $match: {
-//           "history.transactionType": "Refunded"
-//         }
-//       },
-//       {
-//         $group: {
-//           _id: null,
-//           totalRefunded: { $sum: "$history.amount" }
-//         }
-//       },
-//       {
-//         $project: {
-//           _id: 0,
-//           totalRefunded: 1
-//         }
-//       }
-//     ]);
-
-//     const refundSum = totalRefundedAmount[0]?.totalRefunded || 0;
-
-//     const orders = await Orderdb.orderCollection.find()
-//     const orderDetails =  orders.map((order) => {
-//       return {
-//       fullName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-//       productName: order.orderItems.map(item => item.name),
-//       price: order.orderItems.map(item => item.price),
-//       totalAmount: order.totalAmount,
-//       paymentMethod: order.paymentMethod,
-//       paymentStatus: order.paymentStatus
-//       }
-//     });
-     
-//     res.status(200).json({
-//       totalOrders,
-//       totalCustomers,
-//       totalRefundedAmount: refundSum,
-//       onlinePayments,
-//       cashOnDelivery,
-//       cancelledOrders,
-//       totalSales: totalSales[0]?.totalAmount || 0,
-//       totalCouponsUsed: totalCouponsUsed[0]?.couponsUsed || 0,
-//     });
-
-//   } catch (error) {
-//     console.error('Error fetching sales summary:', error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// },
-
 
 
 downlordSalesReport: async (req, res, next) => {

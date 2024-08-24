@@ -273,10 +273,11 @@
                         <%= user.phone %>
                       </td>
                       <td>
-                        <button class="btn btn-<%= user.isBlocked ? 'danger' : 'success' %>">
+                        <span class="badge badge-<%= user.isBlocked ? 'danger' : 'success' %>">
                           <%= user.isBlocked ? 'Blocked' : 'Active' %>
-                        </button>
+                        </span>
                       </td>
+                      
                       <td>
                         <%= user.createdAt %>
                       </td>

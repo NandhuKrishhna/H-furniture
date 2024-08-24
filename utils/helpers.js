@@ -53,7 +53,6 @@ const otpinfo = await dbOtp.otpCollection.updateOne(
   },
   { upsert: true }
 );
-
     console.log("OTP info:", otpinfo);
 
     const details = {
@@ -95,8 +94,6 @@ async function resendOtp(email, id) {
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000);
 }
-
-
 
 
 
@@ -242,13 +239,6 @@ async function fetchOrderData() {
     throw error;
   }
 }
-
-
-
-
-
-
-
 
 
 

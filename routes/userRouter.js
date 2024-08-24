@@ -47,9 +47,9 @@ router.get("/auth/google", passport.authenticate("google", { scope: ["profile", 
 router.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/user/signup" }), (req,res)=> {
     res.redirect("/");
 });
-//------------------------------------------------------------
+//----------------------
 //---------user homepage
-router.get("/", userController.userHomePage)
+// router.get("/", userController.userHomePage)
 //---------user products-----------------
 router.get("/user/products",userController.getUserProducts)
 router.get("/user/search",userController.getUserProducts) // for serach
@@ -109,7 +109,8 @@ router.post("/user/payment_callback",isUserAuthenticated, userController.payment
 router.get("/user/orders",isUserAuthenticated,userController.getMyOrders)
 
 router.post('/order/:orderId/item/:itemId/cancel',isUserAuthenticated, userController.cancelOrderItem);
-router.get("/order/details/:orderId/:itemId",isUserAuthenticated, userController.orderDetails)
+router.get('/order/:orderId/item/:itemId',isUserAuthenticated, userController.getOrderDetails)
+router.post("/order/return", userController.returnProduct)
 
 
 router.get("/user/re-order/:orderId",isUserAuthenticated, userController.repayAmount); 
@@ -131,7 +132,7 @@ router.post("/user/wallet",isUserAuthenticated, userController.addMoneyToWallet)
 
 
 router.post("/user/logout", userController.userLogout)
-
-
+// router.get("/sample", userController.addReview)
+router.get("/", userController.homepage)
 
 module.exports = router

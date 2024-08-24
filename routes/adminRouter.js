@@ -79,8 +79,10 @@ router.get("/admin/logout", adminController.adminLogout);
 router.get("/admin/orders", auth.isadminAuthenticated, adminController.getOrdersPage)
 
 router.post('/admin/orders/update-status',  auth.isadminAuthenticated, adminController.updateOrderStatus);
+router.get('/admin/order/:orderId/item/:itemId', auth.isadminAuthenticated, adminController.orderDetails)
+router.post('/admin/orders/approve-return', auth.isadminAuthenticated, adminController.approveReturn)
+router.post('/admin/orders/reject-return', auth.isadminAuthenticated, adminController.rejectReturn)
 
-// coupon managemnt
 router.get("/admin/coupons",  auth.isadminAuthenticated, adminController.couponManagement)
 
 router.get("/admin/coupons/add-coupon",  auth.isadminAuthenticated, adminController.getAddCouponPage)

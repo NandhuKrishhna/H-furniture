@@ -86,6 +86,10 @@
     background-color: rgb(125, 125, 125);
     width: 72px;
 }
+.return-order-btn{
+  background-color: rgb(125, 125, 125);
+  width: 72px;
+}
 .cancel-order-btn:focus{
   border-color: rgb(87, 87, 87);
 }
@@ -112,69 +116,101 @@
 <div class="container-fluid">
   <div class="row">
     
-      <!-- Sidebar -->
-      <%- include("../partials/userSidenav.ejs") %>
-      <!-- Form Section -->
-      <div class="col-md-9 order-body">
-        <h3 style="padding-left: 40px;">Your Orders</h3>
-        <% orders.forEach(order => { %>
-          <div class="order-card">
-            <div class="card-header">
-              <h6 style="font-size: 12px;">Order No: <%= order?.orderItems[0]?.transactionId %></h6>
-              <span class="order-date invoice-section">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
-              <% if (order.orderStatus === 'Delivered') { %>
-                <button data-order-id="<%= order._id %>" class="btn btn-secondary download-invoice-btn invoice-section">
-                  Download Invoice
-                </button>
-              <% } %>
-              <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Pending") { %>
-                <button style="border-radius: 0; " class="btn btn-warning"
-                  onclick="window.location.href='/user/re-order/<%= order._id %>'">
-                  Pay Now
-                </button>
-              <% } %>
-            </div>
-            <ul class="order-items-list">
-              <% order.orderItems.forEach(item => { %>
-                <li class="order-item">
-                  <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
-                  <div class="product-details">
-                    <div><strong><%= item.name || 'Unknown Product' %></strong></div>
-                    <div>Qty: <%= item.quantity || 0 %></div>
-                    <div>Price: ₹<%= item.price.toFixed(2) %></div>
-                    <button class="details-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Details</button>
-                    <% if (item.status !== 'Cancelled' && order.orderStatus !== 'Delivered') { %>
-                      <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
-                    <% } %>
+    <!-- Sidebar -->
+    <%- include("../partials/userSidenav.ejs") %>
+
+    <!-- Form Section -->
+    <div class="col-md-9 order-body">
+      <h3 style="padding-left: 40px;">Your Orders</h3>
+
+      <% orders.forEach(order => { %>
+        <div class="order-card">
+          <div class="card-header">
+            <h6 style="font-size: 12px;">Order No: <%= order?.orderId %></h6>
+            <span class="order-date invoice-section">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
+
+            <% if (order.orderStatus === 'Delivered') { %>
+              <button data-order-id="<%= order._id %>" class="btn btn-secondary download-invoice-btn invoice-section">
+                Download Invoice
+              </button>
+            <% } %>
+
+            <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Pending") { %>
+              <button style="border-radius: 0;" class="btn btn-warning"
+                onclick="window.location.href='/user/re-order/<%= order._id %>'">
+                Pay Now
+              </button>
+            <% } %>
+          </div>
+
+          <ul class="order-items-list">
+            <% order.orderItems.forEach(item => { %>
+              <li class="order-item">
+                <img src="/<%= item.image %>" alt="<%= item.name %>" class="product-image">
+                <div class="product-details">
+                  <div><strong><%= item.name || 'Unknown Product' %></strong></div>
+                  <div>Qty: <%= item.quantity || 0 %></div>
+                  <div>Price: ₹<%= item.price.toFixed(2) %></div>
+                  <div>Status: 
+                    <span class="badge 
+                      <%= item.status === 'Order Placed' ? 'bg-secondary' : 
+                         item.status === 'Shipped' ? 'bg-info' : 
+                         item.status === 'Delivered' ? 'bg-success' : 
+                         item.status === 'Cancelled' ? 'bg-danger' : 
+                         item.status === 'Returned' ? 'bg-dark' : 
+                         item.status === 'Return Requested' ? 'bg-warning' : '' 
+                      %>">
+                      <%= item.status %>
+                    </span>
                   </div>
-                </li>
-              <% }) %>
-            </ul>
-            <div class="order-total">
-              <div style="font-size: 20px;">Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
-              <div class="<%= order.orderStatus === 'Cancelled' ? 'cancelled-status' : '' %>">
-                Status: <%= order.orderStatus %>
-              </div>
-              <div>Payment: <%= order.paymentMethod %></div>
-              <div>
-                Payment Status: 
-                <span class="status-<%= 
-                  order.paymentStatus === 'Pending' ? 'pending' : 
-                  order.paymentStatus === 'Success' ? 'success' : 
-                  order.paymentStatus === 'Failure' ? 'failure' : '' 
+                  
+
+                  <button class="details-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Details</button>
+
+                  <% if (item.status !== 'Cancelled' && item.status !== 'Delivered' && item.status !== 'Return Requested' && item.status !== 'Returned') { %>
+                    <button class="cancel-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Cancel</button>
+                  <% } %>
+                  
+
+                  <% if (item.status === "Delivered") { %>
+                    <button class="return-order-btn btn-dark" data-order-id="<%= order._id %>" data-item-id="<%= item._id %>">Return</button>
+                  <% } %>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+
+          <div class="order-total">
+            <div style="font-size: 20px;">Order Total: ₹<%= order.totalAmount.toFixed(2) %></div>
+            <div>
+              Payment: 
+              <span class="badge 
+                <%= order.paymentMethod === 'Razorpay' ? 'bg-primary' : 
+                   order.paymentMethod === 'COD' ? 'bg-warning' : '' 
                 %>">
-                  <%= order.paymentStatus %>
-                </span>
-              </div>
+                <%= order.paymentMethod %>
+              </span>
+            </div>
+            
+            <div>
+              Payment Status: 
+              <span class="badge 
+                <%= order.paymentStatus === 'Pending' ? 'bg-warning' : 
+                   order.paymentStatus === 'Success' ? 'bg-success' : 
+                   order.paymentStatus === 'Failed' ? 'bg-danger' : '' 
+                %>">
+                <%= order.paymentStatus %>
+              </span>
+              
             </div>
           </div>
-        <% }) %>
-        
-       
-       </div>
-    
+        </div>
+      <% }) %>
+
+    </div>
   </div>
 </div>
+
 
 
 <script>
@@ -256,29 +292,93 @@ $(document).ready(function() {
   });
 });
 
-$(document).ready(function() {
-        $('.details-order-btn').on('click', function() {
-            var orderId = $(this).data('order-id');
-            var itemId = $(this).data('item-id');
+document.querySelectorAll('.details-order-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const orderId = this.getAttribute('data-order-id');
+    const itemId = this.getAttribute('data-item-id');
+    
+   
+    window.location.href = `/order/${orderId}/item/${itemId}`;
+  });
+});
 
-            $.ajax({
-                url: '/user/orders', 
-                type: 'GET', 
-                data: {
-                    orderId: orderId,
-                    itemId: itemId
+
+document.addEventListener('DOMContentLoaded', function() {
+  const returnButtons = document.querySelectorAll('.return-order-btn');
+
+  returnButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const orderId = this.getAttribute('data-order-id');
+      const itemId = this.getAttribute('data-item-id');
+
+   
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you really want to return this product?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, return it!',
+        cancelButtonText: 'No, keep it',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Return Order',
+            input: 'textarea',
+            inputLabel: 'Please enter the reason for the return:',
+            inputPlaceholder: 'Type your reason here...',
+            inputAttributes: {
+              'aria-label': 'Type your reason here'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+              if (!value) {
+                return 'You need to write something!';
+              }
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              fetch('/order/return', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
                 },
-                success: function(response) {
-                  
-                    window.location.href = '/order/details/' + orderId + '/' + itemId;
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error occurred: " + error);
-                   
+                body: JSON.stringify({ orderId: orderId, itemId: itemId, reason: result.value })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.message) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Return Request Submitted',
+                    text: data.message,
+                  });
+                  location.reload();
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong. Please try again later.',
+                  });
                 }
-            });
-        });
+              })
+              .catch(error => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'An error occurred. Please try again later.',
+                });
+              });
+            }
+          });
+        }
+      });
     });
+  });
+});
+
+
 </script>
 
 
