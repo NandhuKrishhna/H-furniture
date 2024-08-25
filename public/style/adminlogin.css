@@ -1,0 +1,83 @@
+body {
+    background-color: #f8f9fa;
+
+  }
+  
+  .login-form {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form h3 {
+    font-weight: bold;
+  }
+  
+  .form-control {
+    border-radius: 5px;
+  }
+  
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .alert-danger {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically, if needed */
+    background: none;
+    border: none;
+    color: red;
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 25px; /* Adjust margin as needed */
+  }
+  
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+  }
+
+  .img-fluid {
+    max-width: 80%; /* Reduce the max-width of the image */
+  }
+
+  .login-form {
+    max-width: 80%; /* Reduce the max-width of the form */
+  }

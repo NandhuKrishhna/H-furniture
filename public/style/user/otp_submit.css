@@ -1,0 +1,95 @@
+
+  .text-danger {
+    color: red;
+    font-weight: bold;
+  }
+
+  .login-form {
+    max-width: 400px; /* Adjust the max-width as needed */
+    margin: 0 auto;   /* Center the form */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-form h3 {
+    font-weight: bold;
+  }
+
+  .form-control {
+    border-radius: 5px;
+  }
+
+  .btn-block {
+    border-radius: 5px;
+  }
+
+  .alert-danger {
+    background: none;
+    border: none;
+    color: red;
+    padding: 0;
+    font-weight: bold;
+    margin-bottom: 29px;
+    margin-top: -5px;
+  
+  }
+
+  .form-control:focus {
+    box-shadow: none;
+    border-color: none;
+    outline: none;
+  }
+
+  .form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.75rem 0;
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+    font-size: 1rem;
+    color: #aaa;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+    left: 0;
+    color: #000;
+    font-size: 0.85rem;
+    padding-left: 5px;
+  }
+
+  .form-group input {
+    padding: 0.75rem 0.75rem 0.25rem;
+  }
+
+  .form-group input:focus + label,
+  .form-group input:not(:placeholder-shown) + label {
+    top: -2rem;
+  }
+
+  .resend-link {
+  display: inline;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.resend-link:hover {
+  text-decoration: underline;
+}
+
+.message {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
