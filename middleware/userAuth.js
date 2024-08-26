@@ -20,19 +20,22 @@ exports.signupAuth = (req, res, next) => {
 
   exports.isUserAuthenticated = (req, res, next) => {
     try {
-      if (req.cookies.token) {
-        const token = req.cookies.token;
-        const user = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = user; 
-        next();
-      } else {
-        res.redirect("/user/login");
-      }
+        if (req.cookies.token) {
+            const token = req.cookies.token;
+            console.log("Token from cookies:", token); 
+            const user = jwt.verify(token, process.env.JWT_SECRET);
+            console.log("User from token:", user); 
+            req.user = user;
+            next();
+        } else {
+            console.log("No token found"); 
+            res.redirect("/user/login");
+        }
     } catch (err) {
-      console.log(err);
-      res.redirect("/user/login");
+        console.log("Token verification error:", err); 
+        res.redirect("/user/login");
     }
-  };
+};
   
   exports.isUserBlocked = async (req, res, next) => {
     try {

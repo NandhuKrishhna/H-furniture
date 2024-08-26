@@ -266,8 +266,25 @@
                       <%= item.name %>
                     </td>
                     <td>
-                      <%= item.status %>
-                    </td> 
+                      <% if (item.status) { %>
+                        <% if (item.status === 'Order Placed') { %>
+                          <span class="badge badge-primary">Order Placed</span>
+                        <% } else if (item.status === 'Shipped') { %>
+                          <span class="badge badge-info">Shipped</span>
+                        <% } else if (item.status === 'Delivered') { %>
+                          <span class="badge badge-success">Delivered</span>
+                        <% } else if (item.status === 'Cancelled') { %>
+                          <span class="badge badge-danger">Cancelled</span>
+                        <% } else if (item.status === 'Returned') { %>
+                          <span class="badge badge-warning">Returned</span>
+                        <% } else if (item.status === 'Return Requested') { %>
+                          <span class="badge badge-secondary">Return Requested</span>
+                        <% } else { %>
+                          <span class="badge badge-secondary">Unknown Status</span>
+                        <% } %>
+                      <% } %>
+                    </td>
+                     
                     <td>
                       <%= new Date(order.orderDate).toLocaleDateString() %>
                     </td>

@@ -1,1 +1,36 @@
-<h1>404 Page Not Found</h1>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+    }
+    .error-container {
+        text-align: center;
+    }
+    .error-code {
+        font-size: 80px;
+        color: #ff6b6b;
+    }
+    .error-message {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    .back-button {
+        margin-top: 20px;
+        border: 0;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+        padding-left: 27px;
+    }
+</style>
+
+<div class="error-container">
+    <img src="/images/404.png" alt="404 Image" class="img-fluid">
+    <div class="error-message"><%= errorMessage %></div>
+    <p><%= errorDescription %></p>
+    <a href="/" class="btn btn-dark back-button">Back to home</a>
+</div>

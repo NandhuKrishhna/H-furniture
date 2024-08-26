@@ -158,7 +158,6 @@
     }
   });
 });
-
 function initiateRazorpayRepayment() {
   $.ajax({
     url: '/user/repayment_method',
@@ -198,13 +197,27 @@ function initiateRazorpayRepayment() {
             },
             error: function (xhr, status, error) {
               console.error('Error verifying payment:', error);
-              alert('An error occurred while verifying the payment. Please try again.');
+              Swal.fire({
+                icon: 'error',
+                title: 'Payment Verification Failed',
+                text: 'An error occurred while verifying the payment. Please try again.',
+                confirmButtonText: 'Retry'
+              }).then(() => {
+                window.location.href = '/user/orders';
+              });
             }
           });
         },
         "modal": {
           "ondismiss": function () {
-            window.location.href = '/user/orders';
+            Swal.fire({
+              icon: 'error',
+              title: 'Payment Failed',
+              text: 'You closed the payment window. Please try again.',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.href = '/user/orders';
+            });
           }
         },
         "theme": {
@@ -216,12 +229,18 @@ function initiateRazorpayRepayment() {
     },
     error: function (xhr, status, error) {
       console.error('Error initiating Razorpay payment:', error);
-      alert('An error occurred while initiating the payment. Please try again.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Payment Initialization Failed',
+        text: 'An error occurred while initiating the payment. Please try again.',
+        confirmButtonText: 'Retry'
+      }).then(() => {
+        window.location.href = '/user/orders';
+      });
     }
   });
 }
 
-  
   
   
   </script>

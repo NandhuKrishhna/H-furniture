@@ -44,9 +44,18 @@ router.post("/user/change_password", userController.changePassword);
 
 // user google login
 router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/user/signup" }), (req,res)=> {
-    res.redirect("/");
+router.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/user/signup", session: false }), (req, res) => {
+    const { user, token } = req.user;
+       if (token) {
+        res.cookie("token", token, {
+            httpOnly: true,
+        });
+        res.redirect("/"); 
+    } else {
+        res.redirect("/user/login"); 
+    }
 });
+
 //----------------------
 //---------user homepage
 // router.get("/", userController.userHomePage)

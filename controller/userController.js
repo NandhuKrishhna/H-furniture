@@ -222,7 +222,6 @@ module.exports = {
     try {
       const { email, password } = req.body;
 
-      // Find user by email
       const existUser = await Userdb.userCollection.findOne({ email }).lean();
       if (!existUser) {
         return res.status(400).json({
@@ -231,7 +230,6 @@ module.exports = {
         });
       }
 
-      // Compare passwords
       const isMatch = await bcrypt.compare(password, existUser.password);
       if (!isMatch) {
         return res.status(400).json({
@@ -240,18 +238,14 @@ module.exports = {
         });
       }
 
-      // Check if user is blocked
       if (existUser.isBlocked) {
         return res.status(400).json({
           errors: { email: { msg: "User is blocked" } },
           userLogin: true
         });
       }
-
-      // Generate JWT
       const token = jwt.sign({ _id: existUser._id }, process.env.JWT_SECRET);
 
-      // Set cookie and respond
       res.cookie("token", token, {
         httpOnly: true,
         sameSite: "Strict",
@@ -756,55 +750,60 @@ module.exports = {
     }
   },
 
-  getAddMyAddress: async (req, res, next) => {
+ getAddMyAddress : async (req, res, next) => {
     try {
-      const user = verifyToken(req)
-      const userInfo = await Userdb.userCollection.findById(user._id)
-      res.status(200).render("user/add_my_address", {
-        user: true,
-        userInfo
-      })
+        const user = verifyToken(req);
+        const userInfo = await Userdb.userCollection.findById(user._id);
+        const redirectUrl = req.query.redirect || '/user/my-address';
+
+        res.status(200).render("user/add_my_address", {
+            user: true,
+            userInfo,
+            redirectUrl
+        });
     } catch (error) {
-      console.log(error);
-      next(error)
+        console.log(error);
+        next(error);
     }
-  },
+},
 
-
-  addMyAddress: async (req, res, next) => {
+addMyAddress : async (req, res, next) => {
     try {
-      const user = verifyToken(req)
-      const userId = user._id
-      const data = {
-        userId: new ObjectId(userId),
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        homeAddress: req.body.address,
-        landmark: req.body.landmark,
-        city: req.body.city,
-        street: req.body.street,
-        state: req.body.state,
-        phone: req.body.phone,
-        country: req.body.country,
-        pincode: req.body.pincode
+        const user = verifyToken(req);
+        const userId = user._id;
 
-      };
-      console.log(data);
-      console.log("---------------------------");
-      const address = await Addressdb.addressCollection.insertMany(data);
-      if (address) {
+        const data = {
+            userId: new ObjectId(userId),
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            homeAddress: req.body.address,
+            landmark: req.body.landmark,
+            city: req.body.city,
+            street: req.body.street,
+            state: req.body.state,
+            phone: req.body.phone,
+            country: req.body.country,
+            pincode: req.body.pincode
+        };
+        const { redirectUrl } = req.body;
+        console.log(data);
+        console.log("---------------------------");
 
-        res.status(201).json({
-          success: true
-        })
-      }
+        const address = await Addressdb.addressCollection.insertMany(data);
+        if (address) {
+            res.status(201).json({
+                success: true,
+                redirectUrl: redirectUrl || '/user/my-address'
+            });
+        }
 
     } catch (error) {
-      console.log(error);
-      next(error)
+        console.log(error);
+        next(error);
     }
+},
 
-  },
+  
 
   // edit address---------------------------------
   getEditMyAddress: async (req, res, next) => {
@@ -1365,7 +1364,7 @@ applyCoupon: async (req, res, next) => {
         const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId });
         const userInfo = await Userdb.userCollection.findById(userId);
         const hadAddress = userInfo.address ? 'true' : 'false';
-
+        const currentUrl = req.originalUrl;
         // If the user is blocked
         if (userInfo.isBlocked) {
             return res.status(400).json({
@@ -1396,7 +1395,8 @@ applyCoupon: async (req, res, next) => {
             hadAddress,
             address,
             user: true,
-            userId
+            userId,
+            currentUrl
         });
     } catch (error) {
         console.error("Error getting checkout details:", error);

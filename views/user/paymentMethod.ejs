@@ -298,7 +298,14 @@ function initiateRazorpayPayment() {
         },
         "modal": {
           "ondismiss": function () {
-            window.location.href = '/user/orders';
+            Swal.fire({
+              icon: 'error',
+              title: 'Payment Failed',
+              text: 'You closed the payment window. Please try again.',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.href = '/user/orders';
+            });
           }
         },
         "theme": {
@@ -316,11 +323,12 @@ function initiateRazorpayPayment() {
         text: 'An error occurred while initiating the payment. Please try again.',
         confirmButtonText: 'Retry'
       }).then(() => {
-                window.location.href = '/user/orders';
-              });
-            },
+        window.location.href = '/user/orders';
+      });
+    },
   });
 }
+
 
 
 

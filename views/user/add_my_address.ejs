@@ -29,6 +29,8 @@
                     <h4>Shipping Address</h4> <br>
                     <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
                     <form id="addressForm" method="POST">
+                        <input type="hidden" name="redirectUrl" value="<%= redirectUrl %>">
+                        
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="firstName">First Name</label>
@@ -130,10 +132,10 @@
                 document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
                 document.getElementById('formErrors').style.display = 'none';
 
-                if (response.ok) {
-
-                    window.location.href = "/user/my-address"
-                } else {
+                
+        if (response.ok) {
+            window.location.href = data.redirectUrl;
+        } else {
 
                     if (data.errors) {
                         for (const key in data.errors) {

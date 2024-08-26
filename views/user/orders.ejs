@@ -128,12 +128,13 @@
           <div class="card-header">
             <h6 style="font-size: 12px;">Order No: <%= order?.orderId %></h6>
             <span class="order-date invoice-section">Ordered: <%= new Date(order.orderDate).toLocaleDateString() %></span>
-
-            <% if (order.orderStatus === 'Delivered') { %>
-              <button data-order-id="<%= order._id %>" class="btn btn-secondary download-invoice-btn invoice-section">
-                Download Invoice
-              </button>
-            <% } %>
+            <% let hasDeliveredItem = order.orderItems.some(item => item.status === 'Delivered')%>
+    
+          <% if (hasDeliveredItem) { %>
+            <button data-order-id="<%= order._id %>" class="btn btn-secondary download-invoice-btn invoice-section">
+              Download Invoice
+            </button>
+          <% } %>
 
             <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Pending") { %>
               <button style="border-radius: 0;" class="btn btn-warning"

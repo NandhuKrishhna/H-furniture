@@ -13,11 +13,9 @@ passport.use(new GoogleStrategy({
         let user = await Userdb.userCollection.findOne({ googleID: profile.id });
 
         if (user) {
-            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-            });
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
             return done(null, { user, token });
         } else {
-            //------Create a new user-----
             user = new Userdb.userCollection({
                 firstName: profile.name.givenName,
                 lastName: profile.name.familyName,
@@ -26,11 +24,7 @@ passport.use(new GoogleStrategy({
             });
             await user.save();
 
-           
-            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-             
-            });
-
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
             return done(null, { user, token });
         }
     } catch (error) {

@@ -72,8 +72,12 @@ app.use("/", adminRouter);
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).render("404");
+  res.status(404).render("404", {
+    errorMessage: "Oops! Page Not Found",
+    errorDescription: "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
+  });
 });
+
 
 app.use((req, res, next) => {
   console.log('Incoming Request Data:', req.body);
@@ -83,10 +87,13 @@ app.use((req, res, next) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  res.status(500).render("500", {
+    errorMessage: "Something went wrong!",
+    errorDescription: "An unexpected error occurred. Please try again later."
+  });
 });
 
-// Start server
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
