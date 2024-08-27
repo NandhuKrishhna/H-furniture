@@ -996,10 +996,9 @@ downlordSalesReport: async (req, res, next) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await page.goto(`${req.protocol}://${req.get('host')}/admin/sales`, {
+    await page.goto(`https://nandhu.live/admin/sales`, {
       waitUntil: "networkidle2",
     });
-    
 
     //---------hidding UI not needed---------
     await page.evaluate(() => {
