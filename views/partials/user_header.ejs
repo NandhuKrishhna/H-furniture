@@ -57,29 +57,44 @@
 
 <header class="header" id="header">
   <nav class="navbar container">
-     <a href="" class="brand">MAZEN FURNITURE</a>
-     <div class="search">
-      <form action="/user/search" method="get">
-        <input type="text" name="search" value="<%= searchTerm %>" class="search-input" placeholder="Search" autofocus>
-        <button type="submit" class="search-submit"><i class="bx bx-search"></i></button>
-     </form>
-     
-     </div>
-     <div class="menu" id="menu">
-        <ul class="menu-inner">
-           <li class="menu-item"><a href="/" class="menu-link">Home</a></li>
-           <li class="menu-item"><a href="/user/products" class="menu-link">Shop</a></li>
-           <li class="menu-item"><a href="/user/my-account" class="menu-link">Account</a></li>
-           <li class="menu-item"><a href="/user/login" class="menu-link">Login</a></li>
-        </ul>
-     </div>
-     <div class="burger" id="burger">
-        <span class="burger-line"></span>
-        <span class="burger-line"></span>
-        <span class="burger-line"></span>
-     </div>
+      <a href="/" class="brand">MAZEN FURNITURE</a>
+
+      <div class="search">
+          <form action="/user/search" method="get">
+              <input type="text" name="search" value="<%= searchTerm %>" class="search-input" placeholder="Search" autofocus>
+              <button type="submit" class="search-submit"><i class="bx bx-search"></i></button>
+          </form>
+      </div>
+
+      <div class="menu" id="menu">
+          <ul class="menu-inner">
+              <li class="menu-item"><a href="/" class="menu-link">Home</a></li>
+              <li class="menu-item"><a href="/user/products" class="menu-link">Shop</a></li>
+              <li class="menu-item"><a href="/user/my-account" class="menu-link">Account</a></li>
+              <li class="menu-item"><a href="/user/login" class="menu-link">Login</a></li>
+              <!-- Icons for Cart, Wishlist, and Logout -->
+              <li class="menu-item">
+                  <a href="/user/cart" class="menu-link">
+                      <i class="fas fa-shopping-cart"></i> 
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a href="/user/wishlist" class="menu-link">
+                      <i class="fas fa-heart"></i> 
+                  </a>
+              </li>
+            
+          </ul>
+      </div>
+
+      <div class="burger" id="burger">
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+          <span class="burger-line"></span>
+      </div>
   </nav>
 </header>
+
 <style>
   .header{
     margin-bottom: 100px;
