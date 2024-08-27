@@ -3,6 +3,7 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const Userdb = require("../models/UserModels");
 const dotenv = require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const Walletdb= require("../models/walletModel")
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -24,7 +25,7 @@ passport.use(new GoogleStrategy({
                 googleID: profile.id
             });
             await user.save();
-
+            await Walletdb.walletCollection.create({ userId: user._id, balance: 0 });
             const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
             return done(null, { user, token });
         }
