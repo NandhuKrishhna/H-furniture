@@ -1053,15 +1053,17 @@ downlordSalesReport: async (req, res, next) => {
 
 dashboard: async (req, res, next) => {
   try {
-      
-    const data = await fetchOrderData();
-    res.status(200).render("admin/dashboard",{
-      data
-    })
+    const timeframe = req.query.timeframe || 'monthly';
+    const data = await fetchOrderData(timeframe);
+    res.status(200).render("admin/dashboard", {
+      data,
+      timeframe
+    });
   } catch (error) {
     console.log('Error fetching dashboard data:', error);
     next(error);
   }
 }
+
 
 }

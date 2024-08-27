@@ -264,6 +264,15 @@
                 <div class="col-12">
                     <h2>Dashboard</h2>
                     <p>Sales overview & summary</p>
+                    <form action="/admin/dashboard" method="get" class="form-inline">
+                    <label for="timeframe" class="mr-2">Timeframe:</label>
+                    <select name="timeframe" id="timeframe" class="form-control mr-2">
+                        <option value="daily" <%= timeframe === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="monthly" <%= timeframe === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                        <option value="yearly" <%= timeframe === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                    </select>
+                    <button type="submit" class="btn btn-dark">Apply</button>
+                </form>
                 </div>
             </div>
     

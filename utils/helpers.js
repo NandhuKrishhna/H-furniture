@@ -99,62 +99,71 @@ function generateOtp() {
 
 
 
-async function fetchOrderData() {
+async function fetchOrderData(timeframe = 'monthly') {
   try {
-  
+    const matchStage = {};
+
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+
+    if (timeframe === 'daily') {
+      matchStage.orderDate = { $gte: startOfDay };
+    } else if (timeframe === 'monthly') {
+      matchStage.orderDate = { $gte: startOfMonth };
+    } else if (timeframe === 'yearly') {
+      matchStage.orderDate = { $gte: startOfYear };
+    }
+
     const totalProducts = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: '$orderItems' },
       { $group: { _id: null, totalProducts: { $sum: '$orderItems.quantity' } } }
     ]);
 
     const totalSalesAmount = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $group: { _id: null, totalAmount: { $sum: '$totalAmount' } } }
     ]);
 
-    const totalSalesCount = await Orderdb.orderCollection.countDocuments();
+    const totalSalesCount = await Orderdb.orderCollection.countDocuments(matchStage);
 
     const totalProductPrice = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: '$orderItems' },
       { $group: { _id: null, totalPrice: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } } } }
     ]);
 
     const topFiveProducts = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: '$orderItems' },
       { $group: { _id: '$orderItems.productId', totalQuantity: { $sum: '$orderItems.quantity' } } },
       { $sort: { totalQuantity: -1 } },
       { $limit: 5 }
     ]);
 
-    const onlinePayments = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'Razorpay' });
-    const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'COD' });
-    const cancelledOrders = await Orderdb.orderCollection.countDocuments({ orderStatus: 'Cancelled' });
-    const uniqueUserIds = await Orderdb.orderCollection.distinct('userId');
+    const onlinePayments = await Orderdb.orderCollection.countDocuments({ ...matchStage, paymentMethod: 'Razorpay' });
+    const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ ...matchStage, paymentMethod: 'COD' });
+    const cancelledOrders = await Orderdb.orderCollection.countDocuments({ ...matchStage, orderStatus: 'Cancelled' });
+
+    const uniqueUserIds = await Orderdb.orderCollection.distinct('userId', matchStage);
     const totalCustomers = uniqueUserIds.length;
+
     const topFiveProductIds = topFiveProducts.map(product => product._id);
     const topFiveProductDetails = await Productdb.productCollection.find({ _id: { $in: topFiveProductIds } });
+
     const totalRefundedAmount = await Wallectdb.walletCollection.aggregate([
       { $unwind: "$history" },
-      {
-        $match: {
-          "history.transactionType": "Refunded"
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalRefunded: { $sum: "$history.amount" }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          totalRefunded: 1
-        }
-      }
+      { $match: { "history.transactionType": "Refunded", "history.date": { $gte: matchStage.orderDate } } },
+      { $group: { _id: null, totalRefunded: { $sum: "$history.amount" } } },
+      { $project: { _id: 0, totalRefunded: 1 } }
     ]);
 
     const refundSum = totalRefundedAmount[0]?.totalRefunded || 0;
+
     const brandNames = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: "$orderItems" },
       { $lookup: {
         from: "product_datas",
@@ -163,15 +172,13 @@ async function fetchOrderData() {
         as: "productDetails"
       }},
       { $unwind: "$productDetails" },
-      { $group: {
-        _id: "$productDetails.brand",
-        count: { $sum: 1 }
-      }},
+      { $group: { _id: "$productDetails.brand", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 5 }
     ]);
 
     const topCategoryName = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: "$orderItems" },
       { $lookup: {
         from: "product_datas",
@@ -187,16 +194,13 @@ async function fetchOrderData() {
         as: "categoryDetails"
       }},
       { $unwind: "$categoryDetails" },
-      { $group: {
-        _id: "$categoryDetails.categoryName",
-        count: { $sum: 1 }
-      }},
+      { $group: { _id: "$categoryDetails.categoryName", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      { $limit: 5 },
-       
+      { $limit: 5 }
     ]);
 
     const monthlySales = await Orderdb.orderCollection.aggregate([
+      { $match: matchStage },
       { $unwind: '$orderItems' },
       { $group: {
         _id: {
@@ -239,6 +243,8 @@ async function fetchOrderData() {
     throw error;
   }
 }
+
+
 
 
 
