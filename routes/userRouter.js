@@ -119,8 +119,8 @@ router.get("/user/orders",isUserAuthenticated,userController.getMyOrders)
 
 router.post('/order/:orderId/item/:itemId/cancel',isUserAuthenticated, userController.cancelOrderItem);
 router.get('/order/:orderId/item/:itemId',isUserAuthenticated, userController.getOrderDetails)
-router.post("/order/return", userController.returnProduct)
-
+router.post("/order/return",isUserAuthenticated, userController.returnProduct)
+router.post("/user/addReview/:id",isUserAuthenticated, userController.addReview)
 
 router.get("/user/re-order/:orderId",isUserAuthenticated, userController.repayAmount); 
 router.post("/user/repayment_method", isUserAuthenticated,userController.repaymentMethod);

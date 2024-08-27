@@ -1,51 +1,56 @@
 <style>
-    .row{
-        margin-top: 100px;
-    }
-    .status-placed {
-  background-color: #6c757d; 
-  color: white;
-}
+  .row {
+    margin-top: 100px;
+  }
 
-.status-processing {
-  background-color: #17a2b8; 
-  color: white;
-}
+  .status-placed {
+    background-color: #6c757d;
+    color: white;
+  }
 
-.status-shipped {
-  background-color: #ffc107; 
-  color: black;
-}
+  .status-processing {
+    background-color: #17a2b8;
+    color: white;
+  }
 
-.status-delivered {
-  background-color: #28a745; 
-  color: white;
-}
+  .status-shipped {
+    background-color: #ffc107;
+    color: black;
+  }
 
-.status-cancelled {
-  background-color: #dc3545; 
-  color: white;
-}
+  .status-delivered {
+    background-color: #28a745;
+    color: white;
+  }
 
-.status-return-requested {
-  background-color: #fd7e14; 
-  color: white;
-}
+  .status-cancelled {
+    background-color: #dc3545;
+    color: white;
+  }
 
-.status-returned {
-  background-color: #6f42c1; 
-  color: white;
-}
-.rating-star {
-  font-size: 24px;
-  color: #ddd; /* Light gray color for unselected stars */
-  cursor: pointer;
-}
+  .status-return-requested {
+    background-color: #fd7e14;
+    color: white;
+  }
 
-.rating-star.checked {
-  color: #f39c12; /* Gold color for selected stars */
-}
+  .status-returned {
+    background-color: #6f42c1;
+    color: white;
+  }
 
+  .rating-star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+  }
+
+  .rating-star.checked {
+    color: #f39c12;
+  }
+
+  .progress-bar {
+    background-color: rgb(255, 187, 0);
+  }
 </style>
 <div class="container mt-5">
   <div class="row">
@@ -54,136 +59,179 @@
       <hr>
 
       <ul class="list-group list-group-horizontal-sm mb-3" id="orderStatus">
-        <li class="list-group-item flex-fill <%= item.status === 'Order Placed' ? 'status-placed' : '' %>">Order Placed</li>
-        <li class="list-group-item flex-fill <%= item.status === 'Processing' ? 'status-processing' : '' %>">Processing</li>
+        <li class="list-group-item flex-fill <%= item.status === 'Order Placed' ? 'status-placed' : '' %>">Order Placed
+        </li>
+        <li class="list-group-item flex-fill <%= item.status === 'Processing' ? 'status-processing' : '' %>">Processing
+        </li>
         <li class="list-group-item flex-fill <%= item.status === 'Shipped' ? 'status-shipped' : '' %>">Shipped</li>
-        <li class="list-group-item flex-fill <%= item.status === 'Delivered' ? 'status-delivered' : '' %>">Delivered</li>
-        <li class="list-group-item flex-fill <%= item.status === 'Cancelled' ? 'status-cancelled' : '' %>">Cancelled</li>
-        <li class="list-group-item flex-fill <%= item.status === 'Return Requested' ? 'status-return-requested' : '' %>">Return Requested</li>
+        <li class="list-group-item flex-fill <%= item.status === 'Delivered' ? 'status-delivered' : '' %>">Delivered
+        </li>
+        <li class="list-group-item flex-fill <%= item.status === 'Cancelled' ? 'status-cancelled' : '' %>">Cancelled
+        </li>
+        <li
+          class="list-group-item flex-fill <%= item.status === 'Return Requested' ? 'status-return-requested' : '' %>">
+          Return Requested</li>
         <li class="list-group-item flex-fill <%= item.status === 'Returned' ? 'status-returned' : '' %>">Returned</li>
       </ul>
 
-      <p><strong>Last updated:</strong> <%= new Date(updatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></p>
+      <p><strong>Last updated:</strong>
+        <%= new Date(updatedAt).toLocaleString('en-US', { dateStyle: 'medium' , timeStyle: 'short' }) %>
+      </p>
 
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <img src="/<%= item.image %>" alt="Product Image" class="img-fluid" style="max-width: 100px;">
-          <p><%= item.name %></p>
+          <p>
+            <%= item.name %>
+          </p>
         </div>
         <div>
-          <p><strong>Price:</strong> ₹<%= item.price.toFixed(2) %></p>
-          <p><strong>Quantity:</strong> <%= item.quantity %></p>
+          <p><strong>Price:</strong> ₹<%= item.price.toFixed(2) %>
+          </p>
+          <p><strong>Quantity:</strong>
+            <%= item.quantity %>
+          </p>
         </div>
       </div>
 
-      <p><strong>Return Eligibility:</strong> <%= new Date(order.orderDate).toLocaleDateString('en-US') %></p>
-      <p><strong>Shared Shipping Updates:</strong> <%= userInfo.email %></p>
+      <p><strong>Return Eligibility:</strong>
+        <%= new Date(order.orderDate).toLocaleDateString('en-US') %>
+      </p>
+      <p><strong>Shared Shipping Updates:</strong>
+        <%= userInfo.email %>
+      </p>
 
       <!-- Return Status and Message Section -->
       <div class="mt-4">
         <h4>Return Status</h4>
         <% if (item.returnRequest && item.returnRequest.status) { %>
-          <p><strong>Status:</strong> <%= item.returnRequest.status %></p>
+          <p><strong>Status:</strong>
+            <%= item.returnRequest.status %>
+          </p>
           <% if (item.returnRequest.reason) { %>
-            <p><strong>Reason:</strong> <%= item.returnRequest.reason %></p>
-          <% } %>
-          <% if (item.returnRequest.approvalDate) { %>
-            <p><strong>Approved On:</strong> <%= new Date(item.returnRequest.approvalDate).toLocaleDateString('en-US') %></p>
-          <% } %>
-          <% if (item.returnRequest.status === 'Rejected') { %>
-            <p><strong>Message:</strong> Your return request was rejected. Please contact support for more details.</p>
-          <% } else if (item.returnRequest.status === 'Approved') { %>
-            <p><strong>Message:</strong> Your return request has been approved. Further instructions will be sent to your email.</p>
-          <% } else { %>
-            <p><strong>Message:</strong> Your return request is being processed. We will notify you with updates.</p>
-          <% } %>
-        <% } else { %>
-          <p>Your return request is not yet initiated.</p>
-        <% } %>
+            <p><strong>Reason:</strong>
+              <%= item.returnRequest.reason %>
+            </p>
+            <% } %>
+              <% if (item.returnRequest.approvalDate) { %>
+                <p><strong>Approved On:</strong>
+                  <%= new Date(item.returnRequest.approvalDate).toLocaleDateString('en-US') %>
+                </p>
+                <% } %>
+                  <% if (item.returnRequest.status==='Rejected' ) { %>
+                    <p><strong>Message:</strong> Your return request was rejected. Please contact support for more
+                      details.</p>
+                    <% } else if (item.returnRequest.status==='Approved' ) { %>
+                      <p><strong>Message:</strong> Your return request has been approved. Further instructions will be
+                        sent to your email.</p>
+                      <% } else { %>
+                        <p><strong>Message:</strong> Your return request is being processed. We will notify you with
+                          updates.</p>
+                        <% } %>
+                          <% } else { %>
+                            <p>Your return request is not yet initiated.</p>
+                            <% } %>
       </div>
 
       <p><a href="/user/orders">Back to Orders</a></p>
       <!-- Rating and Reviews Section -->
-<div class="mt-5">
-  <h4>What others think about the product</h4>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="average-rating">
-      <div class="star-rating">
-        <span class="fa fa-star checked"></span>
-        <span class="average-rating-value"><%= averageRating.toFixed(1) %></span>
-      </div>
-      <p>Average customer rating</p>
-    </div>
-  </div>
-
-  <div class="review-bars">
-    <% [5, 4, 3, 2, 1].forEach(star => { %>
-      <div class="review-bar d-flex align-items-center">
-        <span><%= star %> <i class="fa fa-star"></i></span>
-        <div class="progress mx-2 flex-grow-1">
-          <div class="progress-bar" role="progressbar" style="width: <%= reviews.filter(r => r.rating === star).length / reviews.length * 100 %>%;"></div>
+      <div class="mt-5">
+        <h4>What others think about the product</h4>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="average-rating">
+            <div class="star-rating">
+              <span class="fa fa-star checked"></span>
+              <span class="average-rating-value">
+                <%= averageRating.toFixed(1) %>
+              </span>
+            </div>
+            <p>Average customer rating</p>
+          </div>
         </div>
-        <span><%= reviews.filter(r => r.rating === star).length %></span>
-      </div>
-    <% }) %>
-  </div>
 
-  <div class="mt-4">
-    <button id="writeReviewBtn" class="btn btn-primary">Write a review</button>
-  </div>
-</div>
+        <div class="review-bars">
+          <% [5, 4, 3, 2, 1].forEach(star=> { %>
+            <div class="review-bar d-flex align-items-center">
+              <span>
+                <%= star %> <i class="fa fa-star"></i>
+              </span>
+              <div class="progress mx-2 flex-grow-1">
+                <div class="progress-bar" role="progressbar"
+                  style="width: <%= reviews.filter(r => r.rating === star).length / reviews.length * 100 %>%;"></div>
+              </div>
+              <span>
+                <%= reviews.filter(r=> r.rating === star).length %>
+              </span>
+            </div>
+            <% }) %>
+        </div>
 
-<!-- Display individual reviews -->
-<div class="reviews mt-5">
-  <% reviews.forEach(review => { %>
-    <div class="review-item mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5><%= review.user.name %></h5>
-        <div>
-          <span class="badge bg-warning text-dark"><%= review.rating %> <i class="fa fa-star"></i></span>
+        <div class="mt-4">
+          <button id="writeReviewBtn" class="btn btn-dark">Write a review</button>
+        </div>
+
+        <!-- Review Form -->
+        <div id="reviewForm" class="mt-4" style="display: none;">
+          <h4>Add your review</h4>
+          <form id="addReviewForm">
+            <div class="form-group">
+              <label for="reviewRating">Your Rating:</label>
+              <div id="ratingStars" class="d-flex">
+                <% for(let i=1; i <=5; i++) { %>
+                  <span class="fa fa-star rating-star" data-rating="<%= i %>"></span>
+                  <% } %>
+              </div>
+              <input type="hidden" id="reviewRating" name="rating" value="0">
+            </div>
+            <div class="form-group">
+              <label for="reviewComment">Your Review:</label>
+              <textarea class="form-control" id="reviewComment" name="comment" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-dark mt-2">Submit Review</button>
+          </form>
+        </div>
+
+        <!-- Display individual reviews -->
+        <div class="reviews mt-5">
+          <% reviews.forEach(review=> { %>
+            <div class="review-item mb-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5>
+                  <%= review.user.firstName %>
+                    <%= review.user.lastName %>
+                </h5> <!-- Display user's full name -->
+                <div>
+                  <span class="badge bg-warning text-dark">
+                    <%= review.rating %> <i class="fa fa-star"></i>
+                  </span>
+                </div>
+              </div>
+              <p>
+                <%= review.comment %>
+              </p>
+              <small class="text-muted">
+                <%= new Date(review.date).toLocaleDateString() %>
+              </small>
+            </div>
+            <hr>
+            <% }) %>
         </div>
       </div>
-      <p><%= review.comment %></p>
-      <small class="text-muted"><%= new Date(review.date).toLocaleDateString() %></small>
     </div>
-    <hr>
-  <% }) %>
-</div>
-<div id="reviewForm" class="mt-4" style="display: none;">
-  <h4>Add your review</h4>
-  <form id="addReviewForm">
-    <div class="form-group">
-      <label for="reviewRating">Your Rating:</label>
-      <div id="ratingStars" class="d-flex">
-        <% for(let i = 1; i <= 5; i++) { %>
-          <span class="fa fa-star rating-star" data-rating="<%= i %>"></span>
-        <% } %>
-      </div>
-      <input type="hidden" id="reviewRating" name="rating" value="0">
-    </div>
-    <div class="form-group">
-      <label for="reviewComment">Your Review:</label>
-      <textarea class="form-control" id="reviewComment" name="comment" rows="3" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-success mt-2">Submit Review</button>
-  </form>
-</div>
-    </div>
-    
+
   </div>
-  
+
 </div>
 
 
 
 <script>
   $(document).ready(function() {
-  // Show the review form
+
   $('#writeReviewBtn').click(function() {
     $('#reviewForm').toggle();
   });
 
-  // Handle star rating
   $('.rating-star').hover(function() {
     var rating = $(this).data('rating');
     highlightStars(rating);
@@ -209,13 +257,12 @@
     });
   }
 
-  // Submit the review via AJAX
   $('#addReviewForm').submit(function(event) {
     event.preventDefault();
     var reviewData = $(this).serialize();
     
     $.ajax({
-      url: '/user/addReview/<%= item.productId._id %>',  // Backend route to handle review submission
+      url: '/user/addReview/<%= item.productId._id %>', 
       type: 'POST',
       data: reviewData,
       success: function(response) {
@@ -224,7 +271,7 @@
           title: 'Review Submitted',
           text: 'Thank you for your feedback!',
         }).then(() => {
-          location.reload();  // Reload the page to update reviews
+          location.reload();  
         });
       },
       error: function(err) {

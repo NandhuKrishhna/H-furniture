@@ -22,7 +22,8 @@ const crypto = require("crypto");
 const PDFDocument = require('pdfkit');
 const { whitelist } = require("validator");
 const { default: mongoose } = require("mongoose");
-const mailer = require("../utils/mails")
+const mailer = require("../utils/mails");
+const { error } = require("console");
 //  <<<<<<<Razorpay>>>>>>>>
 var instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -41,15 +42,7 @@ const verifyToken = (req) => {
 function calculateDiscountedPrice(originalPrice, discount) {
   return originalPrice - (originalPrice * discount / 100);
 }
-const calculateRatingDistribution = (reviews) => {
-  const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-  reviews.forEach(review => {
-    distribution[review.rating]++;
-  });
-
-  return distribution;
-};
 module.exports = {
 
   //getting user signup
@@ -475,10 +468,25 @@ module.exports = {
       let pipeline = [
         {
           $match: { isDeleted: false }
+        },
+        {
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "product",
+            as: "reviews"
+          }
+        },
+        {
+          $addFields: {
+            averageRating: {
+              $avg: "$reviews.rating"
+            }
+          }
         }
       ];
 
-      // Add search functionality
+
       if (req.query.search) {
         const search = req.query.search;
         const regex = new RegExp(search, 'i');
@@ -580,6 +588,16 @@ module.exports = {
         { $count: "total" }
       ]).exec();
 
+      pipeline.push(
+        {
+          $addFields: {
+            averageRating: {
+              $avg: "$reviews.rating"
+            }
+          }
+        }
+      );
+
       const totalProducts = totalProductsResult.length > 0 ? totalProductsResult[0].total : 0;
       const totalPages = Math.ceil(totalProducts / limit);
       const nextPage = page < totalPages ? page + 1 : null;
@@ -590,7 +608,7 @@ module.exports = {
       );
 
       const products = await Productdb.productCollection.aggregate(pipeline).exec();
-
+      
       res.status(200).render("user/user_products", {
         user: true,
         page,
@@ -1660,8 +1678,14 @@ applyCoupon: async (req, res, next) => {
       const order = await Orderdb.orderCollection.findById(orderId).populate("orderItems.productId");
       const item = order.orderItems.find(item => item._id.toString() === itemId);
       
-      const product = await Productdb.productCollection.findById(item.productId._id).populate('reviews.user');
-  
+      const product = await Productdb.productCollection
+        .findById(item.productId._id)
+        .populate({
+          path: 'reviews.user',
+          select: 'firstName lastName'
+        });
+
+      
       res.status(200).render("user/orderDetails", {
         order,
         item,
@@ -2231,6 +2255,41 @@ applyCoupon: async (req, res, next) => {
   }
  },
 
+addReview : async(req,res,next)=>{
+  try {
+    const { rating, comment } = req.body;
+    const productId = req.params.id; 
+    const userId = req.user._id; 
+    console.log(userId,productId,rating,comment);
+   
+    const newReview = {
+      user: userId,
+      rating: parseInt(rating),
+      comment: comment,
+      date: new Date(),
+    };
+
+    
+    const product = await Productdb.productCollection.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+ 
+    product.reviews.push(newReview);
+
+    product.averageRating =
+   product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length;
+    await product.save();
+
+    res.status(200).json({ 
+      message: 'Review added successfully', product 
+    });
+  } catch (err) {
+    console.error(err);
+    next(error)
+  }
+},
 
   }
   

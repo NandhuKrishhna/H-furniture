@@ -126,6 +126,24 @@ images: {
     default: 0,
   },
 });
+productSchema.pre('save', function(next) {
+  if (this.reviews && this.reviews.length > 0) {
+    const totalRating = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+    this.averageRating = parseFloat((totalRating / this.reviews.length).toFixed(1));
+  } else {
+    this.averageRating = 0;
+  }
+  next();
+});
+
+productSchema.pre('findOneAndUpdate', async function(next) {
+  if (this._update.reviews) {
+    const updatedReviews = this._update.reviews;
+    const totalRating = updatedReviews.reduce((acc, review) => acc + review.rating, 0);
+    this._update.averageRating = parseFloat((totalRating / updatedReviews.length).toFixed(1));
+  }
+  next();
+});
 
 const productCollection = new mongoose.model("product_data", productSchema);
 module.exports = { productCollection };
