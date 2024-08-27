@@ -996,13 +996,14 @@ downlordSalesReport: async (req, res, next) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
+    // Use the correct URL to generate the PDF
     await page.goto(`https://nandhu.live/admin/sales`, {
-      waitUntil: "networkidle2",
+      waitUntil: 'networkidle2',
     });
 
-    //---------hiding UI not needed---------
+    // Hide unnecessary UI elements
     await page.evaluate(() => {
-      const downlordBtn = document.getElementById("download-btn");
+      const downlordBtn = document.getElementById('download-btn');
       if (downlordBtn) {
         downlordBtn.style.display = 'none';
       }
@@ -1019,26 +1020,22 @@ downlordSalesReport: async (req, res, next) => {
         showEntries.style.display = 'none';
       }
     });
-   //---------------------------------------
 
-    await page.setViewport({ width: 1920, height: 1080 }); 
-    let height = await page.evaluate(
-      () => document.documentElement.offsetHeight
-    );
-
-    const pdfPath = path.join(__dirname, "../public/files", `${todayDate.getTime()}.pdf`);
-    const pdfBuffer = await page.pdf({
+    // Set viewport and generate PDF
+    await page.setViewport({ width: 1920, height: 1080 });
+    const pdfPath = path.join(__dirname, '../public/files', `${todayDate.getTime()}.pdf`);
+    await page.pdf({
       path: pdfPath,
-      format: "A4",
+      format: 'A4',
     });
 
     await browser.close();
 
+    // Send the generated PDF file
     res.set({
-      "Content-Type": "application/pdf",
-      "Content-Length": pdfBuffer.length,
+      'Content-Type': 'application/pdf',
+      'Content-Length': fs.statSync(pdfPath).size,
     });
-
     res.sendFile(pdfPath, (err) => {
       if (err) {
         console.error('Error sending file:', err);

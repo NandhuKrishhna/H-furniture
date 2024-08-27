@@ -93,8 +93,8 @@ router.patch("/admin/coupons/edit-coupons/:id",  auth.isadminAuthenticated, vali
 router.delete("/admin/coupons/delete-coupons/:id",  auth.isadminAuthenticated, adminController.deleteCoupon)
 
 
-router.get("/admin/sales",  adminController.getSaleReport)
-router.get("/admin/sales/download",adminController.downlordSalesReport)
+router.get('/admin/sales', adminController.getSaleReport);
+router.get('/admin/sales/download', adminController.downlordSalesReport);
 
 router.get("/admin/dashboard",  auth.isadminAuthenticated,adminController.dashboard)
 
