@@ -1000,7 +1000,7 @@ downlordSalesReport: async (req, res, next) => {
       waitUntil: "networkidle2",
     });
 
-    //---------hidding UI not needed---------
+    //---------hiding UI not needed---------
     await page.evaluate(() => {
       const downlordBtn = document.getElementById("download-btn");
       if (downlordBtn) {
@@ -1021,16 +1021,15 @@ downlordSalesReport: async (req, res, next) => {
     });
    //---------------------------------------
 
-      await page.setViewport({ width: 1920, height: 1080 }); 
-      let height = await page.evaluate(
-        () => document.documentElement.offsetHeight
+    await page.setViewport({ width: 1920, height: 1080 }); 
+    let height = await page.evaluate(
+      () => document.documentElement.offsetHeight
     );
 
     const pdfPath = path.join(__dirname, "../public/files", `${todayDate.getTime()}.pdf`);
     const pdfBuffer = await page.pdf({
       path: pdfPath,
       format: "A4",
-     
     });
 
     await browser.close();
@@ -1040,12 +1039,18 @@ downlordSalesReport: async (req, res, next) => {
       "Content-Length": pdfBuffer.length,
     });
 
-    res.sendFile(pdfPath);
+    res.sendFile(pdfPath, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        next(err);
+      }
+    });
   } catch (error) {
     console.error('Error generating PDF:', error);
     next(error);
   }
 },
+
 
 
 
