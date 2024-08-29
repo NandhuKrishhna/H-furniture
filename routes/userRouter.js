@@ -58,7 +58,6 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
 
 //----------------------
 //---------user homepage
-// router.get("/", userController.userHomePage)
 //---------user products-----------------
 router.get("/user/products",userController.getUserProducts)
 router.get("/user/search",userController.getUserProducts) // for serach
@@ -141,7 +140,7 @@ router.post("/user/wallet",isUserAuthenticated, userController.addMoneyToWallet)
 
 
 router.post("/user/logout", userController.userLogout)
-// router.get("/sample", userController.addReview)
-router.get("/", userController.homepage)
+router.get("/", userController.homePage)
+
 
 module.exports = router

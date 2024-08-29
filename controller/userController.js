@@ -443,20 +443,12 @@ module.exports = {
 
   //>>>>>>>>>>>>>>USER PAGE<<<<<<<<<<<<<<<<<<<\\
 
-
-
-
-  homepage : async (req, res) => {
-    try {
-      res.status(200).render("user/home", {
-        user: true
-      });
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-   
+  homePage: async (req, res, next) => {
+    res.render("user/home", { title: "Home Page" });
   },
+  
+
+
 
   //user products
   getUserProducts: async (req, res, next) => {
