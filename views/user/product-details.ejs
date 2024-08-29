@@ -176,49 +176,13 @@
   .product-body{
     margin-top:78px;
   }
-  .custom-breadcrumb {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.custom-breadcrumb .breadcrumb-item {
-  display: inline-block;
-  font-size: 16px;
-  color: #555; 
-}
-
-.custom-breadcrumb .breadcrumb-item a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.custom-breadcrumb .breadcrumb-item.active {
-  color: #6c757d; 
-}
-
-.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  content: ">";
-  color: #6c757d;
-  padding: 0 5px;
-}
 
 
 </style>
 <div class="container mt-5">
     <div class="row">
-      <nav style="padding-left: 20px; padding-top: 50px;" aria-label="breadcrumb">
-        <ol class="breadcrumb custom-breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item"><a href="/user/products">Shop</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Product Details</li>
-        </ol>
-      </nav>
       <div class="col-md-6 product-body">
         <div class="row">
-        
-          
           <div class="col-12 mb-2">
             <img id="mainProductImage" src="/<%= product.images[0] %>" class="img-fluid" alt="Main Product Image" style="min-width: 80%; height: auto;">
             <div class="circle-container" id="wishlist-icon-<%= product._id %>" style="position: absolute; top: 10px; right: 140px;">

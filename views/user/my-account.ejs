@@ -12,7 +12,7 @@
 
   .main-content {
     padding-left: 100px;
-    padding-top: 50px;
+    padding-top: 100px;
   }
   input::placeholder {
         font-size: 12px;
@@ -21,37 +21,7 @@
     input {
         font-size: 12px;
     }
-    .custom-breadcrumb {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.custom-breadcrumb .breadcrumb-item {
-  display: inline-block;
-  font-size: 16px;
-  color: #555; 
-}
-
-.custom-breadcrumb .breadcrumb-item a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.custom-breadcrumb .breadcrumb-item.active {
-  color: #6c757d; 
-}
-
-.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  content: ">";
-  color: #6c757d;
-}
-.breadcrumb-body {
-    padding-top: 96px;
-    padding-bottom: 0px;
-    padding-left: 39px;
-}
+  
 </style>
 </head>
 <body>
@@ -59,13 +29,6 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-         
-        <nav class="breadcrumb-body" aria-label="breadcrumb">
-          <ol class="breadcrumb custom-breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">My Account</li>
-          </ol>
-        </nav>
         <%- include("../partials/userSidenav.ejs") %>
         <!-- Form Section -->
         <div class="col-md-9 main-content">

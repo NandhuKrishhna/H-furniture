@@ -9,7 +9,7 @@ const Wallectdb = require("../models/walletModel")
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { ObjectId } = require("mongodb")
-const fs = require("fs")
+const fs = require("fs").promises;
 const path = require("path");
 const sharp = require("sharp");
 const { isError } = require("util");
@@ -993,20 +993,15 @@ getSaleReport: async (req, res, next) => {
 downlordSalesReport: async (req, res, next) => {
   try {
     const todayDate = new Date();
-
-    // Launch Puppeteer with additional arguments if running in a headless environment like AWS
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // Go to the sales report page
+    // Use the correct URL to generate the PDF
     await page.goto(`https://nandhu.live/admin/sales`, {
       waitUntil: 'networkidle2',
     });
 
-    // Hide unnecessary UI elements on the page
+    // Hide unnecessary UI elements
     await page.evaluate(() => {
       const downlordBtn = document.getElementById('download-btn');
       if (downlordBtn) {
@@ -1026,18 +1021,17 @@ downlordSalesReport: async (req, res, next) => {
       }
     });
 
-    // Set the viewport and generate the PDF
+    // Set viewport and generate PDF
     await page.setViewport({ width: 1920, height: 1080 });
     const pdfPath = path.join(__dirname, '../public/files', `${todayDate.getTime()}.pdf`);
     await page.pdf({
       path: pdfPath,
       format: 'A4',
-      printBackground: true,
     });
 
     await browser.close();
 
-    // Send the generated PDF file as a response
+    // Send the generated PDF file
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Length': fs.statSync(pdfPath).size,
@@ -1046,9 +1040,6 @@ downlordSalesReport: async (req, res, next) => {
       if (err) {
         console.error('Error sending file:', err);
         next(err);
-      } else {
-        // Optionally, delete the file after sending it
-        fs.unlinkSync(pdfPath);
       }
     });
   } catch (error) {

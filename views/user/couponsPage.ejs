@@ -1,7 +1,7 @@
 <style>
   .main-content {
     padding-left: 100px;
-    padding-top: 27px;
+    padding-top: 100px;
     font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
 
@@ -43,49 +43,12 @@
 
 }
 
-.custom-breadcrumb {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
 
-.custom-breadcrumb .breadcrumb-item {
-  display: inline-block;
-  font-size: 16px;
-  color: #555; 
-}
-
-.custom-breadcrumb .breadcrumb-item a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.custom-breadcrumb .breadcrumb-item.active {
-  color: #6c757d; 
-}
-
-.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
-  content: ">";
-  color: #6c757d;
-}
-.breadcrumb-body {
-    padding-top: 96px;
-    padding-bottom: 0px;
-    padding-left: 39px;
-}
 
 </style>
 
 <div class="container-fluid">
   <div class="row">
-    <nav class="breadcrumb-body" aria-label="breadcrumb">
-      <ol class="breadcrumb custom-breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item"><a href="/user/my-account">My Account</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Coupons</li>
-      </ol>
-    </nav>
    <%- include('../partials/userSidenav.ejs') %>
     <main role="main" class="col-md-9 main-content">
       <h4 style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Coupons & Vouchers</h4>
