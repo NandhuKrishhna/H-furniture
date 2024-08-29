@@ -245,6 +245,47 @@ async function fetchOrderData(timeframe = 'monthly') {
 }
 
 
+function generateBreadcrumbs(req) {
+  const breadcrumbs = [];
+  const pathArray = req.path.split('/').filter((path) => path);
+
+  let pathAccumulator = '';
+
+  const breadcrumbNames = {
+      'user': 'User',
+      'products': 'Products',
+      'product': 'Product Details',
+      'cart': 'Cart',
+      'checkout_address_details': 'Checkout',
+      'my-account': 'My Account',
+      'my-address': 'My Address',
+      'add_address': 'Add Address',
+      'edit_address': 'Edit Address',
+      'delete_address': 'Delete Address',
+      'set_new_password': 'Set New Password',
+      'payment_method': 'Payment Method',
+      'orders': 'Orders',
+      'coupons': 'Coupons',
+      'wishlist': 'Wishlist',
+      'wallet': 'Wallet',
+      'logout': 'Logout',
+      're-order': 'Re-order',
+      'download-invoice': 'Download Invoice'
+  };
+
+  pathArray.forEach((segment, index) => {
+      pathAccumulator += `/${segment}`;
+      const name = breadcrumbNames[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+
+      breadcrumbs.push({
+          name: name,
+          url: pathAccumulator
+      });
+  });
+
+  return breadcrumbs;
+}
+
 
 
 

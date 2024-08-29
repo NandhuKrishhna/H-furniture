@@ -8,7 +8,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
     overflow: hidden;
-    /* Ensure image doesn't overflow the card */
+
   }
 
   .card:hover {
@@ -20,12 +20,12 @@
     height: 270px;
     object-fit: cover;
     transition: transform 0.3s ease-in-out;
-    /* Add transition for image effect */
+  
   }
 
   .card:hover img {
     transform: scale(1.05);
-    /* Slightly zoom the image on hover */
+ 
   }
 
   .product-card .card-body {
@@ -35,7 +35,6 @@
   .wishlist-heart {
     cursor: pointer;
     color: #ffffff;
-    /* Default color */
   }
 
   .wishlist-heart.clicked {
@@ -56,7 +55,7 @@
   }
 
   .main-body {
-    padding-top: 50px;
+    padding-top: 100px;
     font-family: monospace;
   }
 
@@ -96,11 +95,44 @@
   .filter-title {
     font-family: monospace;
   }
+  .custom-breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.custom-breadcrumb .breadcrumb-item {
+  display: inline-block;
+  font-size: 16px;
+  color: #555; 
+}
+
+.custom-breadcrumb .breadcrumb-item a {
+  text-decoration: none;
+  color: #007bff; 
+}
+
+.custom-breadcrumb .breadcrumb-item.active {
+  color: #6c757d; 
+}
+
+.custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+  padding: 0 5px;
+}
+
 </style>
 
 <div class="container-fluid main-body">
   <div class="row mt-4">
-
+    <nav style="padding-left: 20px;"  aria-label="breadcrumb">
+      <ol class="breadcrumb custom-breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Shop</li>
+      </ol>
+    </nav>    
     <div class="col-lg-3 col-md-4 col-sm-12 mb-4">
       <div class=" filter-card">
         <div class="card-header">
