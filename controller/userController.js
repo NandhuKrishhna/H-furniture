@@ -447,9 +447,9 @@ module.exports = {
 
   //>>>>>>>>>>>>>>USER PAGE<<<<<<<<<<<<<<<<<<<\\
 
-  homePage: async (req, res, next) => {
-  res.redirect("/user/home")
-  },
+  // homePage: async (req, res, next) => {
+  // res.redirect("/user/home")
+  // },
   
 
   userHomePage: async (req,res,next)=> {

@@ -140,8 +140,8 @@ router.post("/user/wallet",isUserAuthenticated, userController.addMoneyToWallet)
 
 
 router.post("/user/logout", userController.userLogout)
-router.get("/", userController.homePage)
-router.get("/user/home", userController.userHomePage)
+// router.get("/", userController.homePage)
+router.get("/", userController.userHomePage)
 
 
 module.exports = router
