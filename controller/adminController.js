@@ -14,7 +14,8 @@ const path = require("path");
 const sharp = require("sharp");
 const { isError } = require("util");
 const puppeteer = require("puppeteer");
-const {fetchOrderData} = require("../utils/helpers")
+const PDFDocument = require("pdfkit");
+const {fetchOrderData , fetchSaleReportData} = require("../utils/helpers")
 
 function convertDate(users){
   users.forEach(element => {
@@ -883,105 +884,11 @@ deleteCoupon : async (req,res,next) => {
 getSaleReport: async (req, res, next) => {
   try {
     const period = req.query.period || 'daily';
-
-    const matchStage = {};
-    if (period === 'daily') {
-      matchStage['orderDate'] = {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)), 
-        $lt: new Date(new Date().setHours(24, 0, 0, 0)) 
-      };
-    } else if (period === 'monthly') {
-      const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59);
-      matchStage['orderDate'] = {
-        $gte: startOfMonth,
-        $lte: endOfMonth
-      };
-    } else if (period === 'yearly') {
-      const startOfYear = new Date(new Date().getFullYear(), 0, 1);
-      const endOfYear = new Date(new Date().getFullYear() + 1, 0, 0, 23, 59, 59);
-      matchStage['orderDate'] = {
-        $gte: startOfYear,
-        $lte: endOfYear
-      };
-    }
-    const totalOrders = await Orderdb.orderCollection.countDocuments();
-    const uniqueUserIds = await Orderdb.orderCollection.distinct('userId');
-    const totalCustomers = uniqueUserIds.length;
-    const onlinePayments = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'Razorpay' });
-    const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'COD' });
-    const cancelledOrders = await Orderdb.orderCollection.countDocuments({ orderStatus: 'Cancelled' });
-    const totalSales = await Orderdb.orderCollection.aggregate([
-      { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } }
-    ]);
-    const totalCouponsUsed = await Coupondb.couponCollection.aggregate([
-      { $group: { _id: null, couponsUsed: { $sum: "$couponsUsed" } } }
-    ]);
-    const totalRefundedAmount = await Wallectdb.walletCollection.aggregate([
-      { $unwind: "$history" },
-      {
-        $match: {
-          "history.transactionType": "Refunded"
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalRefunded: { $sum: "$history.amount" }
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          totalRefunded: 1
-        }
-      }
-    ]);
-
-    const refundSum = totalRefundedAmount[0]?.totalRefunded || 0;
-    const orders = await Orderdb.orderCollection.find();
-
-    const productIds = orders.flatMap(order => order.orderItems.map(item => item.productId));
-    const products = await Productdb.productCollection.find({ _id: { $in: productIds } }).select('originalprice discount');
-    console.log(products, "this is from sales report");
-
-    const orderDetails = orders.map(order => {
-      return order.orderItems.map(item => {
-        const product = products.find(p => p._id.equals(item.productId));
-        const originalPrice = product ? product.originalprice : 0;
-        const discount = product ? product.discount : 100;
-        const discountPrice = Math.floor(originalPrice * discount / 100);
-        const soldPrice = Math.floor(originalPrice-discountPrice);
-
-        console.log(discount,"<<<<<<<<<<");
-        console.log(originalPrice,">>>>>>>>>");
-        return {
-          fullName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-          orderId: order._id,
-          date: new Date(order.orderDate).toLocaleDateString(),
-          productName: item.name,
-          originalPrice: originalPrice,
-          soldPrice: soldPrice,
-          offer: order.offer || 'N/A',
-          discount: discount,
-          couponApplied: item.appliedCoupon || 'None',
-          paymentMethod: order.paymentMethod,
-          paymentStatus: order.paymentStatus,
-        };
-      });
-    }).flat();
-      
+    const reportData = await fetchSaleReportData(period);
+    console.log(reportData);
     res.render('admin/sales', {
-      totalOrders,
-      totalCustomers,
-      totalRefundedAmount: refundSum,
-      onlinePayments,
-      cashOnDelivery,
-      cancelledOrders,
-      totalSales: totalSales[0]?.totalAmount || 0,
-      totalCouponsUsed: totalCouponsUsed[0]?.couponsUsed || 0,
-      orderDetails,
-      period
+      ...reportData,
+      period,
     });
   } catch (error) {
     console.error('Error fetching sales summary:', error);
@@ -992,62 +899,128 @@ getSaleReport: async (req, res, next) => {
 
 downlordSalesReport: async (req, res, next) => {
   try {
-    const todayDate = new Date();
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const period = req.query.period || 'daily';
+    const reportData = await fetchSaleReportData(period);
 
-    // Use the correct URL to generate the PDF
-    await page.goto(`https://nandhu.live/admin/sales`, {
-      waitUntil: 'networkidle2',
+
+    const doc = new PDFDocument({
+      size: [1200, 1200],
+      margin: 50
     });
 
-    // Hide unnecessary UI elements
-    await page.evaluate(() => {
-      const downlordBtn = document.getElementById('download-btn');
-      if (downlordBtn) {
-        downlordBtn.style.display = 'none';
-      }
-      const searchBar = document.querySelector('.dataTables_filter');
-      if (searchBar) {
-        searchBar.style.display = 'none';
-      }
-      const pagination = document.querySelector('.dataTables_paginate');
-      if (pagination) {
-        pagination.style.display = 'none';
-      }
-      const showEntries = document.querySelector('.dataTables_length');
-      if (showEntries) {
-        showEntries.style.display = 'none';
-      }
+    let filename = `sales_report_${period}.pdf`;
+    filename = encodeURIComponent(filename);
+
+    res.setHeader('Content-disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-type', 'application/pdf');
+
+    doc.pipe(res);
+
+   
+    doc.fontSize(18).text('Mazen Furniture', { align: 'center' });
+    doc.fontSize(14).text(`Sales Report - ${period}`, { align: 'center' });
+
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    doc.fontSize(10).text(`Generated on: ${formattedDate}`, { align: 'center' });
+
+    doc.moveDown();
+    
+    const headers = [
+      { text: 'DATE', width: 60 },
+      { text: 'ORDER ID', width: 100 },
+      { text: 'CUSTOMER NAME', width: 150 },
+      { text: 'ITEM', width: 100 },
+      { text: 'ORIGINAL PRICE', width: 100 },
+      { text: 'SOLD PRICE', width: 100 },
+      { text: 'OFFER', width: 100 },
+      { text: 'DISCOUNT', width: 100 },
+      { text: 'COUPON', width: 100 },
+      { text: 'PAYMENT METHOD', width: 120 },
+      { text: 'STATUS', width: 80 }
+    ];
+    
+    const totalWidth = headers.reduce((sum, header) => sum + header.width, 0);
+    const startX = 50; 
+    let y = doc.y;
+
+   
+    doc.fontSize(10); 
+    headers.reduce((x, header) => {
+      doc.text(header.text, x, y, { width: header.width, align: 'center' });
+      return x + header.width; 
+    }, startX);
+
+    y += 30; 
+
+    
+    doc.moveTo(startX, y - 10)
+      .lineTo(startX + totalWidth, y - 10)
+      .stroke();
+
+    
+    const rowHeight = 20; 
+
+    
+    doc.fontSize(8);
+    reportData.orderDetails.forEach(order => {
+      let rowY = y;
+
+      headers.reduce((x, header, index) => {
+       
+        let text = '';
+        switch (index) {
+          case 0: text = order.date; break;
+          case 1: text = order.orderId; break;
+          case 2: text = order.fullName; break;
+          case 3: text = order.productName; break;
+          case 4: text = order.originalPrice; break;
+          case 5: text = order.soldPrice; break;
+          case 6: text = order.offer; break;
+          case 7: text = order.discount; break;
+          case 8: text = order.couponApplied; break;
+          case 9: text = order.paymentMethod; break;
+          case 10: text = order.paymentStatus; break;
+        }
+        
+        const fontSize = index === 1 ? 7 : 8; 
+        doc.fontSize(fontSize);
+        const textWidth = doc.widthOfString(text);
+        const textHeight = doc.heightOfString(text);
+
+        const verticalOffset = (rowHeight - textHeight) / 2;
+
+        
+        doc.text(text, x, rowY + verticalOffset, { width: header.width, align: 'center' });
+        return x + header.width; 
+      }, startX);
+
+      rowY += rowHeight; 
+      doc.moveTo(startX, rowY)
+        .lineTo(startX + totalWidth, rowY)
+        .stroke();
+
+      y = rowY;
     });
 
-    // Set viewport and generate PDF
-    await page.setViewport({ width: 1920, height: 1080 });
-    const pdfPath = path.join(__dirname, '../public/files', `${todayDate.getTime()}.pdf`);
-    await page.pdf({
-      path: pdfPath,
-      format: 'A4',
-    });
+ 
+    doc.moveTo(startX, y)
+      .lineTo(startX + totalWidth, y)
+      .stroke();
 
-    await browser.close();
-
-    // Send the generated PDF file
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Length': fs.statSync(pdfPath).size,
-    });
-    res.sendFile(pdfPath, (err) => {
-      if (err) {
-        console.error('Error sending file:', err);
-        next(err);
-      }
-    });
+    doc.end();
   } catch (error) {
     console.error('Error generating PDF:', error);
-    next(error);
+    res.status(500).send('Internal Server Error');
   }
 },
-
 
 
 

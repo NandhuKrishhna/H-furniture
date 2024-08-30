@@ -9,7 +9,7 @@ const Wallectdb = require("../models/walletModel")
 const { getProductDetails } = require("../controller/userController");
 const Categorydb = require("../models/categoryModel");
 const { createStructParentTreeNextKey } = require("pdfkit");
-
+const Coupondb = require("../models/couponModel");
 
 
 
@@ -244,6 +244,104 @@ async function fetchOrderData(timeframe = 'monthly') {
   }
 }
 
+async function fetchSaleReportData(period) {
+  const matchStage = {};
+  if (period === 'daily') {
+    matchStage['orderDate'] = {
+      $gte: new Date(new Date().setHours(0, 0, 0, 0)), 
+      $lt: new Date(new Date().setHours(24, 0, 0, 0)) 
+    };
+  } else if (period === 'monthly') {
+    const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59);
+    matchStage['orderDate'] = {
+      $gte: startOfMonth,
+      $lte: endOfMonth
+    };
+  } else if (period === 'yearly') {
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+    const endOfYear = new Date(new Date().getFullYear() + 1, 0, 0, 23, 59, 59);
+    matchStage['orderDate'] = {
+      $gte: startOfYear,
+      $lte: endOfYear
+    };
+  }
+
+  const totalOrders = await Orderdb.orderCollection.countDocuments();
+  const uniqueUserIds = await Orderdb.orderCollection.distinct('userId');
+  const totalCustomers = uniqueUserIds.length;
+  const onlinePayments = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'Razorpay' });
+  const cashOnDelivery = await Orderdb.orderCollection.countDocuments({ paymentMethod: 'COD' });
+  const cancelledOrders = await Orderdb.orderCollection.countDocuments({ orderStatus: 'Cancelled' });
+  const totalSales = await Orderdb.orderCollection.aggregate([
+    { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } }
+  ]);
+  const totalCouponsUsed = await Coupondb.couponCollection.aggregate([
+    { $group: { _id: null, couponsUsed: { $sum: "$couponsUsed" } } }
+  ]);
+  const totalRefundedAmount = await Wallectdb.walletCollection.aggregate([
+    { $unwind: "$history" },
+    {
+      $match: {
+        "history.transactionType": "Refunded"
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalRefunded: { $sum: "$history.amount" }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        totalRefunded: 1
+      }
+    }
+  ]);
+
+  const refundSum = totalRefundedAmount[0]?.totalRefunded || 0;
+  const orders = await Orderdb.orderCollection.find();
+
+  const productIds = orders.flatMap(order => order.orderItems.map(item => item.productId));
+  const products = await Productdb.productCollection.find({ _id: { $in: productIds } }).select('originalprice discount');
+
+  const orderDetails = orders.map(order => {
+    return order.orderItems.map(item => {
+      const product = products.find(p => p._id.equals(item.productId));
+      const originalPrice = product ? product.originalprice : 0;
+      const discount = product ? product.discount : 100;
+      const discountPrice = Math.floor(originalPrice * discount / 100);
+      const soldPrice = Math.floor(originalPrice - discountPrice);
+
+      return {
+        fullName: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+        orderId: order._id,
+        date: new Date(order.orderDate).toLocaleDateString(),
+        productName: item.name,
+        originalPrice: originalPrice,
+        soldPrice: soldPrice,
+        offer: order.offer || 'N/A',
+        discount: discount,
+        couponApplied: item.appliedCoupon || 'None',
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+      };
+    });
+  }).flat();
+
+  return {
+    totalOrders,
+    totalCustomers,
+    totalRefundedAmount: refundSum,
+    onlinePayments,
+    cashOnDelivery,
+    cancelledOrders,
+    totalSales: totalSales[0]?.totalAmount || 0,
+    totalCouponsUsed: totalCouponsUsed[0]?.couponsUsed || 0,
+    orderDetails,
+  };
+}
 
 
 
@@ -253,8 +351,8 @@ module.exports = {
   sendOtp,
   resendOtp,
   upload,
-  fetchOrderData
-
+  fetchOrderData,
+  fetchSaleReportData
 
   };
 

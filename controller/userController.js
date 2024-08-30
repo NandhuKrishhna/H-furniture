@@ -93,8 +93,12 @@ module.exports = {
   //getting user otp
   getsubmitSignupotp: async (req, res, next) => {
     console.log("Inserting data:", req.session.userdata);
+    const userEmail = req.session.userdata?.email;
+    console.log(userEmail);
     res.status(200).render("user/otp_submit", {
-      userOtpSubmit: true
+      userOtpSubmit: true,
+      userEmail,
+      
     }
     );
   },
@@ -444,11 +448,15 @@ module.exports = {
   //>>>>>>>>>>>>>>USER PAGE<<<<<<<<<<<<<<<<<<<\\
 
   homePage: async (req, res, next) => {
-    res.render("user/home", { title: "Home Page" });
+  res.redirect("/user/home")
   },
   
 
-
+  userHomePage: async (req,res,next)=> {
+    res.render('user/homePage', {
+      user:true
+    })
+  },
 
   //user products
   getUserProducts: async (req, res, next) => {

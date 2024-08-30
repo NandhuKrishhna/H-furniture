@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(methodOverride("_method"));
-app.use(logger('combined'));
+app.use(logger('dev'));
 
 // Cache control middleware
 app.use(nocache());

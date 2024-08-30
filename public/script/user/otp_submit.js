@@ -92,7 +92,7 @@ document.getElementById('otpForm').addEventListener('submit', async function(e) 
       })
       .then(data => {
         if (data.success) {
-          messageContainer.textContent = `<strong>OTP has been resent to your email!</strong>`;
+          messageContainer.textContent = `OTP has been resent to your email!`;
           messageContainer.style.color = 'green';
           // Reset timer
           resetTimer(120); // Start the timer from 120 seconds
