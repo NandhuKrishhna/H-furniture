@@ -14,7 +14,8 @@ const {
     validateLoginRules,
     validateMyAccount,
     validateChangePass,
-    validateAddress
+    validateAddress,
+    changePassword
 } = require("../utils/errorhandling")
 
 // user registration
@@ -39,7 +40,7 @@ router.post("/user/resend_forgot_otp", validateOtp,validate, userController.rese
 
 //changing the password 
 router.get("/user/change_password", userController.getChangePassword);
-router.post("/user/change_password", userController.changePassword);
+router.post("/user/change_password",userController.changePassword);
 //getting otp for email verification
 
 // user google login

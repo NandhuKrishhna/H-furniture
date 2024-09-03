@@ -32,7 +32,14 @@
         <%- include("../partials/userSidenav.ejs") %>
         <!-- Form Section -->
         <div class="col-md-9 main-content">
-          <h5>Account Setting</h5>
+          <div >
+            <h5>Account Setting</h5>
+            <ul class="breadcrumb">
+              <li><a href="/user/products">Shop</a></li>
+              <!-- <li><a href="/user/my-account">My Account</a></li> -->
+              <li>My Account</li>
+            </ul>
+          </div>
           <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
               <div class="row mb-3">
                   <div class="col">

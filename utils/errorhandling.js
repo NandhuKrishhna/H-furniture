@@ -304,3 +304,24 @@ exports.validateCoupon =[
             return true;
         }),
 ];
+
+exports.changePassword = [
+
+    check('newPassword')
+    .notEmpty().withMessage('New password is required') 
+      .isLength({ min: 6 }).withMessage('New password must be at least 6 characters long')
+      .matches(/[A-Z]/).withMessage('New password must contain at least one uppercase letter')
+      .matches(/[a-z]/).withMessage('New password must contain at least one lowercase letter')
+      .matches(/[0-9]/).withMessage('New password must contain at least one number')
+      .matches(/[@$!%*?&]/).withMessage('New password must contain at least one special character'),
+    
+    check('confirmPassword')
+    .notEmpty().withMessage('New password is required') 
+      .custom((value, { req }) => {
+        if (value !== req.body.newPassword) {
+          throw new Error('Confirm password must match new password');
+        }
+        return true;
+      }),
+  
+]

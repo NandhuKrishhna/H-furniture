@@ -121,8 +121,15 @@
 
     <!-- Form Section -->
     <div class="col-md-9 order-body">
-      <h3 style="padding-left: 40px;">Your Orders</h3>
-
+      <div style="padding-left: 40px;">
+        <h3 >Your Orders</h3>
+        <ul class="breadcrumb">
+          <li><a href="/user/products">Shop</a></li>
+          <li><a href="/user/my-account">My Account</a></li>
+          <li>Orders</li>
+        </ul>
+      </div>
+    
       <% orders.forEach(order => { %>
         <div class="order-card">
           <div class="card-header">

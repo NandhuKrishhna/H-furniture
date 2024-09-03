@@ -48,18 +48,24 @@
 
 <div class="container mt-5">
   <h3 class="mb-4 payment-body">Shopping Cart</h3>
+  <ul class="breadcrumb">
+    <li><a href="/user/products">Shop</a></li>
+    <li><a href="/user/cart">Cart</a></li>
+    <li><a href="/user/checkout_address_details">Checkout</a></li>
+    <li>Payment</li>
+  </ul>
   <div class="row">
     <div class="col-lg-8">
       <form id="paymentForm" method="POST" action="/user/payment_method">
         <!-- Radio buttons for payment methods -->
-        <div class="payment-card">
+        <!-- <div class="payment-card">
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethod1" value="creditCard">
             <label class="form-check-label" for="paymentMethod1">
               <i class="fa-regular fa-credit-card"></i> Credit Card/Debit Card/UPI/Net Banking/Wallets
             </label>
           </div>
-        </div>
+        </div> -->
         <div class="payment-card">
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodCOD" value="COD">
@@ -72,7 +78,7 @@
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMethodRazorpay" value="Razorpay">
             <label class="form-check-label d-flex align-items-center" for="paymentMethodRazorpay">
-              <i class="fa fa-credit-card"></i> Razorpay
+              <i class="fa fa-credit-card"></i> &nbsp; Razorpay
             </label>
           </div>
         </div>
@@ -150,8 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const couponCode = couponCodeInput.value.trim();
 
     if (!couponCode) {
-      alert('Please enter a coupon code.');
-      return;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Please enter a coupon code.',
+        confirmButtonText: 'Understood'
+      });
+      return; // Exit the function to prevent further execution
     }
 
     fetch('/user/apply-coupon', {
@@ -170,12 +181,56 @@ document.addEventListener('DOMContentLoaded', () => {
         appliedCouponSection.classList.remove('d-none');
         couponCodeInput.value = '';
       } else {
-        alert(data.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.message,
+          confirmButtonText: 'OK'
+        });
       }
     })
     .catch(error => {
       console.error('Error applying coupon:', error);
-      alert('An error occurred while applying the coupon.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while applying the coupon.',
+        confirmButtonText: 'OK'
+      });
+    });
+  });
+
+  removeCouponButton.addEventListener('click', () => {
+    fetch('/user/remove-coupon', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Response Data:", data); 
+      if (data.success) {
+        appliedCouponSection.classList.add('d-none');
+        totalAmountElement.innerText = `₹${data.finalAmount.toFixed(2)}`;
+        discountAmountElement.innerText = `₹${(data.discountValue || 0).toFixed(2)}`;
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.message,
+          confirmButtonText: 'OK'
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error removing coupon:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while removing the coupon.',
+        confirmButtonText: 'OK'
+      });
     });
   });
 
@@ -218,7 +273,7 @@ document.getElementById('paymentForm').addEventListener('submit', function (even
   const totalAmount = document.querySelector('input[name="totalAmount"]').value;
   if (paymentMethod.value === 'COD' && totalAmount > 5000) {
     Swal.fire({
-      icon: 'error',
+      icon: 'warning',
       title: 'Payment Method Unavailable',
       text: 'Cash on Delivery is not available for orders above ₹5000. Please choose another payment method.',
       confirmButtonText: 'OK'

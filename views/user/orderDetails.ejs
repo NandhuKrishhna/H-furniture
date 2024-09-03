@@ -55,6 +55,12 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-8 offset-md-2">
+      <ul class="breadcrumb">
+        <li><a href="/user/products">Shop</a></li>
+        <li><a href="/user/my-account">My Account</a></li>
+        <li><a href="/user/orders">Orders</a></li>
+        <li>Order Details</li>
+      </ul>
       <h2>Details of your order</h2>
       <hr>
 
@@ -191,15 +197,18 @@
           </form>
         </div>
 
-        <!-- Display individual reviews -->
+
         <div class="reviews mt-5">
-          <% reviews.forEach(review=> { %>
+          <% reviews.forEach(review => { %>
             <div class="review-item mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <h5>
-                  <%= review.user.firstName %>
-                    <%= review.user.lastName %>
-                </h5> <!-- Display user's full name -->
+                  <% if (review.user && review.user.firstName && review.user.lastName) { %>
+                    <%= review.user.firstName %> <%= review.user.lastName %>
+                  <% } else { %>
+                    User
+                  <% } %>
+                </h5> 
                 <div>
                   <span class="badge bg-warning text-dark">
                     <%= review.rating %> <i class="fa fa-star"></i>
@@ -214,8 +223,9 @@
               </small>
             </div>
             <hr>
-            <% }) %>
+          <% }) %>
         </div>
+        
       </div>
     </div>
 

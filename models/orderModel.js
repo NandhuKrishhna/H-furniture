@@ -71,15 +71,20 @@ orderSchema.pre('save', function (next) {
   const numberOfItems = this.orderItems.length;
 
   if (numberOfItems > 0 && this.discountValue > 0) {
-    const discountPerItem = this.discountValue / numberOfItems;
+    const totalOrderValue = this.orderItems.reduce((acc, item) => {
+      return acc + (item.price * item.quantity);
+    }, 0);
 
     this.orderItems.forEach(item => {
-      item.discountValue = discountPerItem;
+      const itemTotalValue = item.price * item.quantity;
+      const itemDiscount = (itemTotalValue / totalOrderValue) * this.discountValue;
+      item.discountValue = itemDiscount;
     });
   }
 
   next();
 });
+
 
 const orderCollection = mongoose.model('order_data', orderSchema);
 

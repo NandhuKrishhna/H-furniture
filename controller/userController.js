@@ -430,7 +430,7 @@ module.exports = {
           res.status(400).json({ customError: 'Failed to update password' });
         }
       } else {
-        res.status(400).json({ customError: 'Session is not found' });
+        res.status(400).json({ customError: 'Timeout, please try again' });
       }
     } catch (error) {
       console.error('Error in changePassword:', error);
@@ -1625,12 +1625,15 @@ applyCoupon: async (req, res, next) => {
       }
 
       const payment = await instance.payments.fetch(payment_id);
-      console.log(payment, 'payment');
+      console.log("Fetched Payment Details: ", payment);
+      
 
-      if (payment.status === 'failed') {
+      if (payment.status !== 'success' && payment.status !== 'captured') {
+        console.log("Non-success Payment Status: ", payment.status);
         await handlePaymentFailure(order_id, payment_id);
         return res.redirect(`/user/orders`);
-      }
+    }
+    
 
       console.log('Payment successful');
       const result = await Orderdb.orderCollection.updateOne(
@@ -1653,7 +1656,7 @@ applyCoupon: async (req, res, next) => {
       const user = verifyToken(req);
       const userId = user._id;
       const userInfo = await Userdb.userCollection.findById(userId);
-      const orders = await Orderdb.orderCollection.find({ userId: userId }).sort({ orderDate: -1 }).lean();
+      const orders = await Orderdb.orderCollection.find({ userId: userId }).sort({ updatedAt: -1 }).lean();
 
       res.status(200).render("user/orders", {
         user: true,
