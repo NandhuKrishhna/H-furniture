@@ -1,0 +1,18 @@
+
+<% if (breadcrumbs && breadcrumbs.length > 0) { %>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <% breadcrumbs.forEach((breadcrumb, index) => { %>
+                <li class="breadcrumb-item <%= index === breadcrumbs.length - 1 ? 'active' : '' %>">
+                    <% if (index !== breadcrumbs.length - 1) { %>
+                        <a href="<%= breadcrumb.url %>"><%= breadcrumb.name %></a>
+                    <% } else { %>
+                        <%= breadcrumb.name %>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ol>
+    </nav>
+<% } else { %>
+    <p>No breadcrumbs to display.</p>
+<% } %>
