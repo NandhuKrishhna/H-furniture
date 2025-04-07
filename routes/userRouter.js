@@ -59,6 +59,7 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
 
 //----------------------
 //---------user homepage
+router.get("/home",userController.userHomePage)
 //---------user products-----------------
 router.get("/user/products",userController.getUserProducts)
 router.get("/user/search",userController.getUserProducts) // for serach

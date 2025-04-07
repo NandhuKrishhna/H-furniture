@@ -98,7 +98,7 @@ module.exports = {
     res.status(200).render("user/otp_submit", {
       userOtpSubmit: true,
       userEmail,
-      
+
     }
     );
   },
@@ -197,14 +197,14 @@ module.exports = {
       if (req.cookies.token) {
         const user = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
         if (user) {
-          return res.redirect("/");
+          return res.redirect("/user/home");
         }
       } else {
         req.session.destroy();
         return res.status(200).render("user/login", {
           errors: null,
           userLogin: true,
-          blocked:isBlocked
+          blocked: isBlocked
         });
       }
     } catch (err) {
@@ -450,11 +450,11 @@ module.exports = {
   // homePage: async (req, res, next) => {
   // res.redirect("/user/home")
   // },
-  
 
-  userHomePage: async (req,res,next)=> {
+
+  userHomePage: async (req, res, next) => {
     res.render('user/homePage', {
-      user:true
+      user: true
     })
   },
 
@@ -608,7 +608,7 @@ module.exports = {
       );
 
       const products = await Productdb.productCollection.aggregate(pipeline).exec();
-      
+
       res.status(200).render("user/user_products", {
         user: true,
         page,
@@ -768,60 +768,60 @@ module.exports = {
     }
   },
 
- getAddMyAddress : async (req, res, next) => {
+  getAddMyAddress: async (req, res, next) => {
     try {
-        const user = verifyToken(req);
-        const userInfo = await Userdb.userCollection.findById(user._id);
-        const redirectUrl = req.query.redirect || '/user/my-address';
+      const user = verifyToken(req);
+      const userInfo = await Userdb.userCollection.findById(user._id);
+      const redirectUrl = req.query.redirect || '/user/my-address';
 
-        res.status(200).render("user/add_my_address", {
-            user: true,
-            userInfo,
-            redirectUrl
+      res.status(200).render("user/add_my_address", {
+        user: true,
+        userInfo,
+        redirectUrl
+      });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  },
+
+  addMyAddress: async (req, res, next) => {
+    try {
+      const user = verifyToken(req);
+      const userId = user._id;
+
+      const data = {
+        userId: new ObjectId(userId),
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        homeAddress: req.body.address,
+        landmark: req.body.landmark,
+        city: req.body.city,
+        street: req.body.street,
+        state: req.body.state,
+        phone: req.body.phone,
+        country: req.body.country,
+        pincode: req.body.pincode
+      };
+      const { redirectUrl } = req.body;
+      console.log(data);
+      console.log("---------------------------");
+
+      const address = await Addressdb.addressCollection.insertMany(data);
+      if (address) {
+        res.status(201).json({
+          success: true,
+          redirectUrl: redirectUrl || '/user/my-address'
         });
-    } catch (error) {
-        console.log(error);
-        next(error);
-    }
-},
-
-addMyAddress : async (req, res, next) => {
-    try {
-        const user = verifyToken(req);
-        const userId = user._id;
-
-        const data = {
-            userId: new ObjectId(userId),
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            homeAddress: req.body.address,
-            landmark: req.body.landmark,
-            city: req.body.city,
-            street: req.body.street,
-            state: req.body.state,
-            phone: req.body.phone,
-            country: req.body.country,
-            pincode: req.body.pincode
-        };
-        const { redirectUrl } = req.body;
-        console.log(data);
-        console.log("---------------------------");
-
-        const address = await Addressdb.addressCollection.insertMany(data);
-        if (address) {
-            res.status(201).json({
-                success: true,
-                redirectUrl: redirectUrl || '/user/my-address'
-            });
-        }
+      }
 
     } catch (error) {
-        console.log(error);
-        next(error);
+      console.log(error);
+      next(error);
     }
-},
+  },
 
-  
+
 
   // edit address---------------------------------
   getEditMyAddress: async (req, res, next) => {
@@ -954,41 +954,41 @@ addMyAddress : async (req, res, next) => {
       const user = verifyToken(req);
       const userId = user._id;
       const { productId, quantity } = req.body;
-  
+
       if (quantity > 10) {
         return res.status(400).json({
           success: false,
           message: "You cannot add more than 10 units of a product at a time."
         });
       }
-  
+
       const product = await Productdb.productCollection.findById(productId);
-  
+
       if (!product.inStock) {
         return res.status(400).json({
           success: false,
           message: "Product is out of stock"
         });
       }
-  
+
       if (quantity > product.quantity) {
         return res.status(400).json({
           success: false,
           message: `There are only ${product.quantity} units in stock`
         });
       }
-  
+
       const discountedPrice = calculateDiscountedPrice(product.originalprice, product.discount || 0);
       const productTotalPrice = discountedPrice * quantity;
-  
+
       const cart = await Cartdb.cartCollection.findOne({ userId: userId });
-  
+
       if (cart) {
         const productInCart = cart.products.find((p) => p.productId.toString() === productId.toString());
-  
+
         if (productInCart) {
           const totalQuantity = productInCart.quantity + quantity;
-  
+
           if (totalQuantity > 10) {
             return res.status(400).json({
               success: false,
@@ -996,16 +996,16 @@ addMyAddress : async (req, res, next) => {
               You can only add ${10 - productInCart.quantity} more units.`
             });
           }
-  
+
           if (totalQuantity > product.quantity) {
             return res.status(400).json({
               success: false,
-            message: `There are only ${product.quantity} units in stock and you already have ${productInCart.quantity} units in your cart.`
-          });
-        }
-  
+              message: `There are only ${product.quantity} units in stock and you already have ${productInCart.quantity} units in your cart.`
+            });
+          }
+
           const updatedProductTotalPrice = discountedPrice * totalQuantity;
-  
+
           await Cartdb.cartCollection.updateOne(
             { userId: userId, 'products.productId': productId },
             {
@@ -1032,15 +1032,15 @@ addMyAddress : async (req, res, next) => {
             { upsert: true }
           );
         }
-  
+
         const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId });
         const updatedTotalAmount = cartDetails.products.reduce((total, product) => total + product.price, 0);
-  
+
         await Cartdb.cartCollection.updateOne(
           { userId: userId },
           { $set: { totalAmount: updatedTotalAmount, finalAmount: updatedTotalAmount } }
         );
-  
+
         res.status(200).json({
           success: true,
           updatedProductTotalPrice: productTotalPrice,
@@ -1060,7 +1060,7 @@ addMyAddress : async (req, res, next) => {
           totalAmount: productTotalPrice,
           finalAmount: productTotalPrice
         });
-  
+
         res.status(200).json({
           success: true,
           updatedProductTotalPrice: productTotalPrice,
@@ -1073,7 +1073,7 @@ addMyAddress : async (req, res, next) => {
       next(error);
     }
   },
-  
+
 
   getCart: async (req, res, next) => {
     try {
@@ -1112,216 +1112,216 @@ addMyAddress : async (req, res, next) => {
 
   updateCart: async (req, res, next) => {
     try {
-        const user = verifyToken(req);
-        const userId = user._id;
-        const { productId, quantity } = req.body;
-
-  
-        const product = await Productdb.productCollection.findOne({ _id: productId });
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-        if(quantity > 10 ){
-           return res.status(400).json({
-            success:false,
-            message : "You can only add 10 units at a time"
-          })
-        }
-        if(quantity > product.quantity){
-          return res.status(400).json({
-            success:false,
-            message : "There are only "+product.quantity+" units in stock"
-          })
-        }
-        const price = calculateDiscountedPrice(product.originalprice, product.discount || 0);
+      const user = verifyToken(req);
+      const userId = user._id;
+      const { productId, quantity } = req.body;
 
 
-        const updateResult = await Cartdb.cartCollection.updateOne(
-            { userId: userId, 'products.productId': productId },
-            {
-                $set: {
-                    'products.$.quantity': quantity,
-                    'products.$.price': price * quantity
-                }
-            }
-        );
-
-        if (updateResult.modifiedCount === 0) {
-            return res.status(404).json({ message: 'Cart item not found' });
-        }
-        const cart = await Cartdb.cartCollection.findOne({ userId: userId });
-        if (!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
-        }
-
-        const totalAmount = cart.products.reduce((total, product) => total + product.price, 0);
-
-
-        const finalAmount = totalAmount; 
-        await Cartdb.cartCollection.updateOne(
-            { userId: userId },
-            {
-                $set: {
-                    totalAmount: totalAmount,
-                    finalAmount: finalAmount
-                }
-            }
-        );
-
-        const updatedProduct = cart.products.find(p => p.productId.toString() === productId);
-        res.status(200).json({
-            message: 'Cart updated successfully',
-            totalAmount,
-            finalAmount,
-            updatedPrice: updatedProduct.price
-        });
-    } catch (error) {
-        console.error('Error updating cart:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-},
-
-removeFromCart: async (req, res, next) => {
-  try {
-    const userInfo = verifyToken(req);
-    const { productId } = req.body;
-
-    // Remove the product from the cart
-    const updatedCart = await Cartdb.cartCollection.updateOne(
-      { userId: new ObjectId(userInfo._id) },
-      { $pull: { products: { productId: new ObjectId(productId) } } }
-    );
-
-    if (updatedCart.modifiedCount > 0) {
-      const cart = await Cartdb.cartCollection.findOne({ userId: new ObjectId(userInfo._id) });
-
-      let totalAmount = 0;
-      let finalAmount = 0;
-      let discount = 0;
-
-      // Recalculate totalAmount if there are products left in the cart
-      if (cart && cart.products && cart.products.length > 0) {
-        totalAmount = cart.products.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-        // If a coupon is applied, recalculate the discount
-        if (cart.appliedCoupon) {
-          const coupon = await Coupondb.couponCollection.findOne({ _id: cart.appliedCoupon });
-          if (coupon) {
-            discount = coupon.discountType === 'fixed' 
-              ? coupon.discountValue 
-              : (totalAmount * coupon.discountValue) / 100;
-            discount = coupon.maxDiscount ? Math.min(discount, coupon.maxDiscount) : discount;
-            finalAmount = totalAmount - discount;
-          }
-        } else {
-          finalAmount = totalAmount;
-        }
-      } else {
-        
-        await Cartdb.cartCollection.updateOne(
-          { userId: new ObjectId(userInfo._id) },
-          {
-            $unset: { appliedCoupon: "", discountValue: "" },
-            $set: { totalAmount: 0, finalAmount: 0 }
-          }
-        );
-        return res.json({
-          success: true,
-          updatedTotalAmount: 0,
-          finalAmount: 0,
-          discountValue: 0
-        });
+      const product = await Productdb.productCollection.findOne({ _id: productId });
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
       }
+      if (quantity > 10) {
+        return res.status(400).json({
+          success: false,
+          message: "You can only add 10 units at a time"
+        })
+      }
+      if (quantity > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: "There are only " + product.quantity + " units in stock"
+        })
+      }
+      const price = calculateDiscountedPrice(product.originalprice, product.discount || 0);
 
-      // Update the cart 
-      await Cartdb.cartCollection.updateOne(
-        { userId: new ObjectId(userInfo._id) },
-        { $set: { totalAmount: totalAmount, finalAmount: finalAmount, discountValue: discount } }
+
+      const updateResult = await Cartdb.cartCollection.updateOne(
+        { userId: userId, 'products.productId': productId },
+        {
+          $set: {
+            'products.$.quantity': quantity,
+            'products.$.price': price * quantity
+          }
+        }
       );
 
-      res.json({
+      if (updateResult.modifiedCount === 0) {
+        return res.status(404).json({ message: 'Cart item not found' });
+      }
+      const cart = await Cartdb.cartCollection.findOne({ userId: userId });
+      if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
+      }
+
+      const totalAmount = cart.products.reduce((total, product) => total + product.price, 0);
+
+
+      const finalAmount = totalAmount;
+      await Cartdb.cartCollection.updateOne(
+        { userId: userId },
+        {
+          $set: {
+            totalAmount: totalAmount,
+            finalAmount: finalAmount
+          }
+        }
+      );
+
+      const updatedProduct = cart.products.find(p => p.productId.toString() === productId);
+      res.status(200).json({
+        message: 'Cart updated successfully',
+        totalAmount,
+        finalAmount,
+        updatedPrice: updatedProduct.price
+      });
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
+  removeFromCart: async (req, res, next) => {
+    try {
+      const userInfo = verifyToken(req);
+      const { productId } = req.body;
+
+      // Remove the product from the cart
+      const updatedCart = await Cartdb.cartCollection.updateOne(
+        { userId: new ObjectId(userInfo._id) },
+        { $pull: { products: { productId: new ObjectId(productId) } } }
+      );
+
+      if (updatedCart.modifiedCount > 0) {
+        const cart = await Cartdb.cartCollection.findOne({ userId: new ObjectId(userInfo._id) });
+
+        let totalAmount = 0;
+        let finalAmount = 0;
+        let discount = 0;
+
+        // Recalculate totalAmount if there are products left in the cart
+        if (cart && cart.products && cart.products.length > 0) {
+          totalAmount = cart.products.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+          // If a coupon is applied, recalculate the discount
+          if (cart.appliedCoupon) {
+            const coupon = await Coupondb.couponCollection.findOne({ _id: cart.appliedCoupon });
+            if (coupon) {
+              discount = coupon.discountType === 'fixed'
+                ? coupon.discountValue
+                : (totalAmount * coupon.discountValue) / 100;
+              discount = coupon.maxDiscount ? Math.min(discount, coupon.maxDiscount) : discount;
+              finalAmount = totalAmount - discount;
+            }
+          } else {
+            finalAmount = totalAmount;
+          }
+        } else {
+
+          await Cartdb.cartCollection.updateOne(
+            { userId: new ObjectId(userInfo._id) },
+            {
+              $unset: { appliedCoupon: "", discountValue: "" },
+              $set: { totalAmount: 0, finalAmount: 0 }
+            }
+          );
+          return res.json({
+            success: true,
+            updatedTotalAmount: 0,
+            finalAmount: 0,
+            discountValue: 0
+          });
+        }
+
+        // Update the cart 
+        await Cartdb.cartCollection.updateOne(
+          { userId: new ObjectId(userInfo._id) },
+          { $set: { totalAmount: totalAmount, finalAmount: finalAmount, discountValue: discount } }
+        );
+
+        res.json({
+          success: true,
+          updatedTotalAmount: totalAmount,
+          finalAmount: finalAmount,
+          discountValue: discount
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Product not found in cart'
+        });
+      }
+    } catch (error) {
+      console.error('Error removing product from cart:', error);
+      next(error);
+    }
+  },
+
+
+  applyCoupon: async (req, res, next) => {
+    try {
+      const userInfo = verifyToken(req);
+      const userId = new ObjectId(userInfo._id);
+      const { couponCode } = req.body;
+      console.log("couponCode", couponCode);
+
+      const coupon = await Coupondb.couponCollection.findOne({
+        code: couponCode,
+        isActive: true,
+        isDeleted: false
+      });
+
+      if (!coupon) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid or expired coupon code'
+        });
+      }
+
+      const cart = await Cartdb.cartCollection.findOne({ userId: userId });
+
+      if (!cart) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cart not found'
+        });
+      }
+
+      const totalAmount = cart.products.reduce((total, product) => {
+        return total + product.price;
+      }, 0);
+
+      let discount = coupon.discountType === 'fixed'
+        ? coupon.discountValue
+        : (totalAmount * coupon.discountValue) / 100;
+
+      discount = coupon.maxDiscount ? Math.min(discount, coupon.maxDiscount) : discount;
+
+      const finalAmount = totalAmount - discount;
+
+      await Cartdb.cartCollection.updateOne(
+        { userId: userId },
+        {
+          $set: {
+            totalAmount: totalAmount,
+            appliedCoupon: coupon._id,
+            discountValue: discount,
+            finalAmount: finalAmount
+          }
+        }
+      );
+
+      res.status(200).json({
         success: true,
-        updatedTotalAmount: totalAmount,
-        finalAmount: finalAmount,
+        message: 'Coupon applied successfully',
+        finalAmount,
         discountValue: discount
       });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: 'Product not found in cart'
-      });
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      next(error);
     }
-  } catch (error) {
-    console.error('Error removing product from cart:', error);
-    next(error);
-  }
-},
-
-
-applyCoupon: async (req, res, next) => {
-  try {
-    const userInfo = verifyToken(req);
-    const userId = new ObjectId(userInfo._id);
-    const { couponCode } = req.body;
-    console.log("couponCode", couponCode);
-
-    const coupon = await Coupondb.couponCollection.findOne({
-      code: couponCode,
-      isActive: true,
-      isDeleted: false
-    });
-
-    if (!coupon) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired coupon code'
-      });
-    }
-
-    const cart = await Cartdb.cartCollection.findOne({ userId: userId });
-
-    if (!cart) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cart not found'
-      });
-    }
-
-    const totalAmount = cart.products.reduce((total, product) => {
-      return total + product.price;
-    }, 0);
-
-    let discount = coupon.discountType === 'fixed'
-      ? coupon.discountValue
-      : (totalAmount * coupon.discountValue) / 100;
-
-    discount = coupon.maxDiscount ? Math.min(discount, coupon.maxDiscount) : discount;
-
-    const finalAmount = totalAmount - discount;
-
-    await Cartdb.cartCollection.updateOne(
-      { userId: userId },
-      {
-        $set: {
-          totalAmount: totalAmount,
-          appliedCoupon: coupon._id,
-          discountValue: discount,
-          finalAmount: finalAmount
-        }
-      }
-    );
-    
-    res.status(200).json({
-      success: true,
-      message: 'Coupon applied successfully',
-      finalAmount,
-      discountValue: discount
-    });
-  } catch (error) {
-    console.error('Error applying coupon:', error);
-    next(error);
-  }
-},
+  },
 
 
   //------remove coupon and update total amount-------
@@ -1329,7 +1329,7 @@ applyCoupon: async (req, res, next) => {
     try {
       const userInfo = verifyToken(req);
       const userId = userInfo._id;
-  
+
       const cart = await Cartdb.cartCollection.findOne({ userId: userId });
       if (!cart) {
         return res.status(404).json({
@@ -1337,14 +1337,14 @@ applyCoupon: async (req, res, next) => {
           message: 'Cart not found'
         });
       }
-  
+
       let totalAmount = cart.products.reduce((sum, item) => {
         return sum + item.price;
       }, 0);
-  
+
       console.log('Total Amount Calculated:', totalAmount);
       console.log('Cart Before Update:', cart);
-  
+
       const updateResult = await Cartdb.cartCollection.updateOne(
         { userId: userId },
         {
@@ -1352,14 +1352,14 @@ applyCoupon: async (req, res, next) => {
           $set: { finalAmount: totalAmount }
         }
       );
-  
+
       if (cart.appliedCoupon) {
         await Coupondb.couponCollection.updateOne(
           { _id: cart.appliedCoupon },
           { $inc: { usedCount: -1 } }
         );
       }
-  
+
       res.status(200).json({
         success: true,
         totalAmount: totalAmount,
@@ -1368,59 +1368,59 @@ applyCoupon: async (req, res, next) => {
       });
     } catch (error) {
       console.log('Error:', error);
-      next(error); 
+      next(error);
     }
   },
-  
+
   /////////////////////////
 
   //------checkout address-------
   checkout: async (req, res, next) => {
     try {
-        const user = verifyToken(req);
-        const userId = user._id;
-        const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId });
-        const userInfo = await Userdb.userCollection.findById(userId);
-        const hadAddress = userInfo.address ? 'true' : 'false';
-        const currentUrl = req.originalUrl;
-        // If the user is blocked
-        if (userInfo.isBlocked) {
-            return res.status(400).json({
-                success: false,
-                message: "User access is denied"
-            });
-        }
-
-        const address = await Addressdb.addressCollection.find({ userId, isDeleted: false });
-
-        if (req.method === 'POST' && req.body.selectedAddress) {
-            const selectedAddressId = req.body.selectedAddress;
-            const selectedAddress = await Addressdb.addressCollection.findOne({ _id: selectedAddressId, userId });
-
-            if (selectedAddress) {
-                req.session.selectedAddress = selectedAddress;
-                return res.status(200).json({
-                    success: true,
-                    message: "Address selected successfully"
-                });
-            } else {
-                return res.status(400).json({ success: false, message: 'Invalid address selection' });
-            }
-        }
-
-        res.render('user/checkoutAddress', {
-            cart: cartDetails,
-            hadAddress,
-            address,
-            user: true,
-            userId,
-            currentUrl
+      const user = verifyToken(req);
+      const userId = user._id;
+      const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId });
+      const userInfo = await Userdb.userCollection.findById(userId);
+      const hadAddress = userInfo.address ? 'true' : 'false';
+      const currentUrl = req.originalUrl;
+      // If the user is blocked
+      if (userInfo.isBlocked) {
+        return res.status(400).json({
+          success: false,
+          message: "User access is denied"
         });
+      }
+
+      const address = await Addressdb.addressCollection.find({ userId, isDeleted: false });
+
+      if (req.method === 'POST' && req.body.selectedAddress) {
+        const selectedAddressId = req.body.selectedAddress;
+        const selectedAddress = await Addressdb.addressCollection.findOne({ _id: selectedAddressId, userId });
+
+        if (selectedAddress) {
+          req.session.selectedAddress = selectedAddress;
+          return res.status(200).json({
+            success: true,
+            message: "Address selected successfully"
+          });
+        } else {
+          return res.status(400).json({ success: false, message: 'Invalid address selection' });
+        }
+      }
+
+      res.render('user/checkoutAddress', {
+        cart: cartDetails,
+        hadAddress,
+        address,
+        user: true,
+        userId,
+        currentUrl
+      });
     } catch (error) {
-        console.error("Error getting checkout details:", error);
-        next(error);
+      console.error("Error getting checkout details:", error);
+      next(error);
     }
-},
+  },
 
 
   //--------getting payment method--------
@@ -1428,10 +1428,10 @@ applyCoupon: async (req, res, next) => {
     try {
       const user = verifyToken(req);
       const userId = user._id;
-      
+
       const cartDetails = await Cartdb.cartCollection.findOne({ userId: userId }).lean();
       const appliedCoupon = cartDetails.appliedCoupon;
-      console.log(appliedCoupon,"appliedCoupon");
+      console.log(appliedCoupon, "appliedCoupon");
       res.status(200).render("user/paymentMethod", {
         userId,
         user: true,
@@ -1452,8 +1452,8 @@ applyCoupon: async (req, res, next) => {
   paymentMethod: async (req, res, next) => {
     try {
       console.log(req.body);
-      const { paymentMethod,couponCode } = req.body;
-      console.log("couponCode",couponCode);
+      const { paymentMethod, couponCode } = req.body;
+      console.log("couponCode", couponCode);
 
       if (!paymentMethod) {
         console.error('Payment method is missing');
@@ -1465,7 +1465,7 @@ applyCoupon: async (req, res, next) => {
       const userInfo = await Userdb.userCollection.findById(userId);
       const cart = await Cartdb.cartCollection.findOne({ userId: userId });
       const address = await Addressdb.addressCollection.findOne({ userId: userId, isDeleted: false });
-      console.log("This is cart details from payment method",cart);
+      console.log("This is cart details from payment method", cart);
 
       if (paymentMethod === 'COD' && cart.finalAmount > 5000) {
         return res.status(400).json({
@@ -1488,7 +1488,7 @@ applyCoupon: async (req, res, next) => {
           image: product.image,
           transactionId: uuidv4(),
           appliedCoupon: cart.appliedCoupon,
-        
+
         }));
 
         const newOrder = new Orderdb.orderCollection({
@@ -1503,13 +1503,13 @@ applyCoupon: async (req, res, next) => {
           paymentStatus: 'Pending',
           paymentMethod,
           razorpayOrderId: razorpayOrder.id,
-          orderId : uuidv4()
+          orderId: uuidv4()
         });
 
         await newOrder.save();
         console.log(razorpayOrder, 'razorpayOrder');
         console.log(razorpayOrder.id, 'razorpayOrder.id');
-      //  ------reducing the product quantity---------
+        //  ------reducing the product quantity---------
         for (const product of cart.products) {
           await Productdb.productCollection.updateOne(
             { _id: product.productId },
@@ -1538,7 +1538,7 @@ applyCoupon: async (req, res, next) => {
           image: product.image,
           transactionId: uuidv4(),
           appliedCoupon: couponCode,
-         
+
         }));
 
         const newOrder = new Orderdb.orderCollection({
@@ -1552,7 +1552,7 @@ applyCoupon: async (req, res, next) => {
           orderStatus: 'Order Placed',
           paymentStatus: 'Pending',
           paymentMethod,
-          
+
         });
 
         await newOrder.save();
@@ -1560,7 +1560,7 @@ applyCoupon: async (req, res, next) => {
         for (const product of cart.products) {
           await Productdb.productCollection.updateOne(
             { _id: product.productId },
-            { $inc: { quantity: -product.quantity ,purchaseCount: product.quantity} }
+            { $inc: { quantity: -product.quantity, purchaseCount: product.quantity } }
           );
         }
 
@@ -1604,7 +1604,7 @@ applyCoupon: async (req, res, next) => {
       console.log("signature : ", signature);
       const user = verifyToken(req);
       const userId = user._id;
-      console.log("userId from payment verification : ",userId);
+      console.log("userId from payment verification : ", userId);
       // console.log("userEmail from payment verification : ", userEmail);
 
       const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -1626,14 +1626,14 @@ applyCoupon: async (req, res, next) => {
 
       const payment = await instance.payments.fetch(payment_id);
       console.log("Fetched Payment Details: ", payment);
-      
+
 
       if (payment.status !== 'success' && payment.status !== 'captured') {
         console.log("Non-success Payment Status: ", payment.status);
         await handlePaymentFailure(order_id, payment_id);
         return res.redirect(`/user/orders`);
-    }
-    
+      }
+
 
       console.log('Payment successful');
       const result = await Orderdb.orderCollection.updateOne(
@@ -1677,10 +1677,10 @@ applyCoupon: async (req, res, next) => {
       const user = verifyToken(req);
       const userInfo = await Userdb.userCollection.findById(user._id);
       const { orderId, itemId } = req.params;
-  
+
       const order = await Orderdb.orderCollection.findById(orderId).populate("orderItems.productId");
       const item = order.orderItems.find(item => item._id.toString() === itemId);
-      
+
       const product = await Productdb.productCollection
         .findById(item.productId._id)
         .populate({
@@ -1688,7 +1688,7 @@ applyCoupon: async (req, res, next) => {
           select: 'firstName lastName'
         });
 
-      
+
       res.status(200).render("user/orderDetails", {
         order,
         item,
@@ -1704,7 +1704,7 @@ applyCoupon: async (req, res, next) => {
       next(error);
     }
   },
-  
+
 
   cancelOrderItem: async (req, res, next) => {
     try {
@@ -1730,7 +1730,7 @@ applyCoupon: async (req, res, next) => {
         await order.save();
       }
 
-      
+
       if (order.paymentMethod === "Razorpay") {
         const userId = order.userId;
         const refundAmount = item.price;
@@ -1927,9 +1927,9 @@ applyCoupon: async (req, res, next) => {
       const user = verifyToken(req);
       const userId = user._id;
       console.log(userId, "this is the user id");
-      
+
       const wallet = await Walletdb.walletCollection.findOne({ userId: userId });
-      
+
       if (!wallet) {
         console.log("Wallet not found for user:", userId);
         return res.status(404).json({
@@ -1937,26 +1937,26 @@ applyCoupon: async (req, res, next) => {
           message: 'Wallet not found for the user'
         });
       }
-      
+
       const userInfo = await Userdb.userCollection.findById(userId);
-      
+
       console.log(wallet, "wallet");
       if (wallet) {
         console.log(wallet.balance, "balance");
       }
       // console.log(wallet.history);
-      res.status(200).render("user/wallet",{
+      res.status(200).render("user/wallet", {
         success: true,
         wallet: wallet,
-        user:true
+        user: true
       });
-      
+
     } catch (error) {
       console.log('Error fetching wallet:', error);
       next(error);
     }
   },
-  
+
   //--------add money to the wallet-----------
   addMoneyToWallet: async (req, res, next) => {
     try {
@@ -2016,90 +2016,90 @@ applyCoupon: async (req, res, next) => {
 
 
   getInvoice: async (req, res, next) => {
-      const { orderId } = req.params;
-      // console.log(req.params);
-      try {
-          const order = await Orderdb.orderCollection.findById(orderId).exec();
-  
-          if (!order) {
-              return res.status(404).send('Order not found');
-          }
-  
-          const doc = new PDFDocument({ margin: 50 });
-          let buffers = [];
-          doc.on('data', buffers.push.bind(buffers));
-          doc.on('end', () => {
-              const pdfData = Buffer.concat(buffers);
-  
-              res.writeHead(200, {
-                  'Content-Length': Buffer.byteLength(pdfData),
-                  'Content-Type': 'application/pdf',
-                  'Content-Disposition': `attachment;filename=Invoice_${order._id}.pdf`,
-              }).end(pdfData);
-          });
-  
-          doc.fontSize(20).font('Helvetica-Bold').text('Mazen furniture', 50, 50);
-          doc.fontSize(20).text('INVOICE', 50, 50, { align: 'right' });
-  
-          doc.moveDown();
-          doc.fontSize(10).text(`Invoice No. ${order._id}`, { align: 'right' });
-          doc.text(`16 June 2025`, { align: 'right' });
-  
-          doc.moveDown();
-          doc.fontSize(10).font('Helvetica-Bold').text('BILLED TO:', 50, 150);
-          doc.font('Helvetica').text(`${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`);
-          doc.text(`${order.shippingAddress.phone}`);
-          doc.text(`${order.shippingAddress.homeAddress}`);
-          doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
-          doc.text(`${order.shippingAddress.country}`);
-  
-          doc.moveDown();
-          doc.moveDown().lineWidth(1).moveTo(50, 250).lineTo(550, 250).stroke();
-          doc.font('Helvetica-Bold').text('Item', 50, 260);
-          doc.text('Quantity', 200, 260);
-          doc.text('Unit Price', 350, 260);
-          doc.text('Total', 500, 260);
-          doc.moveDown().lineWidth(1).moveTo(50, 275).lineTo(550, 275).stroke();
-  
-  
-          order.orderItems.forEach((item, index) => {
-              const y = 280 + (index * 20);
-              doc.font('Helvetica').text(`${item.name}`, 50, y);
-              doc.text(`${item.quantity}`, 200, y);
-              doc.text(`₹${item.price.toFixed(2)}`, 350, y);
-              doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 500, y);
-          });
-  
-          doc.moveDown().lineWidth(1).moveTo(50, 350).lineTo(550, 350).stroke();
-          doc.font('Helvetica-Bold').text('Subtotal', 400, 360);
-          doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 360);
-          doc.text('Tax (0%)', 400, 380);
-          doc.text(`₹0.00`, 500, 380);
-          doc.text('Total', 400, 400);
-          doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 400);
-  
-          // Payment Information
-          doc.moveDown();
-          doc.text('Thank you!', 50, 450);
-          doc.moveDown();
-          // doc.font('Helvetica-Bold').text('PAYMENT INFORMATION', 50, 470);
-          doc.font('Helvetica').text('');
-          // doc.text('Account Name: Samira Hadid');
-          // doc.text('Account No.: 123-456-7890');
-          doc.text('');
-          doc.moveDown();
-          // doc.text('Mazen furniture', 400, 530);
-          // doc.text('Kollam, Kerala', 400, 550);
-  
-          doc.end();
-  
-      } catch (error) {
-          console.error('Error fetching order:', error);
-          res.status(500).send('Server error');
+    const { orderId } = req.params;
+    // console.log(req.params);
+    try {
+      const order = await Orderdb.orderCollection.findById(orderId).exec();
+
+      if (!order) {
+        return res.status(404).send('Order not found');
       }
+
+      const doc = new PDFDocument({ margin: 50 });
+      let buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfData = Buffer.concat(buffers);
+
+        res.writeHead(200, {
+          'Content-Length': Buffer.byteLength(pdfData),
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment;filename=Invoice_${order._id}.pdf`,
+        }).end(pdfData);
+      });
+
+      doc.fontSize(20).font('Helvetica-Bold').text('Mazen furniture', 50, 50);
+      doc.fontSize(20).text('INVOICE', 50, 50, { align: 'right' });
+
+      doc.moveDown();
+      doc.fontSize(10).text(`Invoice No. ${order._id}`, { align: 'right' });
+      doc.text(`16 June 2025`, { align: 'right' });
+
+      doc.moveDown();
+      doc.fontSize(10).font('Helvetica-Bold').text('BILLED TO:', 50, 150);
+      doc.font('Helvetica').text(`${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`);
+      doc.text(`${order.shippingAddress.phone}`);
+      doc.text(`${order.shippingAddress.homeAddress}`);
+      doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.pincode}`);
+      doc.text(`${order.shippingAddress.country}`);
+
+      doc.moveDown();
+      doc.moveDown().lineWidth(1).moveTo(50, 250).lineTo(550, 250).stroke();
+      doc.font('Helvetica-Bold').text('Item', 50, 260);
+      doc.text('Quantity', 200, 260);
+      doc.text('Unit Price', 350, 260);
+      doc.text('Total', 500, 260);
+      doc.moveDown().lineWidth(1).moveTo(50, 275).lineTo(550, 275).stroke();
+
+
+      order.orderItems.forEach((item, index) => {
+        const y = 280 + (index * 20);
+        doc.font('Helvetica').text(`${item.name}`, 50, y);
+        doc.text(`${item.quantity}`, 200, y);
+        doc.text(`₹${item.price.toFixed(2)}`, 350, y);
+        doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 500, y);
+      });
+
+      doc.moveDown().lineWidth(1).moveTo(50, 350).lineTo(550, 350).stroke();
+      doc.font('Helvetica-Bold').text('Subtotal', 400, 360);
+      doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 360);
+      doc.text('Tax (0%)', 400, 380);
+      doc.text(`₹0.00`, 500, 380);
+      doc.text('Total', 400, 400);
+      doc.text(`₹${order.totalAmount.toFixed(2)}`, 500, 400);
+
+      // Payment Information
+      doc.moveDown();
+      doc.text('Thank you!', 50, 450);
+      doc.moveDown();
+      // doc.font('Helvetica-Bold').text('PAYMENT INFORMATION', 50, 470);
+      doc.font('Helvetica').text('');
+      // doc.text('Account Name: Samira Hadid');
+      // doc.text('Account No.: 123-456-7890');
+      doc.text('');
+      doc.moveDown();
+      // doc.text('Mazen furniture', 400, 530);
+      // doc.text('Kollam, Kerala', 400, 550);
+
+      doc.end();
+
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      res.status(500).send('Server error');
+    }
   },
-  
-  repayAmount: async function(req, res, next) {
+
+  repayAmount: async function (req, res, next) {
     try {
       const user = verifyToken(req);
       const userId = user._id;
@@ -2121,7 +2121,7 @@ applyCoupon: async (req, res, next) => {
     }
   },
 
-  repaymentMethod: async function(req, res, next) {
+  repaymentMethod: async function (req, res, next) {
     try {
       const { paymentMethod, totalAmount } = req.body;
       const user = verifyToken(req);
@@ -2171,7 +2171,7 @@ applyCoupon: async (req, res, next) => {
     }
   },
 
-  repaymentVerification: async function(req, res, next) {
+  repaymentVerification: async function (req, res, next) {
     const { payment_id, order_id, signature } = req.body;
     const generatedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(`${order_id}|${payment_id}`)
@@ -2223,81 +2223,81 @@ applyCoupon: async (req, res, next) => {
     }
   },
 
- returnProduct : async (req, res, next) => {
-  try {
-    const { orderId, itemId, reason } = req.body;
-    console.log(req.body);
-    
-    const order = await Orderdb.orderCollection.findOneAndUpdate(
-      {_id:orderId, "orderItems._id" : itemId},
-      {
-        $set:{
-              "orderItems.$.status": 'Return Requested',
-              "orderItems.$.returnRequest.reason": reason,
-              "orderItems.$.returnRequest.status": 'Pending',
-              "orderItems.$.returnRequest.requestDate": new Date(),
-             }
-      },
-      {new : true}
-    )
-    if (!order) {
-      return res.status(404).json({
-        success : false,
-         message: 'Order or product not found'
-         });
+  returnProduct: async (req, res, next) => {
+    try {
+      const { orderId, itemId, reason } = req.body;
+      console.log(req.body);
+
+      const order = await Orderdb.orderCollection.findOneAndUpdate(
+        { _id: orderId, "orderItems._id": itemId },
+        {
+          $set: {
+            "orderItems.$.status": 'Return Requested',
+            "orderItems.$.returnRequest.reason": reason,
+            "orderItems.$.returnRequest.status": 'Pending',
+            "orderItems.$.returnRequest.requestDate": new Date(),
+          }
+        },
+        { new: true }
+      )
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: 'Order or product not found'
+        });
+      }
+
+      res.status(200).json({
+        success: false,
+        message: 'Return request submitted successfully', order
+      });
+
+    } catch (error) {
+      console.log(error);
+      next(error)
     }
+  },
 
-    res.status(200).json({ 
-      success : false,
-      message: 'Return request submitted successfully', order 
-    });
+  addReview: async (req, res, next) => {
+    try {
+      const { rating, comment } = req.body;
+      const productId = req.params.id;
+      const userId = req.user._id;
+      console.log(userId, productId, rating, comment);
 
-  } catch (error) {
-    console.log(error);
-    next(error)
-  }
- },
+      const newReview = {
+        user: userId,
+        rating: parseInt(rating),
+        comment: comment,
+        date: new Date(),
+      };
 
-addReview : async(req,res,next)=>{
-  try {
-    const { rating, comment } = req.body;
-    const productId = req.params.id; 
-    const userId = req.user._id; 
-    console.log(userId,productId,rating,comment);
-   
-    const newReview = {
-      user: userId,
-      rating: parseInt(rating),
-      comment: comment,
-      date: new Date(),
-    };
 
-    
-    const product = await Productdb.productCollection.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      const product = await Productdb.productCollection.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+
+      product.reviews.push(newReview);
+
+      product.averageRating =
+        product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length;
+      await product.save();
+
+      res.status(200).json({
+        message: 'Review added successfully', product
+      });
+    } catch (err) {
+      console.error(err);
+      next(error)
     }
+  },
 
- 
-    product.reviews.push(newReview);
+}
 
-    product.averageRating =
-   product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length;
-    await product.save();
 
-    res.status(200).json({ 
-      message: 'Review added successfully', product 
-    });
-  } catch (err) {
-    console.error(err);
-    next(error)
-  }
-},
 
-  }
-  
-
-  
 
 
 

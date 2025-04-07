@@ -8,7 +8,7 @@ const methodOverride = require("method-override");
 const passport = require("./config/passport");
 const expressLayouts = require('express-ejs-layouts');
 const logger = require('morgan');
-const db = require("./config/db"); 
+const db = require("./config/db");
 const nocache = require('nocache');
 // Initialize app
 const app = express();
@@ -37,7 +37,7 @@ app.use(session({
   resave: false,
 }));
 
-// Initialize Passport.js
+// // Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -49,7 +49,7 @@ app.set('layout', 'layout');
 
 // Add local variables for views
 app.use((req, res, next) => {
-  res.locals.searchTerm = req.query.search || ''; 
+  res.locals.searchTerm = req.query.search || '';
   next();
 });
 
@@ -75,7 +75,6 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).render("500", {
@@ -84,7 +83,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
