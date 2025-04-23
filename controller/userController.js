@@ -453,7 +453,7 @@ module.exports = {
 
 
   userHomePage: async (req, res, next) => {
-    res.render('user/homePage', {
+    res.render('user/home-page', {
       user: true
     })
   },

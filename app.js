@@ -57,15 +57,15 @@ app.use((req, res, next) => {
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 
-// Use routes
-app.use("/", userRouter);
-app.use("/", adminRouter);
-
-// Logging incoming request data (optional)
 app.use((req, res, next) => {
-  console.log('Incoming Request Data:', req.body);
+  console.log("Request URL:", req.originalUrl);
   next();
 });
+
+// Use routes
+app.use("/", userRouter);
+app.use("/admin", adminRouter);
+
 
 // 404 Handler
 app.use((req, res) => {
@@ -83,7 +83,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
