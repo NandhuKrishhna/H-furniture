@@ -5,6 +5,12 @@ const testUserHomePage = async (req, res, next) => {
     })
 };
 
+const redirctToHomePage = async (req, res, next) => {
+    console.log("Redirecting to the home page");
+    res.redirect("/home")
+}
+
 module.exports = {
-    testUserHomePage
+    testUserHomePage,
+    redirctToHomePage
 };

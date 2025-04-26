@@ -21,7 +21,10 @@ const {
 
 
 
-router.get("/test", testControler.testUserHomePage)
+router.get("/", userController.userHomePage);
+
+
+
 
 // user registration
 router.get("/user/signup", userController.getUserSignup);

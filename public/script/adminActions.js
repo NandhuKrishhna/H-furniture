@@ -20,13 +20,13 @@ $(document).ready(function () {
   $(document).on("click", ".block-button", function () {
     var userId = $(this).data("user-id");
 
-    giveAlert("Are you sure ?you need to block the user");
+    giveAlert("Are you sure? You need to block the user");
     $(document).on("click", "#confirmAction", function () {
       giveAlert("");
       $.ajax({
         url: "/admin/user_panel/block_user/" + userId,
 
-        method: "PATCH", //patch method to partially update the data
+        method: "PATCH",
         success: function (_, _, response) {
           if (response.status === 200) {
             location.reload();
