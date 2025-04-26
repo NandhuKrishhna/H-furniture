@@ -25,10 +25,15 @@ const { default: mongoose } = require("mongoose");
 const mailer = require("../utils/mails");
 const { error } = require("console");
 //  <<<<<<<Razorpay>>>>>>>>
+console.log("Razorpay key id", process.env.RAZORPAY_KEY_ID);
+console.log("Razorpay key secret", process.env.RAZORPAY_KEY_SECRET);
 var instance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: "rzp_test_HIkvoqb5Aia0Ht",
+  key_secret: "B8AvHLrPrd7RfRbGbOSvcf8N",
 });
+console.log('Razorpay instance:', instance);
+console.log('instance.key_id:', instance.key_id);
+console.log('instance.key_secret:', instance.key_secret);
 
 //----------function to verfiy token-------------
 const verifyToken = (req) => {
@@ -197,7 +202,7 @@ module.exports = {
       if (req.cookies.token) {
         const user = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
         if (user) {
-          return res.redirect("/user/home");
+          return res.redirect("/");
         }
       } else {
         req.session.destroy();
@@ -1480,6 +1485,7 @@ module.exports = {
           currency: 'INR',
           receipt: uuidv4()
         });
+        console.log(razorpayOrder, 'razorpayOrder');
         const newOrderItems = cart.products.map(product => ({
           productId: product.productId,
           quantity: product.quantity,

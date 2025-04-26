@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const dbOtp = require("../models/otpModel");
 const multer = require("multer")
-const Cartdb = require("../models/cartModel" );
+const Cartdb = require("../models/cartModel");
 const Productdb = require("../models/productModels");
 const Addressdb = require("../models/addressModel")
 const Orderdb = require("../models/orderModel")
@@ -15,17 +15,18 @@ const Coupondb = require("../models/couponModel");
 
 
 const Storage = multer.diskStorage({
-  destination :(req,file,cb) =>{
+  destination: (req, file, cb) => {
     cb(null, "./uploads")
   },
-  filename:(req,file,cb) => {
-   cb(null,`${Date.now()}-${file.originalname}`);
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 })
 
-const upload = multer({storage:Storage})
+const upload = multer({ storage: Storage })
 
-
+// console.log("Nodemailer email:", process.env.NODMAILER_EMAIL);
+// console.log("Nodemailer password:", process.env.NODMAILER_PASSWORD);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -34,25 +35,25 @@ const transporter = nodemailer.createTransport({
     pass: process.env.NODMAILER_PASSWORD,
   },
 });
-
-async function sendOtp(email,id) {
+// console.log(transporter, "transporter")
+async function sendOtp(email, id) {
   const Otp = generateOtp();
 
   try {
-    const expireTimeInMilliseconds = 2 * 60 * 1000; 
+    const expireTimeInMilliseconds = 2 * 60 * 1000;
 
-const otpinfo = await dbOtp.otpCollection.updateOne(
-  { otpId: id },
-  {
-    $set: {
-      otp: Otp,
-      otpId: id,
-      generatedAt: Date.now(),
-      expireAt: Date.now() + expireTimeInMilliseconds,
-    },
-  },
-  { upsert: true }
-);
+    const otpinfo = await dbOtp.otpCollection.updateOne(
+      { otpId: id },
+      {
+        $set: {
+          otp: Otp,
+          otpId: id,
+          generatedAt: Date.now(),
+          expireAt: Date.now() + expireTimeInMilliseconds,
+        },
+      },
+      { upsert: true }
+    );
     console.log("OTP info:", otpinfo);
 
     const details = {
@@ -65,6 +66,7 @@ const otpinfo = await dbOtp.otpCollection.updateOne(
     return new Promise((resolve, reject) => {
       transporter.sendMail(details, (err, info) => {
         if (err) {
+          // console.log("Error from nodemailer : ", err)
           reject(err);
         } else {
           resolve("Email sent: " + info.response);
@@ -165,12 +167,14 @@ async function fetchOrderData(timeframe = 'monthly') {
     const brandNames = await Orderdb.orderCollection.aggregate([
       { $match: matchStage },
       { $unwind: "$orderItems" },
-      { $lookup: {
-        from: "product_datas",
-        localField: "orderItems.productId",
-        foreignField: "_id",
-        as: "productDetails"
-      }},
+      {
+        $lookup: {
+          from: "product_datas",
+          localField: "orderItems.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
       { $unwind: "$productDetails" },
       { $group: { _id: "$productDetails.brand", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -180,19 +184,23 @@ async function fetchOrderData(timeframe = 'monthly') {
     const topCategoryName = await Orderdb.orderCollection.aggregate([
       { $match: matchStage },
       { $unwind: "$orderItems" },
-      { $lookup: {
-        from: "product_datas",
-        localField: "orderItems.productId",
-        foreignField: "_id",
-        as: "productDetails"
-      }},
+      {
+        $lookup: {
+          from: "product_datas",
+          localField: "orderItems.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
       { $unwind: "$productDetails" },
-      { $lookup: {
-        from: "category_datas",
-        localField: "productDetails.category",
-        foreignField: "_id",
-        as: "categoryDetails"
-      }},
+      {
+        $lookup: {
+          from: "category_datas",
+          localField: "productDetails.category",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
       { $unwind: "$categoryDetails" },
       { $group: { _id: "$categoryDetails.categoryName", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -202,13 +210,15 @@ async function fetchOrderData(timeframe = 'monthly') {
     const monthlySales = await Orderdb.orderCollection.aggregate([
       { $match: matchStage },
       { $unwind: '$orderItems' },
-      { $group: {
-        _id: {
-          year: { $year: '$orderDate' },
-          month: { $month: '$orderDate' }
-        },
-        totalSales: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } }
-      }},
+      {
+        $group: {
+          _id: {
+            year: { $year: '$orderDate' },
+            month: { $month: '$orderDate' }
+          },
+          totalSales: { $sum: { $multiply: ['$orderItems.quantity', '$orderItems.price'] } }
+        }
+      },
       { $sort: { '_id.year': 1, '_id.month': 1 } }
     ]);
 
@@ -248,8 +258,8 @@ async function fetchSaleReportData(period) {
   const matchStage = {};
   if (period === 'daily') {
     matchStage['orderDate'] = {
-      $gte: new Date(new Date().setHours(0, 0, 0, 0)), 
-      $lt: new Date(new Date().setHours(24, 0, 0, 0)) 
+      $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      $lt: new Date(new Date().setHours(24, 0, 0, 0))
     };
   } else if (period === 'monthly') {
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -347,12 +357,12 @@ async function fetchSaleReportData(period) {
 
 
 
-module.exports = { 
+module.exports = {
   sendOtp,
   resendOtp,
   upload,
   fetchOrderData,
   fetchSaleReportData
 
-  };
+};
 
