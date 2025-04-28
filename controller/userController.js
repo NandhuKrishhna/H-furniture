@@ -25,15 +25,15 @@ const { default: mongoose } = require("mongoose");
 const mailer = require("../utils/mails");
 const { error } = require("console");
 //  <<<<<<<Razorpay>>>>>>>>
-console.log("Razorpay key id", process.env.RAZORPAY_KEY_ID);
-console.log("Razorpay key secret", process.env.RAZORPAY_KEY_SECRET);
+// console.log("Razorpay key id", process.env.RAZORPAY_KEY_ID);
+// console.log("Razorpay key secret", process.env.RAZORPAY_KEY_SECRET);
 var instance = new Razorpay({
   key_id: "rzp_test_HIkvoqb5Aia0Ht",
   key_secret: "B8AvHLrPrd7RfRbGbOSvcf8N",
 });
-console.log('Razorpay instance:', instance);
-console.log('instance.key_id:', instance.key_id);
-console.log('instance.key_secret:', instance.key_secret);
+// console.log('Razorpay instance:', instance);
+// console.log('instance.key_id:', instance.key_id);
+// console.log('instance.key_secret:', instance.key_secret);
 
 //----------function to verfiy token-------------
 const verifyToken = (req) => {

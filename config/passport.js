@@ -3,12 +3,12 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const Userdb = require("../models/UserModels");
 const dotenv = require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const Walletdb= require("../models/walletModel")
+const Walletdb = require("../models/walletModel")
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: process.env.CALLBACK_URL
     // callbackURL: "https://www.nandhu.live/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
     try {

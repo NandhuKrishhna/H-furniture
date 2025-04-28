@@ -38,7 +38,7 @@ app.use(methodOverride("_method"));
 // ========================
 // 2. STATIC ASSETS
 // ========================
-// app.get("/", (req, res) => res.send("hello world")); // Fixed typo
+// app.get("/", (req, res) => res.send("hello world"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

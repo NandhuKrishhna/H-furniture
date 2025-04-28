@@ -36,7 +36,7 @@ module.exports = {
         // console.log("Token:", token);
         try {
           const admin = jwt.verify(token, process.env.ADMIN_SECRET);
-          console.log("Admin:", admin);
+          // console.log("Admin:", admin);
           if (admin) {
             return res.redirect("/admin/user_panel");
           } else {
@@ -883,7 +883,7 @@ module.exports = {
     try {
       const period = req.query.period || 'daily';
       const reportData = await fetchSaleReportData(period);
-      console.log(reportData);
+      // console.log(reportData);
       res.render('admin/sales', {
         ...reportData,
         period,
