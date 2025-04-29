@@ -231,7 +231,12 @@ module.exports = {
           userLogin: true
         });
       }
-
+      if (!existUser.password) {
+        return res.status(400).json({
+          errors: { email: { msg: "Signed in with Google" } },
+          userLogin: true
+        });
+      }
       const isMatch = await bcrypt.compare(password, existUser.password);
       if (!isMatch) {
         return res.status(400).json({
