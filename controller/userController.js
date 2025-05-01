@@ -24,6 +24,16 @@ const { whitelist } = require("validator");
 const { default: mongoose } = require("mongoose");
 const mailer = require("../utils/mails");
 const { error } = require("console");
+const { userRegisterSchema } = require("../utils/zod-validation/user-schema");
+const catchErrors = require("../utils/catchError");
+const { userRegistrationUseCase } = require("../utils/services/userController-service");
+const { setAuthCookies } = require("../utils/setAuthCookies");
+const http = require("../utils/http");
+
+
+
+
+
 //  <<<<<<<Razorpay>>>>>>>>
 // console.log("Razorpay key id", process.env.RAZORPAY_KEY_ID);
 // console.log("Razorpay key secret", process.env.RAZORPAY_KEY_SECRET);
@@ -94,6 +104,25 @@ module.exports = {
       next(err);
     }
   },
+  // TODO: impliment like this
+  // userRegistration: catchErrors(async (req, res) => {
+  //   const userData = userRegisterSchema.parse({
+  //     ...req.body
+  //   })
+
+  //   const { user, accessToken, refreshToken, } = await userRegistrationUseCase(userData);
+  //   return setAuthCookies({ res, accessToken, refreshToken })
+  //     .status(http.CREATED)
+  //     .json({
+  //       success: true,
+  //       message: `Registration successfull. An OTP has been sent to ${user.email}`,
+  //       response: {
+  //         ...user.toObject(),
+  //         accessToken,
+  //       },
+  //     });
+
+  // }),
 
   //getting user otp
   getsubmitSignupotp: async (req, res, next) => {

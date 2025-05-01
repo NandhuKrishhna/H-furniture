@@ -1,16 +1,18 @@
 <div class="container">
   <div class="row align-items-center min-vh-100">
     <div class="col-md-6 d-none d-md-block">
-      <img style="height: 390px; border-radius: 5px;" src="/images/interior-design-with-photoframes-couch-min.jpg" class="img-fluid" alt="Responsive image">
+      <img style="height: 390px; border-radius: 5px;"
+        src="https://res.cloudinary.com/dzsdfw5vx/image/upload/v1746109467/interior-design-with-photoframes-couch-min_mhfa3v.jpg"
+        class="img-fluid" alt="Responsive image">
     </div>
     <div class="col-md-6">
       <div class="login-form p-4">
         <h3 class="mb-4 text-center">User Login</h3>
 
-     <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
-        <form  id="loginForm">
+        <div id="formErrors" class="alert alert-danger" style="display:none;"></div>
+        <form id="loginForm">
           <div class="form-group">
-            <input type="" class="form-control" id="email" name="email" placeholder=" " >
+            <input type="" class="form-control" id="email" name="email" placeholder=" ">
             <label for="email">Email Address</label>
             <div id="emailError" class="text-danger"></div>
           </div>
@@ -21,10 +23,15 @@
             <i class="fa-solid fa-eye-slash toggle-password" id="togglePassword" style="cursor:pointer;"></i>
             <div id="passwordError" class="text-danger"></div>
           </div>
-  
-          
+
+
           <div class="mt-3">
-            <button type="submit" class="btn btn-dark btn-block">Login</button>
+            <button type="submit" class="btn btn-dark btn-block" id="loginBtn">
+              <span id="btnText">Login </span>
+              <span id="btnLoader" class="spinner-border spinner-border-sm d-none" role="status"
+                aria-hidden="true"></span>
+            </button>
+
           </div>
 
           <div class="text-center mt-2">
@@ -49,88 +56,89 @@
       confirmButtonText: 'OK'
     });
   </script>
-<% } %>
-<style>
-  
-  body {
-    background-color: #f8f9fa;
-  }
-  
-  .login-form {
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .login-form h3 {
-    font-weight: bold;
-  }
-  
-  .form-control {
-    border-radius: 5px;
-  }
-  
-  .btn-block {
-    border-radius: 5px;
-  }
+  <% } %>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
 
-  .alert-danger {
-    background: none;
-    border: none;
-    color: red;
-    padding: 0;
-    font-weight: bold;
-    margin-bottom: 29px; 
-    margin-top: -5px; 
-  }
+      .login-form {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
 
-  .form-control:focus {
-    box-shadow: none;
-    border-color: none;
-    outline: none;
-  }
+      .login-form h3 {
+        font-weight: bold;
+      }
 
-  .form-group {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
+      .form-control {
+        border-radius: 5px;
+      }
 
-  .form-group label {
-    position: absolute;
-    top: -4px;
-    left: 5px;
-    padding: 0.75rem 0;
-    pointer-events: none;
-    transition: all 0.2s ease-out;
-    font-size: 1rem;
-    color: #aaa;
-  }
+      .btn-block {
+        border-radius: 5px;
+      }
 
-  .form-group input:focus + label,
-  .form-group input:not(:placeholder-shown) + label {
-    top: -2rem;
-    left: 0;
-    color: #000;
-    font-size: 0.85rem;
-    padding-left: 5px;
-  }
+      .alert-danger {
+        background: none;
+        border: none;
+        color: red;
+        padding: 0;
+        font-weight: bold;
+        margin-bottom: 29px;
+        margin-top: -5px;
+      }
 
-  .form-group input {
-    padding: 0.75rem 0.75rem 0.25rem;
-  }
+      .form-control:focus {
+        box-shadow: none;
+        border-color: none;
+        outline: none;
+      }
 
-  .form-group input:focus + label,
-  .form-group input:not(:placeholder-shown) + label {
-    top: -2rem;
-  }
-.text-danger {
-  color: red;
-  font-weight: bold;
-}
-.toggle-password {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-}
-</style>
+      .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        position: absolute;
+        top: -4px;
+        left: 5px;
+        padding: 0.75rem 0;
+        pointer-events: none;
+        transition: all 0.2s ease-out;
+        font-size: 1rem;
+        color: #aaa;
+      }
+
+      .form-group input:focus+label,
+      .form-group input:not(:placeholder-shown)+label {
+        top: -2rem;
+        left: 0;
+        color: #000;
+        font-size: 0.85rem;
+        padding-left: 5px;
+      }
+
+      .form-group input {
+        padding: 0.75rem 0.75rem 0.25rem;
+      }
+
+      .form-group input:focus+label,
+      .form-group input:not(:placeholder-shown)+label {
+        top: -2rem;
+      }
+
+      .text-danger {
+        color: red;
+        font-weight: bold;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+      }
+    </style>
