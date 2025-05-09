@@ -4,12 +4,12 @@ const path = require("path");
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
-const passport = require("./config/passport");
+const passport = require("./src/config/passport");
 const expressLayouts = require('express-ejs-layouts');
 const logger = require('morgan');
-const db = require("./config/db");
+const db = require("./src/config/db");
 const nocache = require('nocache');
-const errorHandler = require('./utils/errorHandler');
+const errorHandler = require('./src/utils/errorHandler');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -63,10 +63,12 @@ app.use((req, res, next) => {
 
 
 // Other routes
-const userRouter = require("./routes/userRouter");
-const adminRouter = require("./routes/adminRouter");
+const userRouter = require("./src/routes/userRouter");
+const adminRouter = require("./src/routes/adminRouter");
+const authRouter = require('./src/routes/auth-routes');
 app.use(userRouter);
 app.use(adminRouter);
+app.use(authRouter)
 
 // 404 Handler
 app.use((req, res) => {
