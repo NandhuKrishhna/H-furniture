@@ -1,11 +1,11 @@
 
-const Admindb = require("../../models/adminModels");
-const Userdb = require("../../models/UserModels");
-const Productdb = require("../../models/productModels");
-const Categorydb = require("../../models/categoryModel");
-const Orderdb = require("../../models/orderModel");
-const Coupondb = require("../../models/couponModel")
-const Wallectdb = require("../../models/walletModel")
+const Admindb = require("../models/adminModels");
+const Userdb = require("../models/UserModels");
+const Productdb = require("../models/productModels");
+const Categorydb = require("../models/categoryModel");
+const Orderdb = require("../models/orderModel");
+const Coupondb = require("../models/couponModel")
+const Wallectdb = require("../models/walletModel")
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { ObjectId } = require("mongodb")
@@ -15,7 +15,7 @@ const sharp = require("sharp");
 const { isError } = require("util");
 const puppeteer = require("puppeteer");
 const PDFDocument = require("pdfkit");
-const { fetchOrderData, fetchSaleReportData } = require("../../utils/helpers")
+const { fetchOrderData, fetchSaleReportData } = require("../utils/helpers")
 
 function convertDate(users) {
   users.forEach(element => {
