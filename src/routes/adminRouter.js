@@ -11,9 +11,6 @@ const {
   adminLoginRules,
   validateCategory,
   validateCoupon,
-
-
-
 } = require('../utils/errorhandling');
 
 
@@ -36,17 +33,14 @@ router.get("/admin/products", auth.isadminAuthenticated, productController.getAd
 router.get("/admin/products/add-product", auth.isadminAuthenticated, productController.adminaddProduct);
 router.post(
   "/admin/products/add-product", auth.isadminAuthenticated, upload.array("files", 4),
-  productController.addProduct
-);
+  productController.addProduct);
 router.delete("/admin/products/delete-product/:id", auth.isadminAuthenticated, productController.deleteProduct);
 router.get("/admin/products/edit-product/:id", auth.isadminAuthenticated, productController.getEditProduct);
 router.put(
   "/admin/products/edit-product/:id",
   auth.isadminAuthenticated,
   upload.array("files", 4),
-  productController.editProduct
-
-);
+  productController.editProduct);
 router.get("/admin/logout", adminController.adminLogout);
 router.get("/admin/orders", auth.isadminAuthenticated, orderController.getOrdersPage)
 router.post('/admin/orders/update-status', auth.isadminAuthenticated, orderController.updateOrderStatus);
@@ -59,10 +53,10 @@ router.post("/admin/coupons/add-coupon", auth.isadminAuthenticated, validateCoup
 router.get("/admin/coupons/edit-coupons/:id", auth.isadminAuthenticated, couponController.getEditCoupon)
 router.patch("/admin/coupons/edit-coupons/:id", auth.isadminAuthenticated, validateCoupon, validate, couponController.editCoupon)
 router.delete("/admin/coupons/delete-coupons/:id", auth.isadminAuthenticated, couponController.deleteCoupon)
-router.get('/admin/sales', adminController.getSaleReport);
+router.get('/admin/sales', orderController.getSaleReport);
 router.get('/admin/sales/download', orderController.downlordSalesReport);
 
-router.get("/admin/dashboard", auth.isadminAuthenticated, orderController.dashboard)
+router.get("/admin/dashboard", auth.isadminAuthenticated, adminController.dashboard)
 
 
 module.exports = router

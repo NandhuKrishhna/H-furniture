@@ -312,17 +312,5 @@ module.exports = {
             res.status(INTERNAL_SERVER_ERROR).send('Internal Server Error');
         }
     },
-    dashboard: async (req, res, next) => {
-        try {
-            const timeframe = req.query.timeframe || 'monthly';
-            const data = await fetchOrderData(timeframe);
-            res.status(OK).render("admin/dashboard", {
-                data,
-                timeframe
-            });
-        } catch (error) {
-            console.log('Error fetching dashboard data:', error);
-            next(error);
-        }
-    }
+
 }

@@ -2,7 +2,8 @@ const Admindb = require("../models/adminModels");
 const Userdb = require("../models/UserModels");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { ObjectId } = require("mongodb")
+const { ObjectId } = require("mongodb");
+const { fetchOrderData } = require("../utils/helpers");
 
 
 function convertDate(users) {
@@ -152,4 +153,17 @@ module.exports = {
       next(error);
     }
   },
+  dashboard: async (req, res, next) => {
+    try {
+      const timeframe = req.query.timeframe || 'monthly';
+      const data = await fetchOrderData(timeframe);
+      res.status(OK).render("admin/dashboard", {
+        data,
+        timeframe
+      });
+    } catch (error) {
+      console.log('Error fetching dashboard data:', error);
+      next(error);
+    }
+  }
 }
