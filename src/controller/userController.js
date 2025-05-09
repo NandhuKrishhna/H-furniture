@@ -1,15 +1,8 @@
 const Userdb = require("../models/UserModels");
-const Otpdb = require("../models/otpModel")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const fs = require("fs");
-const { sendOtp, resendOtp } = require("../utils/helpers");
 const Productdb = require("../models/productModels")
 const Orderdb = require("../models/orderModel")
-const Categroydb = require("../models/categoryModel")
-const CountryList = require("country-list")
-const countries = CountryList.getNames()
 const Addressdb = require("../models/addressModel");
 const Cartdb = require("../models/cartModel");
 const Coupondb = require("../models/couponModel");
@@ -17,28 +10,13 @@ const WishListdb = require("../models/wishListModel");
 const Walletdb = require("../models/walletModel")
 const uuidv4 = require("uuid").v4;
 const { ObjectId } = require("mongodb");
-const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const PDFDocument = require('pdfkit');
-const { whitelist } = require("validator");
-const { default: mongoose } = require("mongoose");
-const mailer = require("../utils/mails");
 const { error } = require("console");
+const instance = require("../config/razorpay");
+const verifyToken = require("../utils/verifyToken");
 
 
-
-var instance = new Razorpay({
-  key_id: "rzp_test_HIkvoqb5Aia0Ht",
-  key_secret: "B8AvHLrPrd7RfRbGbOSvcf8N",
-});
-
-const verifyToken = (req) => {
-  const token = req.cookies.token;
-  if (token) {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  }
-  return null;
-}
 
 function calculateDiscountedPrice(originalPrice, discount) {
   return originalPrice - (originalPrice * discount / 100);
@@ -53,222 +31,7 @@ module.exports = {
     })
   },
 
-  //user products
-  getUserProducts: async (req, res, next) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = 8;
-      const sort = req.query.sort || 'featured';
 
-      let pipeline = [
-        {
-          $match: { isDeleted: false }
-        },
-        {
-          $lookup: {
-            from: "reviews",
-            localField: "_id",
-            foreignField: "product",
-            as: "reviews"
-          }
-        },
-        {
-          $addFields: {
-            averageRating: {
-              $avg: "$reviews.rating"
-            }
-          }
-        }
-      ];
-
-
-      if (req.query.search) {
-        const search = req.query.search;
-        const regex = new RegExp(search, 'i');
-
-        pipeline.push(
-          {
-            $lookup: {
-              from: "category_datas",
-              localField: "category",
-              foreignField: "_id",
-              as: "categoryInfo",
-            },
-          },
-          {
-            $unwind: "$categoryInfo",
-          },
-          {
-            $match: {
-              $or: [
-                { productName: { $regex: regex } },
-                { brand: { $regex: regex } },
-                { primarymaterial: { $regex: regex } },
-                { polishmaterial: { $regex: regex } },
-                { "categoryInfo.categoryName": { $regex: regex } },
-              ],
-            },
-          }
-        );
-      }
-
-      if (req.query.category) {
-        const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
-        pipeline.push(
-          {
-            $lookup: {
-              from: 'category_datas',
-              localField: 'category',
-              foreignField: '_id',
-              as: 'categoryInfo'
-            }
-          },
-          {
-            $unwind: "$categoryInfo"
-          },
-          {
-            $match: {
-              'categoryInfo.name': { $in: categories }
-            }
-          }
-        );
-      }
-      if (req.query.brand) {
-        const brands = Array.isArray(req.query.brand) ? req.query.brand : [req.query.brand];
-        pipeline.push({
-          $match: {
-            brand: { $in: brands }
-          }
-        });
-      }
-      if (req.query.discount) {
-        const discount = parseInt(req.query.discount);
-        pipeline.push({
-          $match: {
-            discount: { $gte: discount }
-          }
-        });
-      }
-
-      if (sort === 'name_asc' || sort === 'name_desc') {
-        pipeline.push({
-          $addFields: {
-            productNameLower: { $toLower: "$productName" }
-          }
-        });
-      }
-
-      switch (sort) {
-        case 'price_asc':
-          pipeline.push({ $sort: { originalprice: 1 } });
-          break;
-        case 'price_desc':
-          pipeline.push({ $sort: { originalprice: -1 } });
-          break;
-        case 'name_asc':
-          pipeline.push({ $sort: { productNameLower: 1 } });
-          break;
-        case 'name_desc':
-          pipeline.push({ $sort: { productNameLower: -1 } });
-          break;
-        case 'newest':
-          pipeline.push({ $sort: { createdAt: -1 } });
-          break;
-        default:
-          pipeline.push({ $sort: { _id: 1 } });
-          break;
-      }
-      const totalProductsResult = await Productdb.productCollection.aggregate([
-        ...pipeline,
-        { $count: "total" }
-      ]).exec();
-
-      pipeline.push(
-        {
-          $addFields: {
-            averageRating: {
-              $avg: "$reviews.rating"
-            }
-          }
-        }
-      );
-
-      const totalProducts = totalProductsResult.length > 0 ? totalProductsResult[0].total : 0;
-      const totalPages = Math.ceil(totalProducts / limit);
-      const nextPage = page < totalPages ? page + 1 : null;
-
-      pipeline.push(
-        { $skip: (page - 1) * limit },
-        { $limit: limit }
-      );
-
-      const products = await Productdb.productCollection.aggregate(pipeline).exec();
-
-      res.status(200).render("user/user_products", {
-        user: true,
-        page,
-        search: req.query.search || '',
-        sort,
-        nextPage,
-        totalPages,
-        totalProducts,
-        products,
-        calculateDiscountedPrice: calculateDiscountedPrice,
-        userProducts: true,
-      });
-
-    } catch (err) {
-      console.error("Error in getUserProducts:", err);
-      next(err);
-    }
-  },
-
-  //product details
-  getProductDetails: async (req, res, next) => {
-    try {
-
-      const product = await Productdb.productCollection
-        .findById(req.params.id)
-        .lean();
-      const length = product.quantity
-      if (req.session.token) {
-        const user = jwt.verify(req.session.token, process.env.JWT_SECRET);
-        const userInfo = await Userdb.userCollection.findById(user._id).lean();
-        const cart = await Cartdb.cartCollection
-          .findOne({ userId: new ObjectId(user._id) })
-          .lean();
-        if (cart) {
-          count = cart.products.length;
-        } else {
-          count = 0;
-        }
-        res.status(200).render("user/product-details", {
-          user: true,
-          product,
-          userInfo,
-          calculateDiscountedPrice: calculateDiscountedPrice,
-          length,
-          productDetails: true,
-        })
-
-      } else {
-        res.status(200).render("user/product-details", {
-          user: true,
-          product,
-          calculateDiscountedPrice: calculateDiscountedPrice,
-          length,
-          productDetails: true,
-        })
-      }
-      console.log(length, "-------------");
-
-    } catch (error) {
-      console.log(error);
-      next(error)
-    }
-  },
-
-  //get my account
   getMyAccount: async (req, res, next) => {
     try {
       const token = req.cookies.token;
