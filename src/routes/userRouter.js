@@ -17,20 +17,10 @@ const {
 router.get("/", userController.userHomePage);
 
 router.get("/home", userController.userHomePage)
-//---------user products-----------------
-router.get("/user/products", userController.getUserProducts)
-router.get("/user/search", userController.getUserProducts) // for serach
-
-//---------user products details-------------
-router.get("/user/product/:id", userController.getProductDetails);
 
 
-//---------cart routes-----------
-router.get("/user/cart", isUserAuthenticated, userController.getCart)
-router.post("/user/add-to-cart", isUserAuthenticated, userController.addToCart)
-router.patch("/user/update-cart", isUserAuthenticated, userController.updateCart);
-router.delete("/user/delete-from-cart", isUserAuthenticated, userController.removeFromCart);
-//---------apply coupon-------
+
+
 router.post("/user/apply-coupon", isUserAuthenticated, userController.applyCoupon);
 router.post("/user/remove-coupon", isUserAuthenticated, userController.removeCoupon);
 
