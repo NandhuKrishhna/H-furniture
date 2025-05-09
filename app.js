@@ -10,6 +10,9 @@ const logger = require('morgan');
 const db = require("./src/config/db");
 const nocache = require('nocache');
 const errorHandler = require('./src/utils/errorHandler');
+const userRouter = require("./src/routes/userRouter");
+const adminRouter = require("./src/routes/adminRouter");
+const authRouter = require('./src/routes/auth-routes');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -62,10 +65,7 @@ app.use((req, res, next) => {
 
 
 
-// Other routes
-const userRouter = require("./src/routes/userRouter");
-const adminRouter = require("./src/routes/adminRouter");
-const authRouter = require('./src/routes/auth-routes');
+
 app.use(userRouter);
 app.use(adminRouter);
 app.use(authRouter)
