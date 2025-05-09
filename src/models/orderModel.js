@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { addressSchema } = require('../models/addressModel'); 
+const { addressSchema } = require('../models/addressModel');
 
 const orderSchema = new mongoose.Schema({
   userId: {
@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
       discountValue: { type: Number, default: 0 },
       returnRequest: {
         reason: { type: String, default: '' },
-        status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: null }, 
+        status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: null },
         requestDate: { type: Date, default: null },
         approvalDate: { type: Date, default: null },
       }
@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema({
   shippingAddress: addressSchema,
   billingAddress: addressSchema,
   totalAmount: { type: Number, required: true },
-  discountValue: { type: Number, default: 0 }, 
+  discountValue: { type: Number, default: 0 },
   orderDate: { type: Date, default: Date.now },
   orderStatus: {
     type: String,
@@ -54,16 +54,16 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  orderId : {
+  orderId: {
     type: String,
     default: null
   }
 
 },
-{ timestamps: true });
+  { timestamps: true });
 
 orderSchema.pre('save', function (next) {
-  
+
   if (this.isModified('orderStatus')) {
     this.updatedAt = Date.now();
   }

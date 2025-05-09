@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 const reviewSchema = new mongoose.Schema({
   user: {
     type: mongoose.Types.ObjectId,
-    ref: "user_data", 
+    ref: "user_data",
     required: true,
   },
   rating: {
     type: Number,
     required: true,
     min: 1,
-    max: 5, 
+    max: 5,
   },
   comment: {
     type: String,
@@ -84,10 +84,10 @@ const productSchema = new mongoose.Schema({
   },
   color: {
     type: [String],
-  
+
   },
 
-images: {
+  images: {
     type: [String],
     required: true,
   },
@@ -105,7 +105,7 @@ images: {
   },
   countryofOrigin: {
     type: String,
-    required:true
+    required: true
 
   },
   fabric_options: {
@@ -113,20 +113,20 @@ images: {
     required: true
   },
   dimension: {
-    type: String, 
-    required: true  
+    type: String,
+    required: true
   },
   purchaseCount: {
     type: Number,
     default: 0
   },
-  reviews : [reviewSchema],
+  reviews: [reviewSchema],
   averageRating: {
     type: Number,
     default: 0,
   },
 });
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function (next) {
   if (this.reviews && this.reviews.length > 0) {
     const totalRating = this.reviews.reduce((acc, review) => acc + review.rating, 0);
     this.averageRating = parseFloat((totalRating / this.reviews.length).toFixed(1));
@@ -136,7 +136,7 @@ productSchema.pre('save', function(next) {
   next();
 });
 
-productSchema.pre('findOneAndUpdate', async function(next) {
+productSchema.pre('findOneAndUpdate', async function (next) {
   if (this._update.reviews) {
     const updatedReviews = this._update.reviews;
     const totalRating = updatedReviews.reduce((acc, review) => acc + review.rating, 0);
