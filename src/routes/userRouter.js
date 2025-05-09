@@ -1,72 +1,21 @@
 const express = require("express")
 const router = express.Router();
 const userController = require("../controller/userController")
-const testControler = require("../controller/testController")
-const passport = require("passport");
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { isUserAuthenticated } = require("../middleware/userAuth");
 const {
 
-    validateOtp,
     validate,
-    signupValidationRules,
-    validateLoginRules,
-    validateMyAccount,
     validateChangePass,
     validateAddress,
-    changePassword
 } = require("../utils/errorhandling");
 
 
 
 router.get("/", userController.userHomePage);
 
-
-
-
-// user registration
-router.get("/user/signup", userController.getUserSignup);
-router.post("/user/signup", signupValidationRules, validate, userController.userRegistration);
-router.get("/user/submit_otp", userController.getsubmitSignupotp);
-router.post("/user/submit_otp", validateOtp, validate, userController.submitSignupotp);
-router.post("/user/resend_otp", userController.resendSignUpOtp);
-
-// user login
-router.get("/user/login", userController.getUserLogin);
-router.post("/user/login", validateLoginRules, validate, userController.userSignin);
-
-//user forgot password
-router.get("/user/forgot-password", userController.enterForgotEmail);
-router.post("/user/forgot-password", userController.submitEmailForOtp);
-
-// otp and resend otp for forgot password
-router.get("/user/forgot_otp", userController.getEnterForgotOtp);
-router.post("/user/forgot_otp", userController.submitForgetOtp);
-router.post("/user/resend_forgot_otp", validateOtp, validate, userController.resendForgortPass);
-
-//changing the password 
-router.get("/user/change_password", userController.getChangePassword);
-router.post("/user/change_password", userController.changePassword);
-//getting otp for email verification
-
-// user google login
-router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/user/signup", session: false }), (req, res) => {
-    const { user, token } = req.user;
-    if (token) {
-        res.cookie("token", token, {
-            httpOnly: true,
-        });
-        res.redirect("/");
-    } else {
-        res.redirect("/user/login");
-    }
-});
-
-//----------------------
-//---------user homepage
 router.get("/home", userController.userHomePage)
 //---------user products-----------------
 router.get("/user/products", userController.getUserProducts)
@@ -149,7 +98,7 @@ router.get("/user/wallet", isUserAuthenticated, userController.getWallet)
 router.post("/user/wallet", isUserAuthenticated, userController.addMoneyToWallet)
 
 
-router.post("/user/logout", userController.userLogout)
+
 
 
 module.exports = router
