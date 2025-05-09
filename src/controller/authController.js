@@ -2,7 +2,7 @@ const { userCollection } = require("../models/UserModels");
 const { sendOtp } = require("../utils/helpers");
 const { OK, BAD_REQUEST, INTERNAL_SERVER_ERROR } = require("../utils/http");
 const bcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
 module.exports = {
     //@desc : Getting the user sign-up Page.
     getUserSignup: (req, res, next) => {
@@ -171,8 +171,6 @@ module.exports = {
             next(err);
         }
     },
-
-
     // user signin
     userSignin: async (req, res, next) => {
         try {
@@ -370,8 +368,6 @@ module.exports = {
         res.status(200).render("user/changepassword", {
             changePassword: true
         })
-
-
     },
 
     changePassword: async (req, res, next) => {
