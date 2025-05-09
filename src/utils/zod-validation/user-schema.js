@@ -13,20 +13,23 @@ const passwordSchema = z.string().min(6, { message: "Password must be at least 6
 const confirmPasswordSchema = z.string().min(6, { message: "Confirm password is required" });
 
 const userAgentSchema = z.string().optional();
+const phoneSchema = z
+    .string()
+    .regex(/^[6-9]\d{9}$/, { message: "Invalid Indian phone number format" });
 
-// Register schema
-const userRegisterSchema = z
-    .object({
-        fname: nameSchema,
-        lname: nameSchema,
-        email: emailSchema,
-        password: passwordSchema
-    })
+const userRegisterSchema = z.object({
+    fname: nameSchema,
+    lname: nameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+    phone: phoneSchema,
+    userAgent: userAgentSchema,
+});
+
 // Login schema
 const loginSchema = z.object({
     email: emailSchema,
     password: passwordSchema,
-    userAgent: userAgentSchema,
 });
 
 // Verification code schema
