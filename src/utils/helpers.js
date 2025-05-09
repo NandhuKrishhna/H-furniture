@@ -1,15 +1,15 @@
 const nodemailer = require("nodemailer");
-const dbOtp = require("../models/otpModel");
+const dbOtp = require("../src/models/otpModel");
 const multer = require("multer")
-const Cartdb = require("../models/cartModel");
-const Productdb = require("../models/productModels");
-const Addressdb = require("../models/addressModel")
-const Orderdb = require("../models/orderModel")
-const Wallectdb = require("../models/walletModel")
+const Cartdb = require("../src/models/cartModel");
+const Productdb = require("../src/models/productModels");
+const Addressdb = require("../src/models/addressModel")
+const Orderdb = require("../src/models/orderModel")
+const Wallectdb = require("../src/models/walletModel")
 const { getProductDetails } = require("../controller/userController");
-const Categorydb = require("../models/categoryModel");
+const Categorydb = require("../src/models/categoryModel");
 const { createStructParentTreeNextKey } = require("pdfkit");
-const Coupondb = require("../models/couponModel");
+const Coupondb = require("../src/models/couponModel");
 
 
 

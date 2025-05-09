@@ -1,13 +1,13 @@
-const UserModel = require("../../models/UserModels")
+const UserModel = require("../../src/models/UserModels")
 const appAssert = require("../AppAssert");
 const AppErrorCode = require("../AppErrorCode");
 const http = require("../http");
 const bcrypt = require("bcryptjs");
-const OtpModel = require("../../models/otpModel");
+const OtpModel = require("../../src/models/otpModel");
 const { generateOTP, sendMail } = require("../sendMail");
 const { generateOtpExpiration, oneYearFromNow } = require("../dates");
 const { getVerifyEmailTemplates } = require("../emialTemplates");
-const SessionModel = require("../../models/sessionModel");
+const SessionModel = require("../../src/models/sessionModel");
 const { signToken, refreshTokenSignOptions } = require("../jwt");
 
 const userRegistrationUseCase = async (userData) => {
