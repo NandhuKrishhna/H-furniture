@@ -13,6 +13,8 @@ const errorHandler = require('./src/utils/errorHandler');
 const userRouter = require("./src/routes/userRouter");
 const adminRouter = require("./src/routes/adminRouter");
 const authRouter = require('./src/routes/auth-routes');
+const paymentRouter = require('./src/routes/paymentRouter');
+const appFeatRouter = require('./src/routes/appFeatRouter');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -49,15 +51,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layout');
 
-// Template locals
 app.use((req, res, next) => {
   res.locals.searchTerm = req.query.search || '';
   res.locals.user = req.user;
   next();
 });
 
-
-// Request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
@@ -69,6 +68,8 @@ app.use((req, res, next) => {
 app.use(userRouter);
 app.use(adminRouter);
 app.use(authRouter)
+app.use(paymentRouter)
+app.use(appFeatRouter)
 
 // 404 Handler
 app.use((req, res) => {
