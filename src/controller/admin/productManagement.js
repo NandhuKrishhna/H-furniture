@@ -1,7 +1,13 @@
 const { categoryCollection } = require("../../models/categoryModel");
 const { productCollection } = require("../../models/productModels");
 const { OK, INTERNAL_SERVER_ERROR, NOT_FOUND } = require("../../utils/http");
-
+function convertDate(users) {
+    users.forEach(element => {
+        element.createdAt = new Date(element.createdAt).toLocaleString()
+        element.updatedAt = new Date(element.updatedAt).toLocaleString()
+    });
+    return users;
+}
 module.exports = {
     getCategory: async (req, res, next) => {
         try {
