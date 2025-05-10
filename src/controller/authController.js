@@ -1,10 +1,12 @@
+const { otpCollection } = require("../models/otpModel");
 const { userCollection } = require("../models/UserModels");
-const { sendOtp } = require("../utils/helpers");
+const { walletCollection } = require("../models/walletModel");
+const { sendOtp, resendOtp } = require("../utils/helpers");
 const { OK, BAD_REQUEST, INTERNAL_SERVER_ERROR } = require("../utils/http");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 module.exports = {
-    //@desc : Getting the user sign-up Page.
+
     getUserSignup: (req, res, next) => {
         res.status(OK).render("user/user_signup", {
             errors: null,
@@ -12,12 +14,10 @@ module.exports = {
 
         });
     },
-
-    //@desc : User-Sign Handler
     userRegistration: async (req, res, next) => {
         const data = {
-            firstName: req.body.fname,
-            lastName: req.body.lname,
+            fname: req.body.fname,
+            lname: req.body.lname,
             email: req.body.email,
             password: await bcrypt.hash(req.body.password, 10),
             phone: req.body.phone,
@@ -49,34 +49,32 @@ module.exports = {
             next(err);
         }
     },
-    //getting user otp
     getsubmitSignupotp: async (req, res, next) => {
         console.log("Inserting data:", req.session.userdata);
         const userEmail = req.session.userdata?.email;
         console.log(userEmail);
-        res.status(200).render("user/otp_submit", {
+        res.status(OK).render("user/otp_submit", {
             userOtpSubmit: true,
             userEmail,
 
         }
         );
     },
-
     submitSignupotp: async (req, res, next) => {
         try {
             if (!req.session.userdata || !req.session.userdata.email) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { email: { msg: "Email is required" } },
                     userOtpSubmit: true
                 });
             }
-            const isOtp = await Otpdb.otpCollection.findOne({
+            const isOtp = await otpCollection.findOne({
                 otpId: req.session.userdata.email,
             });
 
             const time = Date.now();
             if (!isOtp) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { otp: { msg: "OTP record not found" } },
                     userOtpSubmit: true
                 });
@@ -88,27 +86,32 @@ module.exports = {
 
             if (parseInt(req.body.otp) === isOtp.otp) {
                 if (isOtp.expireAt >= time) {
-                    const userInserted = await Userdb.userCollection.create(req.session.userdata);
-                    console.log(userInserted._id, "<<<<<<>>>>>>");
+                    const userInserted = await userCollection.create(req.session.userdata);
+                    console.log(userInserted)
                     if (userInserted) {
                         //----------create a wallet-----------
-                        await Walletdb.walletCollection.create({ userId: userInserted._id, balance: 0 });
+                        await walletCollection.create({ userId: userInserted._id, balance: 0 });
                         const token = jwt.sign({ _id: userInserted._id }, process.env.JWT_SECRET);
                         res.cookie("token", token, { httpOnly: true });
-                        return res.status(200).json({
+                        return res.status(OK).json({
                             success: "success",
+                            userDate: {
+                                name: `${userInserted.fname}${userInserted.lname}`,
+                                email: userInserted.email,
+                                profilePicture: userInserted.profilePicture
+                            },
                             redirect: "/"
                         });
 
                     }
                 } else {
-                    return res.status(400).json({
+                    return res.status(BAD_REQUEST).json({
                         errors: { otp: { msg: "OTP Expired" } },
                         userOtpSubmit: true
                     });
                 }
             } else {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { otp: { msg: "Invalid OTP" } },
                     userOtpSubmit: true
                 });
@@ -118,15 +121,13 @@ module.exports = {
             next(err);
         }
     },
-
-    //resend signup otp
     resendSignUpOtp: async (req, res, next) => {
         try {
             console.log("Session userdata:", req.session.userdata);
             console.log("User email:", req.session.userdata?.email);
 
             if (!req.session.userdata || !req.session.userdata.email) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     customError: 'Email not found in session', success: false
                 });
             }
@@ -138,7 +139,7 @@ module.exports = {
                 data.success = true;
 
             }
-            res.status(200).json(data);
+            res.status(OK).json(data);
         } catch (error) {
             console.error("Error in resendSignUpOtp:", error);
             res.status(500).json({
@@ -147,8 +148,6 @@ module.exports = {
             });
         }
     },
-
-    //get user Login
     getUserLogin: (req, res, next) => {
         try {
             const isBlocked = req.query.blocked === "true";
@@ -160,7 +159,7 @@ module.exports = {
                 }
             } else {
                 req.session.destroy();
-                return res.status(200).render("user/login", {
+                return res.status(OK).render("user/login", {
                     errors: null,
                     userLogin: true,
                     blocked: isBlocked
@@ -171,34 +170,33 @@ module.exports = {
             next(err);
         }
     },
-    // user signin
     userSignin: async (req, res, next) => {
         try {
             const { email, password } = req.body;
 
-            const existUser = await Userdb.userCollection.findOne({ email }).lean();
+            const existUser = await userCollection.findOne({ email }).lean();
             if (!existUser) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { email: { msg: "User not found" } },
                     userLogin: true
                 });
             }
             if (!existUser.password) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { email: { msg: "Signed in with Google" } },
                     userLogin: true
                 });
             }
             const isMatch = await bcrypt.compare(password, existUser.password);
             if (!isMatch) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { email: { msg: "Incorrect email or password" } },
                     userLogin: true
                 });
             }
 
             if (existUser.isBlocked) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { email: { msg: "User is blocked" } },
                     userLogin: true
                 });
@@ -212,6 +210,11 @@ module.exports = {
 
             res.json({
                 message: ' Login successful',
+                userDate: {
+                    name: `${existUser.fname}${existUser.lname}`,
+                    email: existUser.email,
+                    profilePicture: existUser.profilePicture
+                },
                 success: true
             });
         } catch (err) {
@@ -222,28 +225,25 @@ module.exports = {
             });
         }
     },
-
-    // getting forgot password email submit
     enterForgotEmail: async (req, res, next) => {
-        res.status(200).render("user/forgot_password",
+        res.status(OK).render("user/forgot_password",
 
         );
     },
-    // submitting forgot password email
     submitEmailForOtp: async (req, res, next) => {
         console.log("This is from submitEmail: " + req.body.Email);
         const { Email } = req.body;
 
 
         if (!Email) {
-            return res.status(400).json({ errors: { email: { msg: "Email is required" } } });
+            return res.status(BAD_REQUEST).json({ errors: { email: { msg: "Email is required" } } });
         }
         try {
 
 
-            const userExist = await Userdb.userCollection.findOne({ email: req.body.Email }).lean();
+            const userExist = await userCollection.findOne({ email: req.body.Email }).lean();
             if (!userExist) {
-                return res.status(400).json({ errors: { email: { msg: "User not found" } } });
+                return res.status(BAD_REQUEST).json({ errors: { email: { msg: "User not found" } } });
             } else {
                 try {
                     await sendOtp(req.body.Email, userExist._id);
@@ -267,16 +267,13 @@ module.exports = {
             next(error);
         }
     },
-
-    // getting enter forgot email otp
     getEnterForgotOtp: async (req, res, next) => {
-        res.status(200).render("user/forgot_otp", {
+        res.status(OK).render("user/forgot_otp", {
             email: req.session.forgotUserEmail
         },
             console.log("this is from getEnterForgotOtp" + req.session.forgotUserEmail)
         );
     },
-
     submitForgetOtp: async (req, res, next) => {
         console.log('Session forgetUser:', req.session.forgotUser);
         console.log('Entered OTP:', req.body.Otp);
@@ -284,25 +281,25 @@ module.exports = {
         try {
             // Check if forgetUser session exists
             if (!req.session.forgotUser) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     customError: `Session expired. Please try again.`,
                 });
             }
 
             // Find user from database
-            const user = await Userdb.userCollection.findById(req.session.forgotUser).lean();
+            const user = await userCollection.findById(req.session.forgotUser).lean();
 
             // Check if user exists and has email property
             if (!user || !user.email) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { otp: { msg: "User not found or invalid email" } }
                 });
             }
 
             // Proceed with OTP validation
-            const otpInfo = await Otpdb.otpCollection.findOne({ otpId: req.session.forgotUser });
+            const otpInfo = await otpCollection.findOne({ otpId: req.session.forgotUser });
             if (!otpInfo) {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { otp: { msg: "Invalid OTP" } }
                 });
             }
@@ -319,12 +316,12 @@ module.exports = {
                 if (otpInfo.expireAt >= Date.now()) {
                     return res.json({ redirect: "/user/change_password" });
                 } else {
-                    return res.status(400).json({
+                    return res.status(BAD_REQUEST).json({
                         errors: { otp: { msg: "OTP Expired" } }
                     });
                 }
             } else {
-                return res.status(400).json({
+                return res.status(BAD_REQUEST).json({
                     errors: { otp: { msg: "Invalid OTP" } }
                 });
             }
@@ -333,7 +330,6 @@ module.exports = {
             next(error);
         }
     },
-
     resendForgortPass: async (req, res, next) => {
         try {
             // Debugging information
@@ -351,7 +347,7 @@ module.exports = {
             }
 
             // Respond with success data
-            res.status(200).json(data);
+            res.status(OK).json(data);
         } catch (error) {
             // Log and handle errors
             console.error("Error in resendForgortPass:", error);
@@ -361,48 +357,41 @@ module.exports = {
             });
         }
     },
-
-    //change password
     getChangePassword: async (req, res, next) => {
 
-        res.status(200).render("user/changepassword", {
+        res.status(OK).render("user/changepassword", {
             changePassword: true
         })
     },
-
     changePassword: async (req, res, next) => {
         try {
             if (req.session.forgotUserEmail) {
-                const user = await Userdb.userCollection.findOne({ email: req.session.forgotUserEmail });
+                const user = await userCollection.findOne({ email: req.session.forgotUserEmail });
                 if (!user) {
-                    return res.status(400).json({ customError: 'User not found' });
+                    return res.status(BAD_REQUEST).json({ customError: 'User not found' });
                 }
 
                 const newPassword = await bcrypt.hash(req.body.newPassword, 10);
-                const updatedUser = await Userdb.userCollection.updateOne(
+                const updatedUser = await userCollection.updateOne(
                     { email: req.session.forgotUserEmail },
                     { $set: { password: newPassword } }
                 );
 
                 if (updatedUser.modifiedCount > 0) {
-                    res.status(200).json({ redirectUrl: '/user/login' });
+                    res.status(OK).json({ redirectUrl: '/user/login' });
                 } else {
-                    res.status(400).json({ customError: 'Failed to update password' });
+                    res.status(BAD_REQUEST).json({ customError: 'Failed to update password' });
                 }
             } else {
-                res.status(400).json({ customError: 'Timeout, please try again' });
+                res.status(BAD_REQUEST).json({ customError: 'Timeout, please try again' });
             }
         } catch (error) {
             console.error('Error in changePassword:', error);
             res.status(500).json({ customError: 'An error occurred. Please try again later.' });
         }
     },
-
     userLogout: (req, res, next) => {
         res.clearCookie("token");
         res.json({ success: true });
     },
-
-
-
 }
