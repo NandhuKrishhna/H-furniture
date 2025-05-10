@@ -311,12 +311,12 @@
                                                 <td>
                                                     <button class="btn">
                                                         <i class="edit-product-button fa-solid fa-pen-to-square"
-                                                           data-product-id="<%= product._id %>"></i>
+                                                            data-product-id="<%= product._id %>"></i>
                                                     </button>
-                                                    
+
                                                     <button class="btn">
                                                         <i class="product-delete-icon text-danger fa-solid fa-trash"
-                                                           data-product-id="<%= product._id %>"></i>
+                                                            data-product-id="<%= product._id %>"></i>
                                                     </button>
                                                 </td>
                                 </tr>
@@ -337,49 +337,51 @@
 
 
         $(document).ready(function () {
-          
+            // Edit product
             $(document).on('click', '.edit-product-button', function () {
-        var productId = $(this).data('product-id');
-        window.location.href = '/admin/products/edit-product/' + productId;
-    });
+                var productId = $(this).data('product-id');
+                window.location.href = '/admin/products/edit-product/' + productId;
+            });
 
+            // Delete product
             $(document).on('click', '.product-delete-icon', function () {
-        var productId = $(this).data('product-id');
-        console.log("deletebuttonclicked", productId);
+                var productId = $(this).data('product-id');
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/products/delete-product/' + productId,
-                    type: 'DELETE',
-                    success: function (response) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The product has been deleted.',
-                            'success'
-                        ).then(() => {
-                            location.reload();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/admin/products/delete-product/' + productId,
+                            type: 'DELETE',
+                            success: function (response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The product has been deleted.',
+                                    'success'
+                                );
+                                $(`.product-delete-icon[data-product-id="${productId}"]`).closest('tr').fadeOut(300, function () {
+                                    $(this).remove();
+                                });
+                            },
+                            error: function (err) {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an error deleting the product.',
+                                    'error'
+                                );
+                            }
                         });
-                    },
-                    error: function (err) {
-                        Swal.fire(
-                            'Error!',
-                            'There was an error deleting the product.',
-                            'error'
-                        );
                     }
                 });
-            }
+            });
         });
-    });
-});
+
 
     </script>

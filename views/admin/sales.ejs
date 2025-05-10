@@ -143,35 +143,40 @@
     }
 
     .summary-card {
-    width: 220px;
-    height: 140px;
+        width: 220px;
+        height: 140px;
 
-}
-.table-responsive {
-    padding-top: 50px;
-}
-.table-responsive th{
-    font-size: 12px;
-    
-}
-.table-responsive td{
-    font-size: 10px;
-    
-}
-.card-text{
-    display: flex;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 40px;
-    font-family: monospace;
-}
-.card-body h6{
-    display: flex;
-    justify-content: center;
-    font-family: monospace;
-    font-size: 12px;
-    
-}
+    }
+
+    .table-responsive {
+        padding-top: 50px;
+    }
+
+    .table-responsive th {
+        font-size: 12px;
+
+    }
+
+    .table-responsive td {
+        font-size: 10px;
+
+    }
+
+    .card-text {
+        display: flex;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 40px;
+        font-family: monospace;
+    }
+
+    .card-body h6 {
+        display: flex;
+        justify-content: center;
+        font-family: monospace;
+        font-size: 12px;
+
+    }
 </style>
 
 <body>
@@ -250,12 +255,7 @@
                         <li class="sidebar-item">
                             <a href="/admin/sales" class="sidebar-link">Sales-Report</a>
                         </li>
-                        <li class="sidebar-item">
-                            <a href="/admin/inventory-report" class="sidebar-link">Inventory-Report</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a href="/admin/purchase-report" class="sidebar-link">Purchase-Report</a>
-                        </li>
+
                     </ul>
                 </li>
             </ul>
@@ -267,26 +267,29 @@
             </div>
         </aside>
         <div class="main p-3">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Sales Report</h1>
                 <a href="/admin/sales/download" id="download-btn" class="btn btn-danger">Download PDF</a>
             </div>
             <form method="GET" action="/admin/sales" class="mb-4">
                 <label for="period">Select Period:</label>
                 <select name="period" id="period" onchange="this.form.submit()">
-                    <option value="daily" <% if (period === 'daily') { %>selected<% } %>>Daily</option>
-                    <option value="monthly" <% if (period === 'monthly') { %>selected<% } %>>Monthly</option>
-                    <option value="yearly" <% if (period === 'yearly') { %>selected<% } %>>Yearly</option>
+                    <option value="daily" <% if (period==='daily' ) { %>selected<% } %>>Daily</option>
+                    <option value="monthly" <% if (period==='monthly' ) { %>selected<% } %>>Monthly</option>
+                    <option value="yearly" <% if (period==='yearly' ) { %>selected<% } %>>Yearly</option>
                 </select>
             </form>
-        
+
             <div class="row">
-             
+
                 <div class="col-md-2">
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>No of Orders</h6>
-                            <p class="card-text"><%= totalOrders %></p>
+                            <p class="card-text">
+                                <%= totalOrders %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -294,7 +297,9 @@
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>No of Customers</h6>
-                            <p class="card-text"><%= totalCustomers %></p>
+                            <p class="card-text">
+                                <%= totalCustomers %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -302,7 +307,9 @@
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>Online Payment</h6>
-                            <p class="card-text"><%= onlinePayments %></p>
+                            <p class="card-text">
+                                <%= onlinePayments %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -310,7 +317,9 @@
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>Cash on Delivery</h6>
-                            <p class="card-text"><%= cashOnDelivery %></p>
+                            <p class="card-text">
+                                <%= cashOnDelivery %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -318,7 +327,9 @@
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>Refunds & Returns</h6>
-                            <p class="card-text"><%= totalRefundedAmount %></p>
+                            <p class="card-text">
+                                <%= totalRefundedAmount %>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -326,12 +337,14 @@
                     <div class="card summary-card">
                         <div class="card-body">
                             <h6>Total Transactions</h6>
-                            <p class="card-text"><%= totalSales %></p>
+                            <p class="card-text">
+                                <%= totalSales %>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        
+
             <!-- Table -->
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
@@ -351,30 +364,52 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% orderDetails.forEach(orderDetail => { %>
+                        <% orderDetails.forEach(orderDetail=> { %>
                             <tr>
-                                <td><%= orderDetail.date %></td>
-                                <td style="font-size: 12px;"><%= orderDetail.orderId %></td>
-                                <td><%= orderDetail.fullName %></td>
-                                <td><%= orderDetail.productName %></td>
-                                <td><%= orderDetail.originalPrice %></td>
-                                <td><%= orderDetail.soldPrice %></td>
-                                <td><%= orderDetail.offer %></td>
-                                <td><%= orderDetail.discount %></td>
-                                <td><%= orderDetail.couponApplied %></td>
-                                <td><%= orderDetail.paymentMethod %></td>
-                                <td><%= orderDetail.paymentStatus %></td>
+                                <td>
+                                    <%= orderDetail.date %>
+                                </td>
+                                <td style="font-size: 12px;">
+                                    <%= orderDetail.orderId %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.fullName %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.productName %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.originalPrice %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.soldPrice %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.offer %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.discount %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.couponApplied %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.paymentMethod %>
+                                </td>
+                                <td>
+                                    <%= orderDetail.paymentStatus %>
+                                </td>
                             </tr>
-                        <% }) %>
+                            <% }) %>
                     </tbody>
                 </table>
             </div>
-            
+
         </div>
     </div>
-    
-        
-        
+
+
+
     <script>
 
         const hamBurger = document.querySelector(".toggle-btn");
@@ -383,4 +418,3 @@
             document.querySelector("#sidebar").classList.toggle("expand");
         });
     </script>
-

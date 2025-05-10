@@ -273,11 +273,12 @@
                                         <button class="btn edit-category-button" data-category-id="<%= cat._id %>">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
-                                        <button class="btn category-delete-icon text-danger" data-category-id="<%= cat._id %>">
+                                        <button class="btn category-delete-icon text-danger"
+                                            data-category-id="<%= cat._id %>">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </td>
-                                    
+
                                 </tr>
                                 <% }); %>
                         </tbody>
@@ -288,60 +289,62 @@
     </div>
     </div>
 
-<script>
-    const hamBurger = document.querySelector(".toggle-btn");
+    <script>
+        const hamBurger = document.querySelector(".toggle-btn");
 
-    hamBurger.addEventListener("click", function () {
-        document.querySelector("#sidebar").classList.toggle("expand");
-    });
+        hamBurger.addEventListener("click", function () {
+            document.querySelector("#sidebar").classList.toggle("expand");
+        });
 
-    $(document).ready(function () {
-    // Handle Edit button click with event delegation
-    $(document).on('click', '.edit-category-button', function () {
-        var categoryId = $(this).data('category-id');
-        window.location.href = '/admin/category/edit-category/' + categoryId;
-    });
+        $(document).ready(function () {
+            // Handle Edit button click
+            $(document).on('click', '.edit-category-button', function () {
+                var categoryId = $(this).data('category-id');
+                window.location.href = '/admin/category/edit-category/' + categoryId;
+            });
 
-    // Handle Delete button click with SweetAlert2 and event delegation
-    $(document).on('click', '.category-delete-icon', function () {
-        var categoryId = $(this).data('category-id');
+            // Handle Delete button click
+            $(document).on('click', '.category-delete-icon', function () {
+                var $button = $(this);
+                var categoryId = $button.data('category-id');
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/category/delete-category/' + categoryId,
-                    type: 'DELETE',
-                    success: function (response) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The category has been deleted.',
-                            'success'
-                        ).then(() => {
-                            // Reload the page or remove the category from the DOM
-                            location.reload();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/admin/category/delete-category/' + categoryId,
+                            type: 'DELETE',
+                            success: function (response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The category has been deleted.',
+                                    'success'
+                                );
+
+                                // Remove the table row from the DOM
+                                $button.closest('tr').remove();
+                            },
+                            error: function (err) {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an error deleting the category.',
+                                    'error'
+                                );
+                            }
                         });
-                    },
-                    error: function (err) {
-                        Swal.fire(
-                            'Error!',
-                            'There was an error deleting the category.',
-                            'error'
-                        );
                     }
                 });
-            }
+            });
         });
-    });
-});
 
 
 
-</script>
+
+    </script>

@@ -6,7 +6,8 @@
   .form-group {
     margin-bottom: 1.5rem;
   }
-  .form-control{
+
+  .form-control {
     width: 75%;
   }
 
@@ -14,25 +15,26 @@
     padding-left: 100px;
     padding-top: 100px;
   }
-  input::placeholder {
-        font-size: 12px;
-    }
 
-    input {
-        font-size: 12px;
-    }
-  
+  input::placeholder {
+    font-size: 12px;
+  }
+
+  input {
+    font-size: 12px;
+  }
 </style>
 </head>
+
 <body>
 
-<div class="container-fluid">
+  <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <%- include("../partials/userSidenav.ejs") %>
+      <!-- Sidebar -->
+      <%- include("../partials/userSidenav.ejs") %>
         <!-- Form Section -->
         <div class="col-md-9 main-content">
-          <div >
+          <div>
             <h5>Account Setting</h5>
             <ul class="breadcrumb">
               <li><a href="/user/products">Shop</a></li>
@@ -41,49 +43,53 @@
             </ul>
           </div>
           <form id="account-form" action="/user/my-account" method="POST" onsubmit="return validateForm()">
-              <div class="row mb-3">
-                  <div class="col">
-                      <input type="text" class="form-control" name="fname" placeholder="Firstname" value="<%= userInfo ? userInfo.firstName : '' %>">
-                      <div class="text-danger" id="fname-error"></div>
-                  </div>
-                  <div class="col">
-                      <input type="text" class="form-control" name="lname" placeholder="Lastname" value="<%= userInfo ? userInfo.lastName : '' %>">
-                      <div class="text-danger" id="lname-error"></div>
-                  </div>
+            <div class="row mb-3">
+              <div class="col">
+                <input type="text" class="form-control" name="fname" placeholder="Firstname"
+                  value="<%= userInfo ? userInfo.fname : '' %>">
+                <div class="text-danger" id="fname-error"></div>
               </div>
-              <div class="row mb-3">
-                  <div class="col">
-                      <input type="text" class="form-control" name="phone" placeholder="Mobile No" value="<%= userInfo ? userInfo.phone : '' %>">
-                      <div class="text-danger" id="phone-error"></div>
-                  </div>
-                  <div class="col">
-                      <input type="text" class="form-control" name="email" placeholder="Email" value="<%= userInfo ? userInfo.email : '' %>">
-                      <div class="text-danger" id="email-error"></div>
-                  </div>
+              <div class="col">
+                <input type="text" class="form-control" name="lname" placeholder="Lastname"
+                  value="<%= userInfo ? userInfo.lname : '' %>">
+                <div class="text-danger" id="lname-error"></div>
               </div>
-              <button type="submit" class="btn btn-dark" style="width: 200px; border-radius: 0;">Save</button>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <input type="text" class="form-control" name="phone" placeholder="Mobile No"
+                  value="<%= userInfo ? userInfo.phone : '' %>">
+                <div class="text-danger" id="phone-error"></div>
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" name="email" placeholder="Email"
+                  value="<%= userInfo ? userInfo.email : '' %>">
+                <div class="text-danger" id="email-error"></div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-dark" style="width: 200px; border-radius: 0;">Save</button>
           </form>
-      </div>
-      
+        </div>
+
     </div>
-</div>
+  </div>
 
 
 
-    <script>
+  <script>
     function validateForm() {
       var fname = document.forms["account-form"]["fname"].value;
       var lname = document.forms["account-form"]["lname"].value;
       var phone = document.forms["account-form"]["phone"].value;
       var email = document.forms["account-form"]["email"].value;
       var isValid = true;
-    
+
       // Clear previous error messages
       document.getElementById('fname-error').innerText = '';
       document.getElementById('lname-error').innerText = '';
       document.getElementById('phone-error').innerText = '';
       document.getElementById('email-error').innerText = '';
-    
+
       if (!fname) {
         document.getElementById('fname-error').innerText = 'Firstname is required';
         isValid = false;
@@ -100,7 +106,7 @@
         document.getElementById('email-error').innerText = 'Email is required';
         isValid = false;
       }
-    
+
       if (!isValid) {
         Swal.fire({
           toast: true,
@@ -117,7 +123,7 @@
         });
         return false;
       }
-    
+
       $.ajax({
         type: "POST",
         url: "/user/my-account",
@@ -178,7 +184,7 @@
           });
         }
       });
-    
+
       return false;
 
 
@@ -186,7 +192,6 @@
 
     }
 
-    
 
-    </script>
-    
+
+  </script>

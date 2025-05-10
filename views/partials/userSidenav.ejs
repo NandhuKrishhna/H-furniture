@@ -1,148 +1,148 @@
 <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-.side-menu {
-    background-color: #ffffff;
-    height: 100%;
-    border: 0.5px solid #ced4da;
-    position: relative;
-    left: 30px;
-    top: 100px;
-    font-size: 20px;
-    font-family: monospace;
-}
+    .side-menu {
+        background-color: #ffffff;
+        height: 100%;
+        border: 0.5px solid #ced4da;
+        position: relative;
+        left: 30px;
+        top: 100px;
+        font-size: 20px;
+        font-family: monospace;
+    }
 
-.side-menu .list-group-flush {
-    border-radius: 0;
-    width: 163px;
-    height: 485px;
-    position: relative;
-    left: 100px;
-    top: 67px;
-    flex-direction: column;
-}
-.side-menu .list-group-item {
-    border: none;
-    padding: 10px 15px;
-    font-size: 12px;
-    transition: all 0.3s ease; 
-}
+    .side-menu .list-group-flush {
+        border-radius: 0;
+        width: 163px;
+        height: 485px;
+        position: relative;
+        left: 100px;
+        top: 67px;
+        flex-direction: column;
+    }
 
-.side-menu .list-group-item a {
-    color: rgb(90, 90, 90);
-    text-decoration: none; 
-    display: block;
-}
+    .side-menu .list-group-item {
+        border: none;
+        padding: 10px 15px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
 
-
-.side-menu .list-group-item:hover {
-    /* background-color: #f1f1f1; */
-    transform: scale(1.05); 
-}
+    .side-menu .list-group-item a {
+        color: rgb(90, 90, 90);
+        text-decoration: none;
+        display: block;
+    }
 
 
-.side-menu .list-group-item:hover a {
-    color: #000000; 
-}
-
-.logout-btn {
-    width: 100%;
-    margin-bottom: 50px;
-}
+    .side-menu .list-group-item:hover {
+        /* background-color: #f1f1f1; */
+        transform: scale(1.05);
+    }
 
 
+    .side-menu .list-group-item:hover a {
+        color: #000000;
+    }
+
+    .logout-btn {
+        width: 100%;
+        margin-bottom: 50px;
+    }
 </style>
 
-        <div class="col-md-3 side-menu">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <a href="/user/orders">Your Orders</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/products">Buy Again</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/my-account">Your Account</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/my-address">Your Address</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/cart">Your Cart</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/wishlist">Your Wishlist</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/set_new_password">Change Password</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/coupons">Coupons and Vouchers</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="/user/wallet">Wallet</a>
-                </li>
-            </ul>
-            <button id="logout" class="btn btn-dark logout-btn" style="border-radius: 0;">LOGOUT</button>
-        </div>
+<div class="col-md-3 side-menu">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <a href="/user/orders">Your Orders</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/products">Buy Again</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/my-account">Your Account</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/my-address">Your Address</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/cart">Your Cart</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/wishlist">Your Wishlist</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/set_new_password">Change Password</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/coupons">Coupons and Vouchers</a>
+        </li>
+        <li class="list-group-item">
+            <a href="/user/wallet">Wallet</a>
+        </li>
+    </ul>
+    <button id="logout" class="btn btn-dark logout-btn" style="border-radius: 0;">LOGOUT</button>
+</div>
 
 
-  
-      <script>
-        
-        $(document).ready(function() {
-    $('#logout').on('click', function() {
-      Swal.fire({
-            title: 'Are you sure?',
-            text: "You will be logged out of your account!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: 'black', 
-            cancelButtonColor: 'grey',
-            confirmButtonText: 'Yes, logout!',
-            cancelButtonText: 'No, cancel',
-            customClass: {
-                confirmButton: 'swal2-confirm-black',
-                cancelButton: 'swal2-cancel-grey'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/user/logout',
-                    type: 'POST',
-                    success: function(response) {
-                        if (response.success) {
-                            Swal.fire(
-                                'Logged out!',
-                                'You have been logged out successfully.',
-                                'success',
-                                
-                            ).then(() => {
-                                window.location.href = '/user/login'; 
-                            });
-                        } else {
+
+<script>
+
+    $(document).ready(function () {
+        $('#logout').on('click', function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out of your account!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'black',
+                cancelButtonColor: 'grey',
+                confirmButtonText: 'Yes, logout!',
+                cancelButtonText: 'No, cancel',
+                customClass: {
+                    confirmButton: 'swal2-confirm-black',
+                    cancelButton: 'swal2-cancel-grey'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/user/logout',
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                localStorage.removeItem('userData')
+                                Swal.fire(
+                                    'Logged out!',
+                                    'You have been logged out successfully.',
+                                    'success',
+
+                                ).then(() => {
+                                    window.location.href = '/user/login';
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Oops!',
+                                    'Something went wrong. Please try again later.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function (xhr, status, error) {
                             Swal.fire(
                                 'Oops!',
                                 'Something went wrong. Please try again later.',
                                 'error'
                             );
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire(
-                            'Oops!',
-                            'Something went wrong. Please try again later.',
-                            'error'
-                        );
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
     });
-});
-      </script>
+</script>

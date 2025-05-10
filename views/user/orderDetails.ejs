@@ -199,16 +199,17 @@
 
 
         <div class="reviews mt-5">
-          <% reviews.forEach(review => { %>
+          <% reviews.forEach(review=> { %>
             <div class="review-item mb-4">
               <div class="d-flex justify-content-between align-items-center">
                 <h5>
-                  <% if (review.user && review.user.firstName && review.user.lastName) { %>
-                    <%= review.user.firstName %> <%= review.user.lastName %>
-                  <% } else { %>
-                    User
-                  <% } %>
-                </h5> 
+                  <% if (review.user && review.user.fname && review.user.lname) { %>
+                    <%= review.user.fname %>
+                      <%= review.user.lname %>
+                        <% } else { %>
+                          User
+                          <% } %>
+                </h5>
                 <div>
                   <span class="badge bg-warning text-dark">
                     <%= review.rating %> <i class="fa fa-star"></i>
@@ -223,9 +224,9 @@
               </small>
             </div>
             <hr>
-          <% }) %>
+            <% }) %>
         </div>
-        
+
       </div>
     </div>
 
@@ -236,63 +237,63 @@
 
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
 
-  $('#writeReviewBtn').click(function() {
-    $('#reviewForm').toggle();
-  });
-
-  $('.rating-star').hover(function() {
-    var rating = $(this).data('rating');
-    highlightStars(rating);
-  }, function() {
-    var currentRating = $('#reviewRating').val();
-    highlightStars(currentRating);
-  });
-
-  $('.rating-star').click(function() {
-    var rating = $(this).data('rating');
-    $('#reviewRating').val(rating);
-    highlightStars(rating);
-  });
-
-  function highlightStars(rating) {
-    $('.rating-star').each(function() {
-      var starRating = $(this).data('rating');
-      if (starRating <= rating) {
-        $(this).addClass('checked');
-      } else {
-        $(this).removeClass('checked');
-      }
+    $('#writeReviewBtn').click(function () {
+      $('#reviewForm').toggle();
     });
-  }
 
-  $('#addReviewForm').submit(function(event) {
-    event.preventDefault();
-    var reviewData = $(this).serialize();
-    
-    $.ajax({
-      url: '/user/addReview/<%= item.productId._id %>', 
-      type: 'POST',
-      data: reviewData,
-      success: function(response) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Review Submitted',
-          text: 'Thank you for your feedback!',
-        }).then(() => {
-          location.reload();  
-        });
-      },
-      error: function(err) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Something went wrong!',
-        });
-      }
+    $('.rating-star').hover(function () {
+      var rating = $(this).data('rating');
+      highlightStars(rating);
+    }, function () {
+      var currentRating = $('#reviewRating').val();
+      highlightStars(currentRating);
+    });
+
+    $('.rating-star').click(function () {
+      var rating = $(this).data('rating');
+      $('#reviewRating').val(rating);
+      highlightStars(rating);
+    });
+
+    function highlightStars(rating) {
+      $('.rating-star').each(function () {
+        var starRating = $(this).data('rating');
+        if (starRating <= rating) {
+          $(this).addClass('checked');
+        } else {
+          $(this).removeClass('checked');
+        }
+      });
+    }
+
+    $('#addReviewForm').submit(function (event) {
+      event.preventDefault();
+      var reviewData = $(this).serialize();
+
+      $.ajax({
+        url: '/user/addReview/<%= item.productId._id %>',
+        type: 'POST',
+        data: reviewData,
+        success: function (response) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Review Submitted',
+            text: 'Thank you for your feedback!',
+          }).then(() => {
+            location.reload();
+          });
+        },
+        error: function (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+          });
+        }
+      });
     });
   });
-});
 
 </script>

@@ -286,7 +286,7 @@
                 <ul class="breadcrumb">
                     <li><a href="/admin/coupons">Coupons</a></li>
                     <li>Add Coupons</li>
-                  </ul>
+                </ul>
                 <h1 style="position: relative; left: 80px;" class="text-start"> ADD COUPONS</h1>
                 <div class="row px-5 pt-2">
                     <div id="formErrors" class="text-danger" style="display: none;"></div>
@@ -368,10 +368,24 @@
                     body: JSON.stringify(formObject)
                 });
 
+
                 if (response.ok) {
-                   window.location.href = "/admin/coupons";
+                    window.location.href = "/admin/coupons";
                 } else {
                     const data = await response.json();
+                    if (!data.status) {
+                        console.log(data)
+                        Toastify({
+                            text: data.message,
+                            duration: 3000,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#333",
+                            stopOnFocus: true,
+                        }).showToast();
+                    }
+
+
                     document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
                     document.getElementById('formErrors').style.display = 'none';
 
