@@ -9,7 +9,13 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, required: false, default: null },
   googleID: { type: String, unique: true, sparse: true },
   isBlocked: { type: Boolean, default: false, required: true },
-  isVerified: { type: Boolean, default: false, required: true }
+  isVerified: { type: Boolean, default: false, required: true },
+  profilePicture: {
+    type: String,
+    required: false,
+    default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+  },
+
 }, {
   timestamps: true
 });
