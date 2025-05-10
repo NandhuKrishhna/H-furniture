@@ -1,4 +1,5 @@
 
+
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -18,6 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         });
 
         const data = await response.json();
+        console.log(data)
 
         // Clear previous errors
         document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
@@ -26,6 +28,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         if (response.ok) {
 
             localStorage.setItem("token", data.token);
+            localStorage.setItem("userData", JSON.stringify(data.userDate));
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -42,7 +45,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                 icon: 'success',
                 title: 'Login Successful! Welcome to <strong>Habus Furniture</strong>'
             }).then(() => {
-                window.location.href = '/'; // Redirect after success
+                window.location.href = '/';
             });
         } else {
             // Display validation errors
