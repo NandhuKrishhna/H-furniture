@@ -15,61 +15,73 @@ function giveMsg(msg, boolean) {
   modalMsgBodyAdmin.innerHTML = msg;
 }
 
-// ajax request to block user
 $(document).ready(function () {
+  // BLOCK USER
   $(document).on("click", ".block-button", function () {
-    var userId = $(this).data("user-id");
+    var $button = $(this);
+    var userId = $button.data("user-id");
 
     giveAlert("Are you sure? You need to block the user");
-    $(document).on("click", "#confirmAction", function () {
+
+    $(document).one("click", "#confirmAction", function () {
       giveAlert("");
       $.ajax({
         url: "/admin/user_panel/block_user/" + userId,
-
         method: "PATCH",
-        success: function (_, _, response) {
-          if (response.status === 200) {
-            location.reload();
-          }
+        success: function () {
+          // Update status badge
+          const $row = $button.closest("tr");
+          $row.find("span.badge")
+            .removeClass("badge-success")
+            .addClass("badge-danger")
+            .text("Blocked");
+
+          // Change button to 'unblock'
+          $button
+            .removeClass("block-button")
+            .addClass("unblock-button")
+            .html(`<i class="user-blocked-icon${userId} fa-solid text-danger fa-user-slash"></i>`);
         },
         error: function (error) {
-          console.error("Error updating user status:", error);
+          console.error("Error blocking user:", error);
         },
       });
     });
   });
-});
 
-//ajax request to unblock the user
-
-$(document).ready(function () {
+  // UNBLOCK USER
   $(document).on("click", ".unblock-button", function () {
-    var userId = $(this).data("user-id");
+    var $button = $(this);
+    var userId = $button.data("user-id");
 
-    giveAlert("Are you sure ?you need to unblock the user");
-    $(document).on("click", "#confirmAction", function () {
+    giveAlert("Are you sure? You need to unblock the user");
+
+    $(document).one("click", "#confirmAction", function () {
       giveAlert("");
       $.ajax({
         url: "/admin/user_panel/unblock_user/" + userId,
+        method: "PATCH",
+        success: function () {
+          // Update status badge
+          const $row = $button.closest("tr");
+          $row.find("span.badge")
+            .removeClass("badge-danger")
+            .addClass("badge-success")
+            .text("Active");
 
-        method: "PATCH", //patch method to partially update the data
-        success: function (_, _, response) {
-          if (response.status == 200) {
-            location.reload();
-          }
+          // Change button to 'block'
+          $button
+            .removeClass("unblock-button")
+            .addClass("block-button")
+            .html(`<i class="user-block-icon${userId} fa-solid text-success fa-user"></i>`);
         },
         error: function (error) {
-          console.error("Error updating user status:", error);
+          console.error("Error unblocking user:", error);
         },
       });
     });
   });
 });
-
-
-
-
-
 
 
 
