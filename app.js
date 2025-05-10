@@ -15,6 +15,8 @@ const adminRouter = require("./src/routes/adminRouter");
 const authRouter = require('./src/routes/auth-routes');
 const paymentRouter = require('./src/routes/paymentRouter');
 const appFeatRouter = require('./src/routes/appFeatRouter');
+const { INTERNAL_SERVER_ERROR, NOT_FOUND } = require('./src/utils/http');
+const productRouter = require('./src/routes/productRouter');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -70,18 +72,23 @@ app.use(adminRouter);
 app.use(authRouter)
 app.use(paymentRouter)
 app.use(appFeatRouter)
+app.use(productRouter)
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).render("404", {
+  res.status(NOT_FOUND).render("404", {
     errorMessage: "Oops! Page Not Found",
     errorDescription: "The page you're looking for might have been removed or temporarily unavailable."
   });
 });
 
-// Error handler
-app.use(errorHandler)
-
+app.use((err, req, res, next) => {
+  console.error(`[ERROR] ${new Date().toISOString()}`, err.stack);
+  res.status(INTERNAL_SERVER_ERROR).render("500", {
+    errorMessage: "Something went wrong!",
+    errorDescription: "Our team has been notified. Please try again later."
+  });
+});
 
 app.listen(PORT, async () => {
   await db();
