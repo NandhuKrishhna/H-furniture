@@ -1,24 +1,13 @@
 const Userdb = require("../models/UserModels");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Productdb = require("../models/productModels")
-const Orderdb = require("../models/orderModel")
 const Addressdb = require("../models/addressModel");
-const Cartdb = require("../models/cartModel");
-const Coupondb = require("../models/couponModel");
-const WishListdb = require("../models/wishListModel");
-const Walletdb = require("../models/walletModel")
-const uuidv4 = require("uuid").v4;
 const { ObjectId } = require("mongodb");
-const PDFDocument = require('pdfkit');
-const instance = require("../config/razorpay");
 const verifyToken = require("../utils/verifyToken");
 
 
 
-function calculateDiscountedPrice(originalPrice, discount) {
-  return originalPrice - (originalPrice * discount / 100);
-}
+
 
 module.exports = {
 
