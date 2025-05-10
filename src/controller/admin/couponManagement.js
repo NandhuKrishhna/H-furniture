@@ -1,5 +1,6 @@
 const { couponCollection } = require("../../models/couponModel");
 const { OK, BAD_REQUEST, NOT_FOUND } = require("../../utils/http");
+const CouponModel = require("../../models/couponModel");
 
 module.exports = {
     couponManagement: async (req, res, next) => {
@@ -46,13 +47,14 @@ module.exports = {
             };
             console.log(data);
             const dataExit = await couponCollection.findOne({ code: req.body.code });
+            console.log("Coupon exit ?", dataExit)
             if (dataExit) {
                 return res.status(BAD_REQUEST).json({
                     success: false,
                     message: "Coupon code already exists"
                 });
             }
-            const coupon = new couponCollection(data);
+            const coupon = new CouponModel.couponCollection(data);
             await coupon.save();
 
             res.redirect('/admin/coupons');
