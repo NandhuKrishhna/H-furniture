@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { ObjectId } = require("mongodb");
 const { fetchOrderData } = require("../utils/helpers");
+const { OK, INTERNAL_SERVER_ERROR, NOT_FOUND, BAD_REQUEST } = require("../utils/http");
 
 
 function convertDate(users) {
@@ -26,21 +27,21 @@ module.exports = {
           if (admin) {
             return res.redirect("/admin/user_panel");
           } else {
-            return res.status(200).render("admin/login", {
+            return res.status(OK).render("admin/login", {
               message: null,
 
             });
           }
         } catch (err) {
           console.log("Token verification failed:", err);
-          return res.status(200).render("admin/login", {
+          return res.status(OK).render("admin/login", {
             message: null,
 
           });
         }
       } else {
         console.log("No token found, rendering login page");
-        return res.status(200).render("admin/login", {
+        return res.status(OK).render("admin/login", {
           message: null,
 
 
@@ -48,7 +49,7 @@ module.exports = {
       }
     } catch (error) {
       console.log("Error in getAdminLogin:", error);
-      return res.status(500).send("Internal Server Error");
+      return res.status(INTERNAL_SERVER_ERROR).send("Internal Server Error");
     }
   },
   verifyAdminLogin: async (req, res, next) => {
@@ -56,7 +57,7 @@ module.exports = {
       const admin = await Admindb.adminCollection.findOne({ email: req.body.email });
 
       if (!admin) {
-        return res.status(404).json({
+        return res.status(NOT_FOUND).json({
           customError: "Incorrect email or password"
         });
       }
@@ -64,7 +65,7 @@ module.exports = {
       const passwordValid = await bcrypt.compare(req.body.password, admin.password);
 
       if (!passwordValid) {
-        return res.status(404).json({
+        return res.status(NOT_FOUND).json({
           customError: "Incorrect email or password"
         });
       }
@@ -73,7 +74,7 @@ module.exports = {
       if (passwordValid) {
         const adminToken = jwt.sign({ _id }, process.env.ADMIN_SECRET);
         res.cookie("adminToken", adminToken, { httpOnly: true });
-        return res.status(200).json({
+        return res.status(OK).json({
           success: true,
           message: "Login successful"
         });
@@ -89,7 +90,7 @@ module.exports = {
       const users = await Userdb.userCollection.find({}).lean();
       const userData = convertDate(users);
 
-      res.status(200).render("admin/user_panel", {
+      res.status(OK).render("admin/user_panel", {
         adminUser: true,
         users: users,
         userData,
@@ -102,7 +103,7 @@ module.exports = {
   userSearch: async (req, res, next) => {
     try {
       const users = await Userdb.userCollection.find(req.query)
-      res.status(200).json({
+      res.status(OK).json({
         success: true,
         data: users
       })
@@ -110,7 +111,7 @@ module.exports = {
 
 
     } catch (error) {
-      res.status(400).json({
+      res.status(BAD_REQUEST).json({
         sucess: false,
         error: error.message
       });
@@ -124,7 +125,7 @@ module.exports = {
         { $set: { isBlocked: true } }
       );
       if (user.modifiedCount) {
-        res.sendStatus(200);
+        res.sendStatus(OK);
       }
     } catch (err) {
       next(err);
@@ -139,7 +140,7 @@ module.exports = {
       );
       console.log("This is users id:", id);
       if (user.modifiedCount) {
-        res.sendStatus(200);
+        res.sendStatus(OK);
       }
     } catch (err) {
       next(err);
