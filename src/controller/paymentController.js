@@ -9,7 +9,7 @@ const { walletCollection } = require("../models/walletModel");
 const { OK, BAD_REQUEST, NOT_FOUND } = require("../utils/http");
 const verifyToken = require("../utils/verifyToken");
 const crypto = require("crypto");
-
+const { v4: uuidv4 } = require('uuid');
 module.exports = {
     handlePaymentFailure: async (order_id, payment_id) => {
         try {
@@ -325,7 +325,7 @@ module.exports = {
                 .findById(item.productId._id)
                 .populate({
                     path: 'reviews.user',
-                    select: 'firstName lastName'
+                    select: 'fname lname'
                 });
 
 
