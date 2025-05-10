@@ -1,7 +1,7 @@
 const { categoryCollection } = require("../../models/categoryModel");
 const { productCollection } = require("../../models/productModels");
 const { OK, INTERNAL_SERVER_ERROR, NOT_FOUND } = require("../../utils/http");
-const fs = require('fs');
+const fs = require('fs').promises;
 
 const sharp = require('sharp');
 
