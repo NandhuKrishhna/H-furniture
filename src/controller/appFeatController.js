@@ -9,7 +9,10 @@ const { walletCollection } = require("../models/walletModel");
 const { wishListCollection } = require("../models/wishListModel");
 const { BAD_REQUEST, OK, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("../utils/http");
 const verifyToken = require("../utils/verifyToken");
-
+const { v4: uuidv4 } = require('uuid');
+function calculateDiscountedPrice(originalPrice, discount) {
+    return originalPrice - (originalPrice * discount / 100);
+}
 module.exports = {
     applyCoupon: async (req, res, next) => {
         try {
