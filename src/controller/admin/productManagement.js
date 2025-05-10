@@ -219,7 +219,7 @@ module.exports = {
 
             console.log('Resized images:', resizedImages);
 
-            const category = await Categorydb.categoryCollection.findOne({
+            const category = await categoryCollection.findOne({
                 categoryName: { $regex: req.body.category, $options: "i" }
             });
 
@@ -251,7 +251,7 @@ module.exports = {
 
             console.log(productdata);
 
-            await Productdb.productCollection.insertMany(productdata);
+            await productCollection.insertMany(productdata);
             res.redirect("/admin/products");
         } catch (error) {
             console.log(error);
