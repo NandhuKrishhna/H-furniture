@@ -19,8 +19,8 @@ passport.use(new GoogleStrategy({
             return done(null, { user, token });
         } else {
             user = new Userdb.userCollection({
-                firstName: profile.name.givenName,
-                lastName: profile.name.familyName,
+                fname: profile.name.givenName,
+                lname: profile.name.familyName,
                 email: profile.email,
                 googleID: profile.id
             });
