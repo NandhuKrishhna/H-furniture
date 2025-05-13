@@ -1,0 +1,23 @@
+<div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+        <h2 class="mb-3">Welcome, <%= name %> 👋</h2>
+        <p class="lead">We're setting up your account...</p>
+        <div class="spinner-border text-primary mt-4" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const user = {
+        name: "<%= name %>",
+        email: "<%= email %>",
+        profilePicture: "<%= profilePicture %>" || null
+    };
+
+    localStorage.setItem("userData", JSON.stringify(user));
+
+    setTimeout(() => {
+        window.location.href = "/";
+    }, 1000);
+</script>

@@ -394,4 +394,16 @@ module.exports = {
         res.clearCookie("token");
         res.json({ success: true });
     },
+    googleSuccess: (req, res) => {
+        const { name, email, profilePicture } = req.query;
+        if (!name || !email) {
+            return res.redirect("/user/login");
+        }
+
+        res.render("user/googleSuccess", {
+            name,
+            email,
+            profilePicture
+        });
+    }
 }
